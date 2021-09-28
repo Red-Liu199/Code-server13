@@ -282,3 +282,12 @@ INFO:root:validation [CTR] 87.68  79.66  16.27  99.94  0.557
 INFO:root:validation 84.97  77.05  16.27  97.28  0.557
 INFO:root:early stop count:4
 INFO:root:Epoch:15, Train epoch time: 8.89 min, loss: 0.5234705474374416
+INFO:root:Inference time:5.899 min
+INFO:root:validation [CTR] 89.98  80.36  16.37  101.54  0.563
+INFO:root:validation 89.18  79.56  16.37  100.73  0.563
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:16, Train epoch time: 8.86 min, loss: 0.513526767937844
+INFO:root:Inference time:5.873 min
+INFO:root:validation [CTR] 88.68  81.26  16.60  101.57  0.560
+INFO:root:validation 85.57  78.46  16.60  98.61  0.560
+INFO:root:early stop count:4

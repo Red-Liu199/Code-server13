@@ -54,3 +54,8 @@ INFO:root:Inference time:3.686 min
 INFO:root:validation [CTR] 86.47  77.35  16.54  98.45  0.572
 INFO:root:validation 84.27  75.25  16.54  96.30  0.572
 INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-DS_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:12, Train epoch time: 13.43 min, epoch loss: 12236.6895
+INFO:root:Inference time:3.641 min
+INFO:root:validation [CTR] 89.08  81.16  17.34  102.46  0.597
+INFO:root:validation 86.07  78.26  17.34  99.51  0.597
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-DS_sd11_lr0.0001_bs4_ga8/best_score_model
