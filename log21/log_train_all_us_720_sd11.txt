@@ -1,0 +1,87 @@
+INFO:transformers.tokenization_utils:Model name '../distilgpt2' not found in model shortcut name list (gpt2, gpt2-medium, gpt2-large, gpt2-xl, distilgpt2). Assuming '../distilgpt2' is a path, a model identifier, or url to a directory containing tokenizer files.
+INFO:transformers.tokenization_utils:Didn't find file ../distilgpt2/added_tokens.json. We won't load it.
+INFO:transformers.tokenization_utils:Didn't find file ../distilgpt2/special_tokens_map.json. We won't load it.
+INFO:transformers.tokenization_utils:Didn't find file ../distilgpt2/tokenizer_config.json. We won't load it.
+INFO:transformers.tokenization_utils:loading file ../distilgpt2/vocab.json
+INFO:transformers.tokenization_utils:loading file ../distilgpt2/merges.txt
+INFO:transformers.tokenization_utils:loading file None
+INFO:transformers.tokenization_utils:loading file None
+INFO:transformers.tokenization_utils:loading file None
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:transformers.tokenization_utils:Adding [restaurant] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [hotel] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [attraction] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [train] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [taxi] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [police] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [hospital] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [general] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [inform] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [request] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [nooffer] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [recommend] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [select] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [offerbook] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [offerbooked] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [nobook] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [bye] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [greet] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [reqmore] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [welcome] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_name] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_choice] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_area] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_price] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_type] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_reference] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_phone] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_address] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_food] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_leave] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_postcode] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_id] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_arrive] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_stars] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_day] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_destination] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_car] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_departure] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_time] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_people] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_stay] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_pricerange] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_department] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_name]([value_phone] to the vocabulary
+INFO:transformers.tokenization_utils:Adding <pad> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_r> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <unk> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_b> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_a> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_u> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_r> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_b> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_a> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_d> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_d> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_u> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_r> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_b> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_a> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_d> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_db> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_db> to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_nores] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_0] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_1] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_2] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_3] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [book] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [fail_book] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [fail_info] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [pre_invalid] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [invalid] to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_g> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_g> to the vocabulary
+INFO:transformers.tokenization_utils:Assigning ['[restaurant]', '[hotel]', '[attraction]', '[train]', '[taxi]', '[police]', '[hospital]', '[general]', '[inform]', '[request]', '[nooffer]', '[recommend]', '[select]', '[offerbook]', '[offerbooked]', '[nobook]', '[bye]', '[greet]', '[reqmore]', '[welcome]', '[value_name]', '[value_choice]', '[value_area]', '[value_price]', '[value_type]', '[value_reference]', '[value_phone]', '[value_address]', '[value_food]', '[value_leave]', '[value_postcode]', '[value_id]', '[value_arrive]', '[value_stars]', '[value_day]', '[value_destination]', '[value_car]', '[value_departure]', '[value_time]', '[value_people]', '[value_stay]', '[value_pricerange]', '[value_department]', '[value_name]([value_phone]', '<pad>', '<go_r>', '<unk>', '<go_b>', '<go_a>', '<eos_u>', '<eos_r>', '<eos_b>', '<eos_a>', '<go_d>', '<eos_d>', '<sos_u>', '<sos_r>', '<sos_b>', '<sos_a>', '<sos_d>', '<sos_db>', '<eos_db>', '[db_nores]', '[db_0]', '[db_1]', '[db_2]', '[db_3]', '[book]', '[fail_book]', '[fail_info]', '[pre_invalid]', '[invalid]', '<sos_g>', '<eos_g>'] to the additional_special_tokens key of the tokenizer
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Encoding data now and save the encoded data in ./data/multi-woz-2.1-processed/encoded_us_data.json

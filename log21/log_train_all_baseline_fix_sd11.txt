@@ -1,0 +1,284 @@
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Encoding data now and save the encoded data in ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:encoded file saved in ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running pretraining *****
+INFO:root:  Num Dialogs = 8434
+INFO:root:  Num Epochs = 40
+INFO:root:  Batch size  = 2
+INFO:root:warmup epochs:8
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need a place to eat that is cheap. <eos_u> <sos_b> [restaurant]  pricerange cheap <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [inform]  price choice [request]  area <eos_a> <sos_r>  i have [value_choice] [value_price]  restaurant -s in different area -s of town. do you have a location preference? <eos_r> <sos_u>  yes. i want the center area. <eos_u> <sos_b> [restaurant]  pricerange cheap area centre <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [recommend]  name food <eos_a> <sos_r>  i can recommend [value_name]  that serves [value_food]  food <eos_r> <sos_u>  do you have any restaurant -s that serve english food? <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food english <eos_b> <sos_db> [db_0] <eos_db> <sos_a> [restaurant] [nooffer]  food area <eos_a> <sos_r>  i am showing nothing for [value_food]  food in the [value_area]  area. would you like to try something else? <eos_r> <sos_u>  how about some awesome indian food. i need a table for 8 on 16:30 monday <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [restaurant] [offerbooked]  reference name [general] [reqmore] <eos_a> <sos_r>  i booked you at [value_name] . the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r> <sos_u>  thanks for your help. in addition, i am looking for a thursday train departing cambridge, please. <eos_u> <sos_b> [train]  day thursday departure cambridge [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [inform]  day choice departure [request]  destination <eos_a> <sos_r>  there are [value_choice]  trains leaving [value_departure]  on [value_day] . where is your destination? <eos_r> <sos_u>  i am looking to travel to ely departing after 13:15 if possible. <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [train] [inform]  leave id day [offerbook] <eos_a> <sos_r>  the [value_id]  leaves at [value_leave]  on [value_day] . would you like me to book you? <eos_r> <sos_u>  yes, please book 8 tickets and provide me with a reference number <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [train] [offerbooked]  reference <eos_a> <sos_r>  okay i have booked that for you and the reference number is [value_reference] . is there anything else i can do for you? <eos_r> <sos_u>  great, thanks. that is all for now! <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [greet] <eos_a> <sos_r>  ok. i hope you have a great day! <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need to find some information in a particular restaurant. are you able to look up a specific place? <eos_u> <sos_b> <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [restaurant] [request]  name <eos_a> <sos_r>  absolutely. what is the name of the restaraunt you are interested in? <eos_r> <sos_u>  kohinoor. i want to book a table for 2 people at 16:45 on thursday <eos_u> <sos_b> [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure. booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . can i help with anything else today? <eos_r> <sos_u>  i also need a thursday train. <eos_u> <sos_b> [train]  day thursday [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [request]  departure destination <eos_a> <sos_r>  what location will you depart from and where are you headed? <eos_r> <sos_u>  depart from ely and would like to arrive by 13:00 in cambridge. i need to book it for 2 people i also need a reference number. thanks <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [train] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure thing, it is booked and your reference number is [value_reference] . do you need more help? <eos_r> <sos_u>  nope, i am all finished for today. thanks so much, goodbye now! <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [welcome] [bye] <eos_a> <sos_r>  you are very welcome, bye! <eos_r>
+INFO:root:Epoch:0, Train epoch time: 8.88 min, loss: 11.503293689133491
+INFO:root:Epoch:1, Train epoch time: 8.85 min, loss: 2.942405879893572
+INFO:root:Epoch:2, Train epoch time: 8.86 min, loss: 1.7119312854417421
+INFO:root:Epoch:3, Train epoch time: 8.85 min, loss: 1.1729171755447396
+INFO:root:Epoch:4, Train epoch time: 8.84 min, loss: 0.9474717525152669
+INFO:root:Epoch:5, Train epoch time: 8.83 min, loss: 0.8244413573367368
+INFO:root:Inference time:7.808 min
+INFO:root:validation [CTR] 77.76  62.73  14.36  84.60  0.279
+INFO:root:validation 60.92  49.30  14.36  69.47  0.279
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:6, Train epoch time: 8.88 min, loss: 0.7483253342368674
+INFO:root:Inference time:6.494 min
+INFO:root:validation [CTR] 55.91  44.39  14.95  65.10  0.407
+INFO:root:validation 52.71  41.98  14.95  62.29  0.407
+INFO:root:Epoch:7, Train epoch time: 8.89 min, loss: 0.6955783112910782
+INFO:root:Inference time:5.739 min
+INFO:root:validation [CTR] 68.14  55.91  13.39  75.41  0.442
+INFO:root:validation 64.23  52.71  13.39  71.85  0.442
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:8, Train epoch time: 8.87 min, loss: 0.6546664431401209
+INFO:root:Inference time:6.149 min
+INFO:root:validation [CTR] 83.07  73.05  15.10  93.16  0.466
+INFO:root:validation 77.76  68.74  15.10  88.35  0.466
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:9, Train epoch time: 8.88 min, loss: 0.6230610336632767
+INFO:root:Inference time:5.986 min
+INFO:root:validation [CTR] 79.66  70.04  16.08  90.93  0.502
+INFO:root:validation 75.55  66.73  16.08  87.22  0.502
+INFO:root:early stop count:4
+INFO:root:Epoch:10, Train epoch time: 8.88 min, loss: 0.599463244333446
+INFO:root:Inference time:5.678 min
+INFO:root:validation [CTR] 84.37  70.24  15.79  93.10  0.533
+INFO:root:validation 82.97  69.44  15.79  91.99  0.533
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:11, Train epoch time: 8.88 min, loss: 0.5795215219648234
+INFO:root:Inference time:5.572 min
+INFO:root:validation [CTR] 84.87  73.95  14.42  93.83  0.535
+INFO:root:validation 83.17  72.55  14.42  92.28  0.535
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:12, Train epoch time: 8.87 min, loss: 0.5637652563557956
+INFO:root:Inference time:5.701 min
+INFO:root:validation [CTR] 83.77  74.35  16.05  95.11  0.537
+INFO:root:validation 81.56  72.14  16.05  92.90  0.537
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:13, Train epoch time: 8.85 min, loss: 0.5503957401810804
+INFO:root:Inference time:6.015 min
+INFO:root:validation [CTR] 87.27  79.66  17.14  100.60  0.530
+INFO:root:validation 83.17  75.95  17.14  96.70  0.530
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:14, Train epoch time: 8.85 min, loss: 0.5382765408554063
+INFO:root:Inference time:5.935 min
+INFO:root:validation [CTR] 87.88  79.76  16.22  100.04  0.555
+INFO:root:validation 85.07  77.15  16.22  97.33  0.555
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:15, Train epoch time: 8.85 min, loss: 0.5268904685613438
+INFO:root:Inference time:5.732 min
+INFO:root:validation [CTR] 89.58  80.06  16.44  101.26  0.559
+INFO:root:validation 88.48  79.06  16.44  100.20  0.559
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:16, Train epoch time: 8.83 min, loss: 0.5171441500135717
+INFO:root:Inference time:5.812 min
+INFO:root:validation [CTR] 87.88  80.76  16.52  100.84  0.558
+INFO:root:validation 85.27  78.26  16.52  98.29  0.558
+INFO:root:early stop count:4
+INFO:root:Epoch:17, Train epoch time: 8.85 min, loss: 0.5082890251956396
+INFO:root:Inference time:5.891 min
+INFO:root:validation [CTR] 85.07  77.56  16.18  97.49  0.550
+INFO:root:validation 83.77  76.35  16.18  96.24  0.550
+INFO:root:early stop count:3
+INFO:root:Epoch:18, Train epoch time: 8.84 min, loss: 0.4994736560746341
+INFO:root:Inference time:5.748 min
+INFO:root:validation [CTR] 87.78  79.66  16.30  100.02  0.565
+INFO:root:validation 86.87  78.96  16.30  99.22  0.565
+INFO:root:early stop count:2
+INFO:root:Epoch:19, Train epoch time: 8.84 min, loss: 0.49150930843296126
+INFO:root:Inference time:5.968 min
+INFO:root:validation [CTR] 89.58  81.66  16.53  102.15  0.563
+INFO:root:validation 88.48  80.76  16.53  101.15  0.563
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:20, Train epoch time: 8.84 min, loss: 0.48434189227190866
+INFO:root:Inference time:5.783 min
+INFO:root:validation [CTR] 86.57  78.76  16.99  99.65  0.567
+INFO:root:validation 86.27  78.46  16.99  99.35  0.567
+INFO:root:early stop count:4
+INFO:root:Epoch:21, Train epoch time: 8.84 min, loss: 0.4778885076297195
+INFO:root:Inference time:5.676 min
+INFO:root:validation [CTR] 92.38  84.67  16.50  105.02  0.576
+INFO:root:validation 89.98  82.57  16.50  102.77  0.576
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:22, Train epoch time: 8.85 min, loss: 0.47087048219740535
+INFO:root:Inference time:5.803 min
+INFO:root:validation [CTR] 90.48  82.16  17.14  103.47  0.568
+INFO:root:validation 89.78  81.46  17.14  102.76  0.568
+INFO:root:early stop count:4
+INFO:root:Epoch:23, Train epoch time: 8.84 min, loss: 0.46547547139768414
+INFO:root:Inference time:5.844 min
+INFO:root:validation [CTR] 90.68  82.46  17.03  103.60  0.562
+INFO:root:validation 88.38  80.26  17.03  101.34  0.562
+INFO:root:early stop count:3
+INFO:root:Epoch:24, Train epoch time: 8.85 min, loss: 0.45983198736133485
+INFO:root:Inference time:5.804 min
+INFO:root:validation [CTR] 91.08  83.07  17.07  104.15  0.568
+INFO:root:validation 88.78  80.96  17.07  101.94  0.568
+INFO:root:early stop count:2
+INFO:root:Epoch:25, Train epoch time: 8.83 min, loss: 0.45430370645114015
+INFO:root:Inference time:5.832 min
+INFO:root:validation [CTR] 89.98  81.46  16.64  102.37  0.581
+INFO:root:validation 88.68  80.26  16.64  101.11  0.581
+INFO:root:early stop count:1
+INFO:root:Epoch:26, Train epoch time: 8.82 min, loss: 0.44941980802990217
+INFO:root:Inference time:5.882 min
+INFO:root:validation [CTR] 87.58  80.06  17.11  100.92  0.567
+INFO:root:validation 85.27  77.76  17.11  98.62  0.567
+INFO:root:early stop count:0
+INFO:root:Epoch:27, Train epoch time: 8.84 min, loss: 0.44458177843978464
+INFO:root:Inference time:5.767 min
+INFO:root:validation [CTR] 90.08  81.86  16.60  102.57  0.584
+INFO:root:validation 88.08  80.26  16.60  100.77  0.584
+INFO:root:early stop count:-1
+INFO:root:Epoch:28, Train epoch time: 8.83 min, loss: 0.440235560826204
+INFO:root:Inference time:5.803 min
+INFO:root:validation [CTR] 89.78  81.16  16.54  102.01  0.579
+INFO:root:validation 87.78  79.56  16.54  100.20  0.579
+INFO:root:early stop count:-2
+INFO:root:Epoch:29, Train epoch time: 8.85 min, loss: 0.4359570872047443
+INFO:root:Inference time:5.793 min
+INFO:root:validation [CTR] 89.98  82.97  15.99  102.46  0.566
+INFO:root:validation 87.98  81.06  15.99  100.51  0.566
+INFO:root:early stop count:-3
+INFO:root:Epoch:30, Train epoch time: 8.85 min, loss: 0.4325022044789186
+INFO:root:Inference time:5.838 min
+INFO:root:validation [CTR] 90.78  81.16  16.74  102.71  0.584
+INFO:root:validation 89.08  79.66  16.74  101.11  0.584
+INFO:root:early stop count:-4
+INFO:root:Epoch:31, Train epoch time: 8.84 min, loss: 0.4286164366819166
+INFO:root:Inference time:5.867 min
+INFO:root:validation [CTR] 90.48  82.57  16.55  103.08  0.571
+INFO:root:validation 88.98  81.06  16.55  101.57  0.571
+INFO:root:early stop count:-5
+INFO:root:Epoch:32, Train epoch time: 8.85 min, loss: 0.4252953695059954
+INFO:root:Inference time:5.865 min
+INFO:root:validation [CTR] 89.88  83.17  17.11  103.63  0.577
+INFO:root:validation 88.48  81.86  17.11  102.28  0.577
+INFO:root:early stop count:-6
+INFO:root:Epoch:33, Train epoch time: 8.85 min, loss: 0.42284042665608473
+INFO:root:Inference time:5.814 min
+INFO:root:validation [CTR] 92.89  84.47  16.57  105.25  0.579
+INFO:root:validation 90.88  82.87  16.57  103.45  0.579
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:34, Train epoch time: 8.84 min, loss: 0.41999963255299455
+INFO:root:Inference time:5.957 min
+INFO:root:validation [CTR] 90.48  81.66  16.74  102.81  0.585
+INFO:root:validation 89.08  80.26  16.74  101.41  0.585
+INFO:root:early stop count:4
+INFO:root:Epoch:35, Train epoch time: 8.88 min, loss: 0.4178118857802177
+INFO:root:Inference time:5.825 min
+INFO:root:validation [CTR] 91.18  82.36  16.22  102.99  0.584
+INFO:root:validation 89.98  81.36  16.22  101.89  0.584
+INFO:root:early stop count:3
+INFO:root:Epoch:36, Train epoch time: 8.85 min, loss: 0.4152714761675083
+INFO:root:Inference time:5.870 min
+INFO:root:validation [CTR] 91.48  83.37  16.82  104.24  0.588
+INFO:root:validation 89.98  82.16  16.82  102.89  0.588
+INFO:root:early stop count:2
+INFO:root:Epoch:37, Train epoch time: 8.88 min, loss: 0.41349458986363763
+INFO:root:Inference time:5.891 min
+INFO:root:validation [CTR] 91.58  83.67  16.82  104.44  0.587
+INFO:root:validation 90.08  82.26  16.82  102.99  0.587
+INFO:root:early stop count:1
+INFO:root:Epoch:38, Train epoch time: 8.86 min, loss: 0.4122456724525177
+INFO:root:Inference time:5.889 min
+INFO:root:validation [CTR] 91.28  83.07  16.77  103.94  0.587
+INFO:root:validation 89.98  81.86  16.77  102.69  0.587
+INFO:root:early stop count:0
+INFO:root:Epoch:39, Train epoch time: 8.86 min, loss: 0.4109923886281085
+INFO:root:Inference time:5.887 min
+INFO:root:validation [CTR] 91.28  82.57  16.81  103.73  0.588
+INFO:root:validation 90.08  81.36  16.81  102.53  0.588
+INFO:root:early stop count:-1
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running pretraining *****
+INFO:root:  Num Dialogs = 8434
+INFO:root:  Num Epochs = 60
+INFO:root:  Batch size  = 2
+INFO:root:warmup epochs:7
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need a place to eat that is cheap. <eos_u> <sos_b> [restaurant]  pricerange cheap <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [inform]  price choice [request]  area <eos_a> <sos_r>  i have [value_choice] [value_price]  restaurant -s in different area -s of town. do you have a location preference? <eos_r> <sos_u>  yes. i want the center area. <eos_u> <sos_b> [restaurant]  pricerange cheap area centre <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [recommend]  name food <eos_a> <sos_r>  i can recommend [value_name]  that serves [value_food]  food <eos_r> <sos_u>  do you have any restaurant -s that serve english food? <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food english <eos_b> <sos_db> [db_0] <eos_db> <sos_a> [restaurant] [nooffer]  food area <eos_a> <sos_r>  i am showing nothing for [value_food]  food in the [value_area]  area. would you like to try something else? <eos_r> <sos_u>  how about some awesome indian food. i need a table for 8 on 16:30 monday <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [restaurant] [offerbooked]  reference name [general] [reqmore] <eos_a> <sos_r>  i booked you at [value_name] . the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r> <sos_u>  thanks for your help. in addition, i am looking for a thursday train departing cambridge, please. <eos_u> <sos_b> [train]  day thursday departure cambridge [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [inform]  day choice departure [request]  destination <eos_a> <sos_r>  there are [value_choice]  trains leaving [value_departure]  on [value_day] . where is your destination? <eos_r> <sos_u>  i am looking to travel to ely departing after 13:15 if possible. <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [train] [inform]  leave id day [offerbook] <eos_a> <sos_r>  the [value_id]  leaves at [value_leave]  on [value_day] . would you like me to book you? <eos_r> <sos_u>  yes, please book 8 tickets and provide me with a reference number <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [train] [offerbooked]  reference <eos_a> <sos_r>  okay i have booked that for you and the reference number is [value_reference] . is there anything else i can do for you? <eos_r> <sos_u>  great, thanks. that is all for now! <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [greet] <eos_a> <sos_r>  ok. i hope you have a great day! <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need to find some information in a particular restaurant. are you able to look up a specific place? <eos_u> <sos_b> <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [restaurant] [request]  name <eos_a> <sos_r>  absolutely. what is the name of the restaraunt you are interested in? <eos_r> <sos_u>  kohinoor. i want to book a table for 2 people at 16:45 on thursday <eos_u> <sos_b> [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure. booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . can i help with anything else today? <eos_r> <sos_u>  i also need a thursday train. <eos_u> <sos_b> [train]  day thursday [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [request]  departure destination <eos_a> <sos_r>  what location will you depart from and where are you headed? <eos_r> <sos_u>  depart from ely and would like to arrive by 13:00 in cambridge. i need to book it for 2 people i also need a reference number. thanks <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [train] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure thing, it is booked and your reference number is [value_reference] . do you need more help? <eos_r> <sos_u>  nope, i am all finished for today. thanks so much, goodbye now! <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [welcome] [bye] <eos_a> <sos_r>  you are very welcome, bye! <eos_r>
+INFO:root:Epoch:0, Train epoch time: 8.90 min, loss: 11.335637304983152
+INFO:root:Epoch:1, Train epoch time: 8.91 min, loss: 2.8734516831840673
+INFO:root:Epoch:2, Train epoch time: 8.97 min, loss: 1.6570539823147603
+INFO:root:Epoch:3, Train epoch time: 8.89 min, loss: 1.14953628162609
+INFO:root:Epoch:4, Train epoch time: 8.86 min, loss: 0.9335661243504124
+INFO:root:Epoch:5, Train epoch time: 8.86 min, loss: 0.8136722500934157
+INFO:root:Epoch:6, Train epoch time: 8.85 min, loss: 0.7400677017213385
+INFO:root:Epoch:7, Train epoch time: 8.85 min, loss: 0.688235458529386
+INFO:root:Inference time:5.616 min
+INFO:root:validation [CTR] 70.24  57.21  13.68  77.41  0.457
+INFO:root:validation 66.93  54.81  13.68  74.55  0.457
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running pretraining *****
+INFO:root:  Num Dialogs = 8434
+INFO:root:  Num Epochs = 60
+INFO:root:  Batch size  = 2
+INFO:root:warmup epochs:7
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need a place to eat that is cheap. <eos_u> <sos_b> [restaurant]  pricerange cheap <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [inform]  price choice [request]  area <eos_a> <sos_r>  i have [value_choice] [value_price]  restaurant -s in different area -s of town. do you have a location preference? <eos_r> <sos_u>  yes. i want the center area. <eos_u> <sos_b> [restaurant]  pricerange cheap area centre <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [recommend]  name food <eos_a> <sos_r>  i can recommend [value_name]  that serves [value_food]  food <eos_r> <sos_u>  do you have any restaurant -s that serve english food? <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food english <eos_b> <sos_db> [db_0] <eos_db> <sos_a> [restaurant] [nooffer]  food area <eos_a> <sos_r>  i am showing nothing for [value_food]  food in the [value_area]  area. would you like to try something else? <eos_r> <sos_u>  how about some awesome indian food. i need a table for 8 on 16:30 monday <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [restaurant] [offerbooked]  reference name [general] [reqmore] <eos_a> <sos_r>  i booked you at [value_name] . the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r> <sos_u>  thanks for your help. in addition, i am looking for a thursday train departing cambridge, please. <eos_u> <sos_b> [train]  day thursday departure cambridge [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [inform]  day choice departure [request]  destination <eos_a> <sos_r>  there are [value_choice]  trains leaving [value_departure]  on [value_day] . where is your destination? <eos_r> <sos_u>  i am looking to travel to ely departing after 13:15 if possible. <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [train] [inform]  leave id day [offerbook] <eos_a> <sos_r>  the [value_id]  leaves at [value_leave]  on [value_day] . would you like me to book you? <eos_r> <sos_u>  yes, please book 8 tickets and provide me with a reference number <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [train] [offerbooked]  reference <eos_a> <sos_r>  okay i have booked that for you and the reference number is [value_reference] . is there anything else i can do for you? <eos_r> <sos_u>  great, thanks. that is all for now! <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [greet] <eos_a> <sos_r>  ok. i hope you have a great day! <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need to find some information in a particular restaurant. are you able to look up a specific place? <eos_u> <sos_b> <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [restaurant] [request]  name <eos_a> <sos_r>  absolutely. what is the name of the restaraunt you are interested in? <eos_r> <sos_u>  kohinoor. i want to book a table for 2 people at 16:45 on thursday <eos_u> <sos_b> [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure. booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . can i help with anything else today? <eos_r> <sos_u>  i also need a thursday train. <eos_u> <sos_b> [train]  day thursday [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [request]  departure destination <eos_a> <sos_r>  what location will you depart from and where are you headed? <eos_r> <sos_u>  depart from ely and would like to arrive by 13:00 in cambridge. i need to book it for 2 people i also need a reference number. thanks <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [train] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure thing, it is booked and your reference number is [value_reference] . do you need more help? <eos_r> <sos_u>  nope, i am all finished for today. thanks so much, goodbye now! <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [welcome] [bye] <eos_a> <sos_r>  you are very welcome, bye! <eos_r>
+INFO:root:Epoch:0, Train epoch time: 8.89 min, loss: 11.335637304983152
+INFO:root:Epoch:1, Train epoch time: 8.87 min, loss: 2.8734516831840673
+INFO:root:Epoch:2, Train epoch time: 8.89 min, loss: 1.6570539823147603
+INFO:root:Epoch:3, Train epoch time: 8.91 min, loss: 1.14953628162609
+INFO:root:Epoch:4, Train epoch time: 8.90 min, loss: 0.9335661243504124
+INFO:root:Epoch:5, Train epoch time: 8.88 min, loss: 0.8136722500934157
+INFO:root:Epoch:6, Train epoch time: 8.86 min, loss: 0.7400677017213385
+INFO:root:Epoch:7, Train epoch time: 8.84 min, loss: 0.688235458529386
+INFO:root:Inference time:5.635 min
+INFO:root:validation [CTR] 70.24  57.21  13.68  77.41  0.457
+INFO:root:validation 66.93  54.81  13.68  74.55  0.457
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:8, Train epoch time: 8.87 min, loss: 0.6479287949087046
+INFO:root:Inference time:6.061 min
+INFO:root:validation [CTR] 83.67  74.55  15.16  94.27  0.474
+INFO:root:validation 78.56  70.04  15.16  89.46  0.474
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:9, Train epoch time: 8.91 min, loss: 0.6179868628628513
+INFO:root:Inference time:5.966 min
+INFO:root:validation [CTR] 80.26  70.24  16.14  91.39  0.505
+INFO:root:validation 75.85  66.73  16.14  87.43  0.505
+INFO:root:early stop count:4
+INFO:root:Epoch:10, Train epoch time: 8.88 min, loss: 0.5953686061590613
+INFO:root:Inference time:5.717 min
+INFO:root:validation [CTR] 84.77  70.34  15.73  93.29  0.537
+INFO:root:validation 83.97  70.04  15.73  92.73  0.537
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:11, Train epoch time: 8.87 min, loss: 0.5760412643242346
+INFO:root:Inference time:5.626 min
+INFO:root:validation [CTR] 84.77  74.05  14.65  94.05  0.538
+INFO:root:validation 83.27  73.05  14.65  92.80  0.538
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:12, Train epoch time: 8.86 min, loss: 0.560440282418256
+INFO:root:Inference time:5.704 min
+INFO:root:validation [CTR] 83.07  73.65  16.17  94.53  0.534
+INFO:root:validation 81.16  71.94  16.17  92.72  0.534
+INFO:root:early stop count:4
+INFO:root:Epoch:13, Train epoch time: 8.84 min, loss: 0.5471420339111983
+INFO:root:Inference time:6.078 min
+INFO:root:validation [CTR] 87.17  80.16  17.28  100.94  0.534
+INFO:root:validation 83.57  76.65  17.28  97.39  0.534
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:14, Train epoch time: 8.90 min, loss: 0.5350042122960317
+INFO:root:Inference time:6.193 min
+INFO:root:validation [CTR] 87.68  79.66  16.27  99.94  0.557
+INFO:root:validation 84.97  77.05  16.27  97.28  0.557
+INFO:root:early stop count:4
+INFO:root:Epoch:15, Train epoch time: 8.89 min, loss: 0.5234705474374416

@@ -1,0 +1,13 @@
+*.zip
+/experiments/
+/experiments_21/
+/_pycache_/
+/.vscode/
+/best_model/
+/data/
+/db/
+/log/
+/log_rl/
+/log_21/
+/results/
+/RL_exp/

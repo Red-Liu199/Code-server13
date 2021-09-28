@@ -1,0 +1,28 @@
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Example rewards of one batch :[[(1.0, 0.0, 1), (1.0, 0.0, 1), (1.0, 1.0, 1), (1.0, 1.0, 1), (1.0, 0.33333333333333326, 1), (1.0, 1.0, 1), (1.0, 0.33333333333333326, 1), (1.0, 1.0, 1)], [(1.0, 0.6000000000000001, 1), (1.0, 0.0, 1), (0.6666666666666667, 1.0, 1), (0.6666666666666667, -1.0, 1), (0.4285714285714286, 0.0, 1), (0.19999999999999996, -1.0, 1), (0.6000000000000001, 1.0, 1), (0.6000000000000001, 0.0, 1)], [(1.0, 1.0, 1), (1.0, -0.33333333333333337, 1), (1.0, -1.0, 1), (1.0, -1.0, 1), (1.0, 1.0, 1), (1.0, -0.5, 1), (1.0, 1.0, 1), (1.0, -0.33333333333333337, 1)], [(1.0, 1.0, 1), (1.0, -1.0, 1), (1.0, 1.0, 1), (1.0, -1.0, -1), (1.0, -1.0, 1), (1.0, 0.0, 1), (1.0, -1.0, 1), (1.0, 1.0, 1)]]
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Dialogs per rl epoch:8434
+INFO:root:Example rewards of one batch :[[(1.0, -1.0, -1), (0.6666666666666667, 1.0, 1), (0.6666666666666667, 1.0, 1)], [(1.0, 1.0, 1), (1.0, -0.33333333333333337, 1), (1.0, 1.0, 1)], [(1.0, -0.5, 1), (1.0, 0.19999999999999996, 1), (1.0, -1.0, 1)], [(1, 0.5, 1), (1, 0.0, 1), (1, 1.0, 1)]]
+INFO:root:Example rewards of one batch :[[(1.0, -1.0, -1), (0.6666666666666667, 1.0, 1), (0.6666666666666667, 1.0, 1)], [(1.0, 1.0, 1), (1.0, -0.33333333333333337, 1), (1.0, 1.0, 1)], [(1.0, -0.5, 1), (1.0, 0.19999999999999996, 1), (1.0, -1.0, 1)], [(1, 0.5, 1), (1, 0.0, 1), (1, 1.0, 1)], [(1.0, -1.0, 1), (1.0, -0.33333333333333337, 1), (1.0, -0.6, 1)], [(1.0, 1.0, 1), (1.0, -1.0, -1), (1.0, -1.0, 1)], [(1.0, 0.0, 1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1.0, 0.33333333333333326, 1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1, 0.0, 1), (1, 1.0, 1), (1, -1.0, 1)], [(1.0, 1.0, 1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1, 1.0, 1), (1, 1.0, 1), (1, 1.0, 1)], [(1.0, 0.0, -1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1, 0.33333333333333326, 1), (1, 1.0, 1), (1, 1.0, 1)], [(1, 0.0, 1), (1, 0.0, 1), (1, 1.0, 1)], [(1.0, 0.5, 1), (1.0, 1.0, 1), (1.0, -1.0, 1)], [(1.0, 0.0, -1), (1.0, -1.0, 1), (1.0, 1.0, 1)], [(1.0, 1.0, 1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1.0, 0.19999999999999996, 1), (1.0, 1.0, 1), (1.0, 0.0, 1)], [(1.0, 0.33333333333333326, -1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1, 0.0, 1), (1, 0.0, 1), (1, -1.0, 1)], [(1.0, 1.0, 1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1.0, 0.19999999999999996, 1), (1.0, -0.19999999999999996, 1), (0.6666666666666667, -1.0, 1)], [(1.0, 0.0, 1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1.0, 1.0, 1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1, -1.0, 1), (1, 0.0, 1), (1, -1.0, 1)], [(1.0, 0.5, -1), (1.0, 0.0, 1), (1.0, 1.0, 1)], [(1, 0.0, 1), (1, -1.0, 1), (1, 1.0, 1)], [(1.0, 0.33333333333333326, 1), (1.0, -0.33333333333333337, -1), (1.0, 1.0, 1)], [(1, 0.0, 1), (1, 1.0, 1), (1, 1.0, 1)], [(1.0, 1.0, 1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1.0, 1.0, 1), (1.0, 1.0, 1), (1.0, 1.0, 1)], [(1.0, -1.0, -1), (1.0, -0.33333333333333337, 1), (1.0, 1.0, 1)]]
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Dialogs per rl epoch:8434
+INFO:root:Reward example. BS reward:[1.0, 0.6666666666666667, 0.6666666666666667], Act reward:[-1.0, 1.0, 1.0], Resp reward:[-1, 1, 1], Session reward:1.0
+INFO:root:Reward example. BS reward:[1.0, 1.0, 1.0], Act reward:[1.0, -0.33333333333333337, 1.0], Resp reward:[1, 1, 1], Session reward:1.0
+INFO:root:Reward example. BS reward:[1.0, 1.0, 1.0], Act reward:[-0.5, 0.19999999999999996, -1.0], Resp reward:[1, 1, 1], Session reward:1.0
+INFO:root:Reward example. BS reward:[1, 1, 1], Act reward:[0.5, 0.0, 1.0], Resp reward:[1, 1, 1], Session reward:1.0
+INFO:root:Example rewards of one batch :[[(2.0, 0.0, 0.0), (1.6666666666666667, 2.0, 2.0), (1.6666666666666667, 2.0, 2.0)], [(2.0, 2.0, 2.0), (2.0, 0.6666666666666666, 2.0), (2.0, 2.0, 2.0)], [(2.0, 0.5, 2.0), (2.0, 1.2, 2.0), (2.0, 0.0, 2.0)], [(2.0, 1.5, 2.0), (2.0, 1.0, 2.0), (2.0, 2.0, 2.0)]]

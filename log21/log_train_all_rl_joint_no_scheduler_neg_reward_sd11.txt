@@ -1,0 +1,81 @@
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Inference time:7.960 min
+INFO:root:validation [CTR] 90.99  81.28  16.71  102.84  0.450
+INFO:root:validation 87.75  78.24  16.71  99.70  0.450
+INFO:root:Inference time:8.406 min
+INFO:root:validation [CTR] 87.45  77.43  15.72  98.16  0.436
+INFO:root:validation 85.22  75.20  15.72  95.94  0.436
+INFO:root:Inference time:8.613 min
+INFO:root:validation [CTR] 88.26  79.15  15.70  99.40  0.416
+INFO:root:validation 84.92  76.42  15.70  96.36  0.416
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Inference time:7.663 min
+INFO:root:validation [CTR] 93.42  85.83  16.96  106.58  0.468
+INFO:root:validation 90.79  83.60  16.96  104.15  0.468
+INFO:root:Inference time:7.121 min
+INFO:root:validation [CTR] 93.32  85.22  17.08  106.35  0.469
+INFO:root:validation 90.08  82.59  17.08  103.41  0.469
+INFO:root:Inference time:6.939 min
+INFO:root:validation [CTR] 93.12  84.62  17.03  105.89  0.464
+INFO:root:validation 88.97  81.38  17.03  102.20  0.464
+INFO:root:Inference time:6.895 min
+INFO:root:validation [CTR] 93.32  85.02  16.98  106.15  0.466
+INFO:root:validation 89.57  81.88  16.98  102.71  0.466
+INFO:root:Inference time:6.971 min
+INFO:root:validation [CTR] 93.12  84.72  16.95  105.87  0.461
+INFO:root:validation 88.97  81.07  16.95  101.97  0.461
+INFO:root:Inference time:6.978 min
+INFO:root:validation [CTR] 93.12  84.72  16.91  105.83  0.458
+INFO:root:validation 88.97  81.07  16.91  101.93  0.458
+INFO:root:Inference time:7.002 min
+INFO:root:validation [CTR] 93.12  84.72  16.88  105.79  0.459
+INFO:root:validation 88.77  80.97  16.88  101.75  0.459
+INFO:root:Inference time:6.979 min
+INFO:root:validation [CTR] 92.91  84.51  16.93  105.65  0.457
+INFO:root:validation 88.66  80.87  16.93  101.70  0.457
+INFO:root:Inference time:6.933 min
+INFO:root:validation [CTR] 92.81  84.11  16.92  105.38  0.458
+INFO:root:validation 88.56  80.57  16.92  101.49  0.458
+INFO:root:Inference time:7.051 min
+INFO:root:validation [CTR] 92.81  84.01  16.91  105.32  0.459
+INFO:root:validation 88.56  80.47  16.91  101.42  0.459
+INFO:root:Inference time:6.975 min
+INFO:root:validation [CTR] 92.81  84.11  16.97  105.44  0.458
+INFO:root:validation 88.56  80.57  16.97  101.54  0.458
+INFO:root:Inference time:6.433 min
+INFO:root:validation [CTR] 92.71  84.01  16.95  105.31  0.459
+INFO:root:validation 88.46  80.47  16.95  101.41  0.459
+INFO:root:Inference time:6.082 min
+INFO:root:validation [CTR] 92.71  84.01  16.92  105.28  0.459
+INFO:root:validation 88.46  80.47  16.92  101.38  0.459
+INFO:root:Inference time:6.023 min
+INFO:root:validation [CTR] 92.71  84.01  16.91  105.27  0.459
+INFO:root:validation 88.46  80.47  16.91  101.37  0.459
+INFO:root:Inference time:6.196 min
+INFO:root:validation [CTR] 92.71  84.01  16.90  105.26  0.459
+INFO:root:validation 88.46  80.47  16.90  101.36  0.459
+INFO:root:Inference time:5.850 min
+INFO:root:validation [CTR] 92.71  84.01  16.89  105.25  0.459
+INFO:root:validation 88.46  80.47  16.89  101.35  0.459
+INFO:root:Inference time:5.870 min
+INFO:root:validation [CTR] 92.81  84.01  16.87  105.29  0.460
+INFO:root:validation 88.56  80.57  16.87  101.44  0.460
+INFO:root:Inference time:5.851 min
+INFO:root:validation [CTR] 92.81  84.01  16.87  105.29  0.460
+INFO:root:validation 88.56  80.57  16.87  101.44  0.460
+INFO:root:Inference time:5.867 min
+INFO:root:validation [CTR] 92.81  84.01  16.88  105.29  0.460
+INFO:root:validation 88.56  80.57  16.88  101.44  0.460
+INFO:root:Inference time:5.866 min
+INFO:root:validation [CTR] 92.81  84.01  16.88  105.29  0.460
+INFO:root:validation 88.56  80.57  16.88  101.44  0.460
+INFO:root:Inference time:5.862 min
+INFO:root:validation [CTR] 92.81  84.01  16.89  105.30  0.460
+INFO:root:validation 88.56  80.57  16.89  101.45  0.460

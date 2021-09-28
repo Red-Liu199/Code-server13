@@ -1,0 +1,56 @@
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u> <sos_b> [train]  day sunday arrive 20:15 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [inform]  choice [request]  destination <eos_a> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_b> [train]  day sunday arrive 20:15 <eos_b> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_u>  i am heading to birmingham new street. <eos_u> <sos_b> [train]  day sunday arrive 20:15 destination birmingham new street <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [inform]  arrive id [select] <eos_a> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_b> [train]  day sunday arrive 20:15 destination birmingham new street <eos_b> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u> <sos_b> [train]  day sunday arrive 20:15 destination birmingham new street <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [inform]  price leave departure <eos_a> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_b> [train]  day sunday arrive 20:15 destination birmingham new street <eos_b> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u> <sos_b> [attraction]  type concert hall area centre [train]  day sunday arrive 20:15 destination birmingham new street <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [attraction] [inform]  address type area name <eos_a> <sos_r>  the [value_type]  in the [value_area]  is [value_name]  located at [value_address] . <eos_r>
+INFO:root:Epoch:0, Train epoch time: 12.99 min, epoch loss: 118554.1795
+INFO:root:Epoch:1, Train epoch time: 13.55 min, epoch loss: 26546.7623
+INFO:root:Epoch:2, Train epoch time: 13.15 min, epoch loss: 19177.0178
+INFO:root:Epoch:3, Train epoch time: 13.80 min, epoch loss: 16756.1422
+INFO:root:Epoch:4, Train epoch time: 13.62 min, epoch loss: 15529.9927
+INFO:root:Epoch:5, Train epoch time: 14.04 min, epoch loss: 14771.2221
+INFO:root:Epoch:6, Train epoch time: 13.49 min, epoch loss: 14227.7008
+INFO:root:Inference time:3.488 min
+INFO:root:validation [CTR] 73.75  64.73  16.09  85.33  0.512
+INFO:root:validation 71.44  62.93  16.09  83.27  0.512
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-DS_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:7, Train epoch time: 13.28 min, epoch loss: 13801.7584
+INFO:root:Inference time:3.386 min
+INFO:root:validation [CTR] 81.36  70.54  14.24  90.20  0.542
+INFO:root:validation 79.36  68.84  14.24  88.34  0.542
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-DS_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:8, Train epoch time: 12.80 min, epoch loss: 13447.0642
+INFO:root:Inference time:3.504 min
+INFO:root:validation [CTR] 71.64  64.43  16.98  85.02  0.526
+INFO:root:validation 69.64  62.73  16.98  83.17  0.526
+INFO:root:Epoch:9, Train epoch time: 13.35 min, epoch loss: 13137.4051
+INFO:root:Inference time:3.497 min
+INFO:root:validation [CTR] 65.73  57.11  16.18  77.60  0.551
+INFO:root:validation 64.83  56.31  16.18  76.75  0.551
+INFO:root:Epoch:10, Train epoch time: 12.76 min, epoch loss: 12825.9067
+INFO:root:Inference time:3.624 min
+INFO:root:validation [CTR] 74.65  66.63  17.92  88.56  0.562
+INFO:root:validation 72.04  64.23  17.92  86.06  0.562
+INFO:root:early stop count:4
+INFO:root:Epoch:11, Train epoch time: 13.36 min, epoch loss: 12513.6677
+INFO:root:Inference time:3.686 min
+INFO:root:validation [CTR] 86.47  77.35  16.54  98.45  0.572
+INFO:root:validation 84.27  75.25  16.54  96.30  0.572
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-DS_sd11_lr0.0001_bs4_ga8/best_score_model

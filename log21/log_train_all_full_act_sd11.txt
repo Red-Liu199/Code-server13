@@ -1,0 +1,713 @@
+INFO:transformers.tokenization_utils:Model name '../distilgpt2' not found in model shortcut name list (gpt2, gpt2-medium, gpt2-large, gpt2-xl, distilgpt2). Assuming '../distilgpt2' is a path, a model identifier, or url to a directory containing tokenizer files.
+INFO:transformers.tokenization_utils:Didn't find file ../distilgpt2/added_tokens.json. We won't load it.
+INFO:transformers.tokenization_utils:Didn't find file ../distilgpt2/special_tokens_map.json. We won't load it.
+INFO:transformers.tokenization_utils:Didn't find file ../distilgpt2/tokenizer_config.json. We won't load it.
+INFO:transformers.tokenization_utils:loading file ../distilgpt2/vocab.json
+INFO:transformers.tokenization_utils:loading file ../distilgpt2/merges.txt
+INFO:transformers.tokenization_utils:loading file None
+INFO:transformers.tokenization_utils:loading file None
+INFO:transformers.tokenization_utils:loading file None
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:transformers.tokenization_utils:Adding [restaurant] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [hotel] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [attraction] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [train] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [taxi] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [police] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [hospital] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [general] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [inform] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [request] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [nooffer] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [recommend] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [select] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [offerbook] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [offerbooked] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [nobook] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [bye] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [greet] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [reqmore] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [welcome] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_name] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_choice] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_area] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_price] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_type] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_reference] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_phone] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_address] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_food] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_leave] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_postcode] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_id] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_arrive] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_stars] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_day] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_destination] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_car] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_departure] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_time] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_people] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_stay] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_pricerange] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_department] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_name]([value_phone] to the vocabulary
+INFO:transformers.tokenization_utils:Adding <pad> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_r> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <unk> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_b> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_a> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_u> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_r> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_b> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_a> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_d> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_d> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_u> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_r> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_b> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_a> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_d> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_db> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_db> to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_nores] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_0] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_1] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_2] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_3] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [book] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [fail_book] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [fail_info] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [pre_invalid] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [invalid] to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_g> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_g> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_ua> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_ua> to the vocabulary
+INFO:transformers.tokenization_utils:Assigning ['[restaurant]', '[hotel]', '[attraction]', '[train]', '[taxi]', '[police]', '[hospital]', '[general]', '[inform]', '[request]', '[nooffer]', '[recommend]', '[select]', '[offerbook]', '[offerbooked]', '[nobook]', '[bye]', '[greet]', '[reqmore]', '[welcome]', '[value_name]', '[value_choice]', '[value_area]', '[value_price]', '[value_type]', '[value_reference]', '[value_phone]', '[value_address]', '[value_food]', '[value_leave]', '[value_postcode]', '[value_id]', '[value_arrive]', '[value_stars]', '[value_day]', '[value_destination]', '[value_car]', '[value_departure]', '[value_time]', '[value_people]', '[value_stay]', '[value_pricerange]', '[value_department]', '[value_name]([value_phone]', '<pad>', '<go_r>', '<unk>', '<go_b>', '<go_a>', '<eos_u>', '<eos_r>', '<eos_b>', '<eos_a>', '<go_d>', '<eos_d>', '<sos_u>', '<sos_r>', '<sos_b>', '<sos_a>', '<sos_d>', '<sos_db>', '<eos_db>', '[db_nores]', '[db_0]', '[db_1]', '[db_2]', '[db_3]', '[book]', '[fail_book]', '[fail_info]', '[pre_invalid]', '[invalid]', '<sos_g>', '<eos_g>', '<sos_ua>', '<eos_ua>'] to the additional_special_tokens key of the tokenizer
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Encoding data now and save the encoded data in ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:encoded file saved in ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:transformers.configuration_utils:loading configuration file ../distilgpt2/config.json
+INFO:transformers.configuration_utils:Model config GPT2Config {
+  "_num_labels": 1,
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPT2LMHeadModel"
+  ],
+  "attn_pdrop": 0.1,
+  "bos_token_id": 50256,
+  "embd_pdrop": 0.1,
+  "eos_token_id": 50256,
+  "id2label": {
+    "0": "LABEL_0"
+  },
+  "initializer_range": 0.02,
+  "label2id": {
+    "LABEL_0": 0
+  },
+  "layer_norm_epsilon": 1e-05,
+  "model_type": "gpt2",
+  "n_ctx": 1024,
+  "n_embd": 768,
+  "n_head": 12,
+  "n_layer": 6,
+  "n_positions": 1024,
+  "resid_pdrop": 0.1,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50
+    }
+  },
+  "vocab_size": 50257
+}
+
+INFO:transformers.modeling_utils:loading weights file ../distilgpt2/pytorch_model.bin
+INFO:transformers.modeling_utils:Weights of GPT2LMHeadModel not initialized from pretrained model: ['transformer.h.0.attn.masked_bias', 'transformer.h.1.attn.masked_bias', 'transformer.h.2.attn.masked_bias', 'transformer.h.3.attn.masked_bias', 'transformer.h.4.attn.masked_bias', 'transformer.h.5.attn.masked_bias']
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running pretraining *****
+INFO:root:  Num Dialogs = 8434
+INFO:root:  Num Epochs = 60
+INFO:root:  Batch size  = 2
+INFO:root:warmup epochs:7
+INFO:transformers.tokenization_utils:Model name '../distilgpt2' not found in model shortcut name list (gpt2, gpt2-medium, gpt2-large, gpt2-xl, distilgpt2). Assuming '../distilgpt2' is a path, a model identifier, or url to a directory containing tokenizer files.
+INFO:transformers.tokenization_utils:Didn't find file ../distilgpt2/added_tokens.json. We won't load it.
+INFO:transformers.tokenization_utils:Didn't find file ../distilgpt2/special_tokens_map.json. We won't load it.
+INFO:transformers.tokenization_utils:Didn't find file ../distilgpt2/tokenizer_config.json. We won't load it.
+INFO:transformers.tokenization_utils:loading file ../distilgpt2/vocab.json
+INFO:transformers.tokenization_utils:loading file ../distilgpt2/merges.txt
+INFO:transformers.tokenization_utils:loading file None
+INFO:transformers.tokenization_utils:loading file None
+INFO:transformers.tokenization_utils:loading file None
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:transformers.tokenization_utils:Adding [restaurant] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [hotel] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [attraction] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [train] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [taxi] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [police] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [hospital] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [general] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [inform] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [request] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [nooffer] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [recommend] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [select] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [offerbook] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [offerbooked] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [nobook] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [bye] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [greet] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [reqmore] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [welcome] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_name] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_choice] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_area] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_price] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_type] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_reference] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_phone] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_address] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_food] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_leave] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_postcode] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_id] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_arrive] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_stars] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_day] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_destination] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_car] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_departure] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_time] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_people] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_stay] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_pricerange] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_department] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [value_name]([value_phone] to the vocabulary
+INFO:transformers.tokenization_utils:Adding <pad> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_r> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <unk> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_b> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_a> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_u> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_r> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_b> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_a> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <go_d> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_d> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_u> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_r> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_b> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_a> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_d> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_db> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_db> to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_nores] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_0] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_1] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_2] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [db_3] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [book] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [fail_book] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [fail_info] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [pre_invalid] to the vocabulary
+INFO:transformers.tokenization_utils:Adding [invalid] to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_g> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_g> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <sos_ua> to the vocabulary
+INFO:transformers.tokenization_utils:Adding <eos_ua> to the vocabulary
+INFO:transformers.tokenization_utils:Assigning ['[restaurant]', '[hotel]', '[attraction]', '[train]', '[taxi]', '[police]', '[hospital]', '[general]', '[inform]', '[request]', '[nooffer]', '[recommend]', '[select]', '[offerbook]', '[offerbooked]', '[nobook]', '[bye]', '[greet]', '[reqmore]', '[welcome]', '[value_name]', '[value_choice]', '[value_area]', '[value_price]', '[value_type]', '[value_reference]', '[value_phone]', '[value_address]', '[value_food]', '[value_leave]', '[value_postcode]', '[value_id]', '[value_arrive]', '[value_stars]', '[value_day]', '[value_destination]', '[value_car]', '[value_departure]', '[value_time]', '[value_people]', '[value_stay]', '[value_pricerange]', '[value_department]', '[value_name]([value_phone]', '<pad>', '<go_r>', '<unk>', '<go_b>', '<go_a>', '<eos_u>', '<eos_r>', '<eos_b>', '<eos_a>', '<go_d>', '<eos_d>', '<sos_u>', '<sos_r>', '<sos_b>', '<sos_a>', '<sos_d>', '<sos_db>', '<eos_db>', '[db_nores]', '[db_0]', '[db_1]', '[db_2]', '[db_3]', '[book]', '[fail_book]', '[fail_info]', '[pre_invalid]', '[invalid]', '<sos_g>', '<eos_g>', '<sos_ua>', '<eos_ua>'] to the additional_special_tokens key of the tokenizer
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:transformers.configuration_utils:loading configuration file ../distilgpt2/config.json
+INFO:transformers.configuration_utils:Model config GPT2Config {
+  "_num_labels": 1,
+  "activation_function": "gelu_new",
+  "architectures": [
+    "GPT2LMHeadModel"
+  ],
+  "attn_pdrop": 0.1,
+  "bos_token_id": 50256,
+  "embd_pdrop": 0.1,
+  "eos_token_id": 50256,
+  "id2label": {
+    "0": "LABEL_0"
+  },
+  "initializer_range": 0.02,
+  "label2id": {
+    "LABEL_0": 0
+  },
+  "layer_norm_epsilon": 1e-05,
+  "model_type": "gpt2",
+  "n_ctx": 1024,
+  "n_embd": 768,
+  "n_head": 12,
+  "n_layer": 6,
+  "n_positions": 1024,
+  "resid_pdrop": 0.1,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+    "text-generation": {
+      "do_sample": true,
+      "max_length": 50
+    }
+  },
+  "vocab_size": 50257
+}
+
+INFO:transformers.modeling_utils:loading weights file ../distilgpt2/pytorch_model.bin
+INFO:transformers.modeling_utils:Weights of GPT2LMHeadModel not initialized from pretrained model: ['transformer.h.0.attn.masked_bias', 'transformer.h.1.attn.masked_bias', 'transformer.h.2.attn.masked_bias', 'transformer.h.3.attn.masked_bias', 'transformer.h.4.attn.masked_bias', 'transformer.h.5.attn.masked_bias']
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running pretraining *****
+INFO:root:  Num Dialogs = 8434
+INFO:root:  Num Epochs = 60
+INFO:root:  Batch size  = 2
+INFO:root:warmup epochs:7
+INFO:root:Input examples:
+INFO:root:<sos_g> [train] [inform]  leave 13:15 destination ely day thursday departure cambridge [fail_info] [book] [invalid]  no people 8 [fail_book] [restaurant] [inform]  food indian pricerange cheap area centre [fail_info]  food english pricerange cheap area centre [book]  people 8 day monday [invalid]  no time 16:30 [fail_book] <eos_g> <sos_ua> [restaurant] [inform]  price cheap <eos_ua> <sos_u>  i need a place to eat that is cheap. <eos_u> <sos_r>  i have [value_choice] [value_price]  restaurant -s in different area -s of town. do you have a location preference? <eos_r> <sos_ua> [restaurant] [inform]  area centre <eos_ua> <sos_u>  yes. i want the center area. <eos_u> <sos_r>  i can recommend [value_name]  that serves [value_food]  food <eos_r> <sos_ua> [restaurant] [inform]  food english <eos_ua> <sos_u>  do you have any restaurant -s that serve english food? <eos_u> <sos_r>  i am showing nothing for [value_food]  food in the [value_area]  area. would you like to try something else? <eos_r> <sos_ua> [restaurant] [inform]  food indian time 16:30 day monday people 8 <eos_ua> <sos_u>  how about some awesome indian food. i need a table for 8 on 16:30 monday <eos_u> <sos_r>  i booked you at [value_name] . the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r> <sos_ua> [train] [inform]  day thursday departure cambridge <eos_ua> <sos_u>  thanks for your help. in addition, i am looking for a thursday train departing cambridge, please. <eos_u> <sos_r>  there are [value_choice]  trains leaving [value_departure]  on [value_day] . where is your destination? <eos_r> <sos_ua> [train] [inform]  destination ely leave 13:15 <eos_ua> <sos_u>  i am looking to travel to ely departing after 13:15 if possible. <eos_u> <sos_r>  the [value_id]  leaves at [value_leave]  on [value_day] . would you like me to book you? <eos_r> <sos_ua> [train] [inform]  people 8 <eos_ua> <sos_u>  yes, please book 8 tickets and provide me with a reference number <eos_u> <sos_r>  okay i have booked that for you and the reference number is [value_reference] . is there anything else i can do for you? <eos_r> <sos_ua> [general]  [thank] <eos_ua> <sos_u>  great, thanks. that is all for now! <eos_u> <sos_r>  ok. i hope you have a great day! <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_g> [train] [inform]  destination cambridge day friday arrive 13:00 departure ely [fail_info] [book] [invalid]  no people 2 [fail_book] [restaurant] [inform]  name kohinoor [fail_info] [book]  people 2 day thursday [invalid]  no time 16:45 [fail_book] <eos_g> <sos_ua> [restaurant] [inform]  none none <eos_ua> <sos_u>  i need to find some information in a particular restaurant. are you able to look up a specific place? <eos_u> <sos_r>  absolutely. what is the name of the restaraunt you are interested in? <eos_r> <sos_ua> [restaurant] [inform]  name kohinoor time 16:45 day thursday people 2 <eos_ua> <sos_u>  kohinoor. i want to book a table for 2 people at 16:45 on thursday <eos_u> <sos_r>  sure. booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . can i help with anything else today? <eos_r> <sos_ua> [train] [inform]  day thursday <eos_ua> <sos_u>  i also need a thursday train. <eos_u> <sos_r>  what location will you depart from and where are you headed? <eos_r> <sos_ua> [train] [inform]  destination cambridge arrive 13:00 departure ely people 2 <eos_ua> <sos_u>  depart from ely and would like to arrive by 13:00 in cambridge. i need to book it for 2 people i also need a reference number. thanks <eos_u> <sos_r>  sure thing, it is booked and your reference number is [value_reference] . do you need more help? <eos_r> <sos_ua> [general]  [thank] <eos_ua> <sos_u>  nope, i am all finished for today. thanks so much, goodbye now! <eos_u> <sos_r>  you are very welcome, bye! <eos_r>
+INFO:root:Epoch:0, Train epoch time: 5.54 min, loss: 12.96175973473084
+INFO:root:Epoch:1, Train epoch time: 5.54 min, loss: 3.2437015688979463
+INFO:root:Epoch:2, Train epoch time: 5.53 min, loss: 2.0939214601865244
+INFO:root:Epoch:3, Train epoch time: 5.53 min, loss: 1.6436508417723583
+INFO:root:Epoch:4, Train epoch time: 5.52 min, loss: 1.4279139952519295
+INFO:root:Epoch:5, Train epoch time: 5.52 min, loss: 1.3052663309601285
+INFO:root:Epoch:6, Train epoch time: 5.52 min, loss: 1.2212932623275716
+INFO:root:Epoch:7, Train epoch time: 5.51 min, loss: 1.1613105402549522
+INFO:root:Epoch:8, Train epoch time: 5.71 min, loss: 1.1125174038603682
+INFO:root:Epoch:9, Train epoch time: 5.74 min, loss: 1.0761610564457957
+INFO:root:Epoch:10, Train epoch time: 5.68 min, loss: 1.0473694386969372
+INFO:root:Epoch:11, Train epoch time: 5.70 min, loss: 1.0227964587711191
+INFO:root:Epoch:12, Train epoch time: 5.73 min, loss: 1.001980987583001
+INFO:root:Epoch:13, Train epoch time: 5.62 min, loss: 0.9840809261213279
+INFO:root:Epoch:14, Train epoch time: 5.51 min, loss: 0.9680205994256028
+INFO:root:Epoch:15, Train epoch time: 5.69 min, loss: 0.9529998591501225
+INFO:root:Epoch:16, Train epoch time: 5.72 min, loss: 0.9395834109372418
+INFO:root:Epoch:17, Train epoch time: 5.74 min, loss: 0.9264004723220625
+INFO:root:Epoch:18, Train epoch time: 5.73 min, loss: 0.9144874136200096
+INFO:root:Epoch:19, Train epoch time: 5.73 min, loss: 0.9035419092593625
+INFO:root:Epoch:20, Train epoch time: 5.72 min, loss: 0.8931284881509419
+INFO:root:Epoch:21, Train epoch time: 5.71 min, loss: 0.8830388796360616
+INFO:root:Epoch:22, Train epoch time: 5.71 min, loss: 0.8735685804244405
+INFO:root:Epoch:23, Train epoch time: 5.71 min, loss: 0.8637294666598518
+INFO:root:Epoch:24, Train epoch time: 5.59 min, loss: 0.8558054484982144
+INFO:root:Epoch:25, Train epoch time: 5.50 min, loss: 0.8468555248018459
+INFO:root:Epoch:26, Train epoch time: 5.50 min, loss: 0.8383184227196029
+INFO:root:Epoch:27, Train epoch time: 5.58 min, loss: 0.8306387713772174
+INFO:root:Epoch:28, Train epoch time: 5.50 min, loss: 0.823708907696213
+INFO:root:Epoch:29, Train epoch time: 5.51 min, loss: 0.8167502277826437
+INFO:root:Epoch:30, Train epoch time: 5.70 min, loss: 0.809798408609094
+INFO:root:Epoch:31, Train epoch time: 5.51 min, loss: 0.8024535337237594
+INFO:root:Epoch:32, Train epoch time: 5.68 min, loss: 0.7959980332369084
+INFO:root:Epoch:33, Train epoch time: 5.54 min, loss: 0.7901756581277942
+INFO:root:Epoch:34, Train epoch time: 5.51 min, loss: 0.7839743425432234
+INFO:root:Epoch:35, Train epoch time: 5.51 min, loss: 0.7787691703694773
+INFO:root:Epoch:36, Train epoch time: 5.51 min, loss: 0.7732713473585046
+INFO:root:Epoch:37, Train epoch time: 5.66 min, loss: 0.7673519756034985
+INFO:root:Epoch:38, Train epoch time: 5.71 min, loss: 0.7630690649526629
+INFO:root:Epoch:39, Train epoch time: 5.71 min, loss: 0.7577550651927271
+INFO:root:Epoch:40, Train epoch time: 5.71 min, loss: 0.7531339283776215
+INFO:root:Epoch:41, Train epoch time: 5.71 min, loss: 0.7487719530707352
+INFO:root:Epoch:42, Train epoch time: 5.71 min, loss: 0.7443527410882709
+INFO:root:Epoch:43, Train epoch time: 5.71 min, loss: 0.740598050133985
+INFO:root:Epoch:44, Train epoch time: 5.71 min, loss: 0.7369465285821102
+INFO:root:Epoch:45, Train epoch time: 5.69 min, loss: 0.7333777142970637
+INFO:root:Epoch:46, Train epoch time: 5.51 min, loss: 0.7295762372415779
+INFO:root:Epoch:47, Train epoch time: 5.51 min, loss: 0.7264693823890999
+INFO:root:Epoch:48, Train epoch time: 5.51 min, loss: 0.7234211502447335
+INFO:root:Epoch:49, Train epoch time: 5.51 min, loss: 0.720148600093352
+INFO:root:Epoch:50, Train epoch time: 5.52 min, loss: 0.7175837877976934
+INFO:root:Epoch:51, Train epoch time: 5.52 min, loss: 0.7147698061700731
+INFO:root:Epoch:52, Train epoch time: 5.52 min, loss: 0.713492905808587
+INFO:root:Epoch:53, Train epoch time: 5.52 min, loss: 0.7102992133978678
+INFO:root:Epoch:54, Train epoch time: 5.56 min, loss: 0.7085208984708045
+INFO:root:Epoch:55, Train epoch time: 5.71 min, loss: 0.7072267560637501
+INFO:root:Epoch:56, Train epoch time: 5.63 min, loss: 0.7056464860732939
+INFO:root:Epoch:57, Train epoch time: 5.52 min, loss: 0.704148762364791
+INFO:root:Epoch:58, Train epoch time: 5.69 min, loss: 0.7030813041871116
+INFO:root:Epoch:59, Train epoch time: 5.71 min, loss: 0.7015196877966207
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running pretraining *****
+INFO:root:  Num Dialogs = 8434
+INFO:root:  Num Epochs = 60
+INFO:root:  Batch size  = 2
+INFO:root:warmup epochs:7
+INFO:root:Input examples:
+INFO:root:<sos_g> [train] [inform]  leave 13:15 destination ely day thursday departure cambridge [fail_info] [book] [invalid]  no people 8 [fail_book] [restaurant] [inform]  food indian pricerange cheap area centre [fail_info]  food english pricerange cheap area centre [book]  people 8 day monday [invalid]  no time 16:30 [fail_book] <eos_g> <sos_ua> [restaurant] [inform]  price cheap <eos_ua> <sos_u>  i need a place to eat that is cheap. <eos_u> <sos_r>  i have [value_choice] [value_price]  restaurant -s in different area -s of town. do you have a location preference? <eos_r> <sos_ua> [restaurant] [inform]  area centre <eos_ua> <sos_u>  yes. i want the center area. <eos_u> <sos_r>  i can recommend [value_name]  that serves [value_food]  food <eos_r> <sos_ua> [restaurant] [inform]  food english <eos_ua> <sos_u>  do you have any restaurant -s that serve english food? <eos_u> <sos_r>  i am showing nothing for [value_food]  food in the [value_area]  area. would you like to try something else? <eos_r> <sos_ua> [restaurant] [inform]  food indian time 16:30 day monday people 8 <eos_ua> <sos_u>  how about some awesome indian food. i need a table for 8 on 16:30 monday <eos_u> <sos_r>  i booked you at [value_name] . the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r> <sos_ua> [train] [inform]  day thursday departure cambridge <eos_ua> <sos_u>  thanks for your help. in addition, i am looking for a thursday train departing cambridge, please. <eos_u> <sos_r>  there are [value_choice]  trains leaving [value_departure]  on [value_day] . where is your destination? <eos_r> <sos_ua> [train] [inform]  destination ely leave 13:15 <eos_ua> <sos_u>  i am looking to travel to ely departing after 13:15 if possible. <eos_u> <sos_r>  the [value_id]  leaves at [value_leave]  on [value_day] . would you like me to book you? <eos_r> <sos_ua> [train] [inform]  people 8 <eos_ua> <sos_u>  yes, please book 8 tickets and provide me with a reference number <eos_u> <sos_r>  okay i have booked that for you and the reference number is [value_reference] . is there anything else i can do for you? <eos_r> <sos_ua> [general]  [thank] <eos_ua> <sos_u>  great, thanks. that is all for now! <eos_u> <sos_r>  ok. i hope you have a great day! <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_g> [train] [inform]  destination cambridge day friday arrive 13:00 departure ely [fail_info] [book] [invalid]  no people 2 [fail_book] [restaurant] [inform]  name kohinoor [fail_info] [book]  people 2 day thursday [invalid]  no time 16:45 [fail_book] <eos_g> <sos_ua> [restaurant] [inform]  none none <eos_ua> <sos_u>  i need to find some information in a particular restaurant. are you able to look up a specific place? <eos_u> <sos_r>  absolutely. what is the name of the restaraunt you are interested in? <eos_r> <sos_ua> [restaurant] [inform]  name kohinoor time 16:45 day thursday people 2 <eos_ua> <sos_u>  kohinoor. i want to book a table for 2 people at 16:45 on thursday <eos_u> <sos_r>  sure. booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . can i help with anything else today? <eos_r> <sos_ua> [train] [inform]  day thursday <eos_ua> <sos_u>  i also need a thursday train. <eos_u> <sos_r>  what location will you depart from and where are you headed? <eos_r> <sos_ua> [train] [inform]  destination cambridge arrive 13:00 departure ely people 2 <eos_ua> <sos_u>  depart from ely and would like to arrive by 13:00 in cambridge. i need to book it for 2 people i also need a reference number. thanks <eos_u> <sos_r>  sure thing, it is booked and your reference number is [value_reference] . do you need more help? <eos_r> <sos_ua> [general]  [thank] <eos_ua> <sos_u>  nope, i am all finished for today. thanks so much, goodbye now! <eos_u> <sos_r>  you are very welcome, bye! <eos_r>
+INFO:root:Epoch:0, Train epoch time: 5.57 min, loss: 12.96175973473084
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running pretraining *****
+INFO:root:  Num Dialogs = 8434
+INFO:root:  Num Epochs = 60
+INFO:root:  Batch size  = 2
+INFO:root:warmup epochs:7
+INFO:root:Input examples:
+INFO:root:<sos_g> [train] [inform]  leave 13:15 destination ely day thursday departure cambridge [fail_info] [book] [invalid]  no people 8 [fail_book] [restaurant] [inform]  food indian pricerange cheap area centre [fail_info]  food english pricerange cheap area centre [book]  people 8 day monday [invalid]  no time 16:30 [fail_book] <eos_g> <sos_ua> [restaurant] [inform]  price cheap <eos_ua> <sos_u>  i need a place to eat that is cheap. <eos_u> <sos_r>  i have [value_choice] [value_price]  restaurant -s in different area -s of town. do you have a location preference? <eos_r> <sos_ua> [restaurant] [inform]  area centre <eos_ua> <sos_u>  yes. i want the center area. <eos_u> <sos_r>  i can recommend [value_name]  that serves [value_food]  food <eos_r> <sos_ua> [restaurant] [inform]  food english <eos_ua> <sos_u>  do you have any restaurant -s that serve english food? <eos_u> <sos_r>  i am showing nothing for [value_food]  food in the [value_area]  area. would you like to try something else? <eos_r> <sos_ua> [restaurant] [inform]  food indian time 16:30 day monday people 8 <eos_ua> <sos_u>  how about some awesome indian food. i need a table for 8 on 16:30 monday <eos_u> <sos_r>  i booked you at [value_name] . the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r> <sos_ua> [train] [inform]  day thursday departure cambridge <eos_ua> <sos_u>  thanks for your help. in addition, i am looking for a thursday train departing cambridge, please. <eos_u> <sos_r>  there are [value_choice]  trains leaving [value_departure]  on [value_day] . where is your destination? <eos_r> <sos_ua> [train] [inform]  destination ely leave 13:15 <eos_ua> <sos_u>  i am looking to travel to ely departing after 13:15 if possible. <eos_u> <sos_r>  the [value_id]  leaves at [value_leave]  on [value_day] . would you like me to book you? <eos_r> <sos_ua> [train] [inform]  people 8 <eos_ua> <sos_u>  yes, please book 8 tickets and provide me with a reference number <eos_u> <sos_r>  okay i have booked that for you and the reference number is [value_reference] . is there anything else i can do for you? <eos_r> <sos_ua> [general]  [thank] <eos_ua> <sos_u>  great, thanks. that is all for now! <eos_u> <sos_r>  ok. i hope you have a great day! <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_g> [train] [inform]  destination cambridge day friday arrive 13:00 departure ely [fail_info] [book] [invalid]  no people 2 [fail_book] [restaurant] [inform]  name kohinoor [fail_info] [book]  people 2 day thursday [invalid]  no time 16:45 [fail_book] <eos_g> <sos_ua> [restaurant] [inform]  none none <eos_ua> <sos_u>  i need to find some information in a particular restaurant. are you able to look up a specific place? <eos_u> <sos_r>  absolutely. what is the name of the restaraunt you are interested in? <eos_r> <sos_ua> [restaurant] [inform]  name kohinoor time 16:45 day thursday people 2 <eos_ua> <sos_u>  kohinoor. i want to book a table for 2 people at 16:45 on thursday <eos_u> <sos_r>  sure. booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . can i help with anything else today? <eos_r> <sos_ua> [train] [inform]  day thursday <eos_ua> <sos_u>  i also need a thursday train. <eos_u> <sos_r>  what location will you depart from and where are you headed? <eos_r> <sos_ua> [train] [inform]  destination cambridge arrive 13:00 departure ely people 2 <eos_ua> <sos_u>  depart from ely and would like to arrive by 13:00 in cambridge. i need to book it for 2 people i also need a reference number. thanks <eos_u> <sos_r>  sure thing, it is booked and your reference number is [value_reference] . do you need more help? <eos_r> <sos_ua> [general]  [thank] <eos_ua> <sos_u>  nope, i am all finished for today. thanks so much, goodbye now! <eos_u> <sos_r>  you are very welcome, bye! <eos_r>
+INFO:root:Epoch:0, Train epoch time: 5.61 min, loss: 12.96175973473084
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running pretraining *****
+INFO:root:  Num Dialogs = 8434
+INFO:root:  Num Epochs = 60
+INFO:root:  Batch size  = 2
+INFO:root:warmup epochs:7
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need a place to eat that is cheap. <eos_u> <sos_b> [restaurant]  pricerange cheap <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [inform]  price choice [request]  area <eos_a> <sos_r>  i have [value_choice] [value_price]  restaurant -s in different area -s of town. do you have a location preference? <eos_r> <sos_u>  yes. i want the center area. <eos_u> <sos_b> [restaurant]  pricerange cheap area centre <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [recommend]  name food <eos_a> <sos_r>  i can recommend [value_name]  that serves [value_food]  food <eos_r> <sos_u>  do you have any restaurant -s that serve english food? <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food english <eos_b> <sos_db> [db_0] <eos_db> <sos_a> [restaurant] [nooffer]  food area <eos_a> <sos_r>  i am showing nothing for [value_food]  food in the [value_area]  area. would you like to try something else? <eos_r> <sos_u>  how about some awesome indian food. i need a table for 8 on 16:30 monday <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [restaurant] [offerbooked]  reference name [general] [reqmore] <eos_a> <sos_r>  i booked you at [value_name] . the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r> <sos_u>  thanks for your help. in addition, i am looking for a thursday train departing cambridge, please. <eos_u> <sos_b> [train]  day thursday departure cambridge [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [inform]  day choice departure [request]  destination <eos_a> <sos_r>  there are [value_choice]  trains leaving [value_departure]  on [value_day] . where is your destination? <eos_r> <sos_u>  i am looking to travel to ely departing after 13:15 if possible. <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [train] [inform]  leave id day [offerbook] <eos_a> <sos_r>  the [value_id]  leaves at [value_leave]  on [value_day] . would you like me to book you? <eos_r> <sos_u>  yes, please book 8 tickets and provide me with a reference number <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [train] [offerbooked]  reference <eos_a> <sos_r>  okay i have booked that for you and the reference number is [value_reference] . is there anything else i can do for you? <eos_r> <sos_u>  great, thanks. that is all for now! <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [greet] <eos_a> <sos_r>  ok. i hope you have a great day! <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need to find some information in a particular restaurant. are you able to look up a specific place? <eos_u> <sos_b> <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [restaurant] [request]  name <eos_a> <sos_r>  absolutely. what is the name of the restaraunt you are interested in? <eos_r> <sos_u>  kohinoor. i want to book a table for 2 people at 16:45 on thursday <eos_u> <sos_b> [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure. booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . can i help with anything else today? <eos_r> <sos_u>  i also need a thursday train. <eos_u> <sos_b> [train]  day thursday [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [request]  departure destination <eos_a> <sos_r>  what location will you depart from and where are you headed? <eos_r> <sos_u>  depart from ely and would like to arrive by 13:00 in cambridge. i need to book it for 2 people i also need a reference number. thanks <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [train] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure thing, it is booked and your reference number is [value_reference] . do you need more help? <eos_r> <sos_u>  nope, i am all finished for today. thanks so much, goodbye now! <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [welcome] [bye] <eos_a> <sos_r>  you are very welcome, bye! <eos_r>
+INFO:root:Epoch:0, Train epoch time: 9.04 min, loss: 13.312202809430662
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running pretraining *****
+INFO:root:  Num Dialogs = 8434
+INFO:root:  Num Epochs = 60
+INFO:root:  Batch size  = 2
+INFO:root:warmup epochs:7
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need a place to eat that is cheap. <eos_u> <sos_b> [restaurant]  pricerange cheap <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [inform]  price choice [request]  area <eos_a> <sos_r>  i have [value_choice] [value_price]  restaurant -s in different area -s of town. do you have a location preference? <eos_r> <sos_u>  yes. i want the center area. <eos_u> <sos_b> [restaurant]  pricerange cheap area centre <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [restaurant] [recommend]  name food <eos_a> <sos_r>  i can recommend [value_name]  that serves [value_food]  food <eos_r> <sos_u>  do you have any restaurant -s that serve english food? <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food english <eos_b> <sos_db> [db_0] <eos_db> <sos_a> [restaurant] [nooffer]  food area <eos_a> <sos_r>  i am showing nothing for [value_food]  food in the [value_area]  area. would you like to try something else? <eos_r> <sos_u>  how about some awesome indian food. i need a table for 8 on 16:30 monday <eos_u> <sos_b> [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [restaurant] [offerbooked]  reference name [general] [reqmore] <eos_a> <sos_r>  i booked you at [value_name] . the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r> <sos_u>  thanks for your help. in addition, i am looking for a thursday train departing cambridge, please. <eos_u> <sos_b> [train]  day thursday departure cambridge [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [inform]  day choice departure [request]  destination <eos_a> <sos_r>  there are [value_choice]  trains leaving [value_departure]  on [value_day] . where is your destination? <eos_r> <sos_u>  i am looking to travel to ely departing after 13:15 if possible. <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [train] [inform]  leave id day [offerbook] <eos_a> <sos_r>  the [value_id]  leaves at [value_leave]  on [value_day] . would you like me to book you? <eos_r> <sos_u>  yes, please book 8 tickets and provide me with a reference number <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [train] [offerbooked]  reference <eos_a> <sos_r>  okay i have booked that for you and the reference number is [value_reference] . is there anything else i can do for you? <eos_r> <sos_u>  great, thanks. that is all for now! <eos_u> <sos_b> [train]  day thursday departure cambridge leave 13:15 destination ely people 8 [restaurant]  pricerange cheap area centre food indian people 8 day monday time 16:30 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [greet] <eos_a> <sos_r>  ok. i hope you have a great day! <eos_r>
+INFO:root:Input examples:
+INFO:root:<sos_u>  i need to find some information in a particular restaurant. are you able to look up a specific place? <eos_u> <sos_b> <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [restaurant] [request]  name <eos_a> <sos_r>  absolutely. what is the name of the restaraunt you are interested in? <eos_r> <sos_u>  kohinoor. i want to book a table for 2 people at 16:45 on thursday <eos_u> <sos_b> [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_1] <eos_db> <sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure. booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . can i help with anything else today? <eos_r> <sos_u>  i also need a thursday train. <eos_u> <sos_b> [train]  day thursday [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [request]  departure destination <eos_a> <sos_r>  what location will you depart from and where are you headed? <eos_r> <sos_u>  depart from ely and would like to arrive by 13:00 in cambridge. i need to book it for 2 people i also need a reference number. thanks <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_2] <eos_db> <sos_a> [train] [offerbooked]  reference [general] [reqmore] <eos_a> <sos_r>  sure thing, it is booked and your reference number is [value_reference] . do you need more help? <eos_r> <sos_u>  nope, i am all finished for today. thanks so much, goodbye now! <eos_u> <sos_b> [train]  day thursday destination cambridge arrive 13:00 departure ely people 2 [restaurant]  name kohinoor people 2 day thursday time 16:45 <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [welcome] [bye] <eos_a> <sos_r>  you are very welcome, bye! <eos_r>
+INFO:root:Epoch:0, Train epoch time: 8.94 min, loss: 13.314345934801777
+INFO:root:Epoch:1, Train epoch time: 8.94 min, loss: 3.1401722921146056
+INFO:root:Epoch:2, Train epoch time: 8.94 min, loss: 1.9113371549594103
+INFO:root:Epoch:3, Train epoch time: 8.94 min, loss: 1.3572168766631862
+INFO:root:Epoch:4, Train epoch time: 8.95 min, loss: 1.1449560972260364
+INFO:root:Epoch:5, Train epoch time: 8.95 min, loss: 1.0292130825386039
+INFO:root:Epoch:6, Train epoch time: 8.94 min, loss: 0.954601589231396
+INFO:root:Epoch:7, Train epoch time: 8.94 min, loss: 0.9023568627389619
+INFO:root:Inference time:6.274 min
+INFO:root:validation [CTR] 79.26  66.53  15.56  88.45  0.000
+INFO:root:validation 69.74  59.12  15.56  79.99  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:8, Train epoch time: 12.56 min, loss: 0.862537418446611
+INFO:root:Inference time:6.169 min
+INFO:root:validation [CTR] 82.57  73.15  14.44  92.29  0.000
+INFO:root:validation 75.45  66.93  14.44  85.63  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:9, Train epoch time: 12.64 min, loss: 0.8326096476453936
+INFO:root:Inference time:6.215 min
+INFO:root:validation [CTR] 81.06  72.04  16.38  92.93  0.000
+INFO:root:validation 74.25  66.13  16.38  86.57  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:10, Train epoch time: 8.97 min, loss: 0.8087718773139955
+INFO:root:Inference time:5.991 min
+INFO:root:validation [CTR] 88.38  75.85  15.85  97.96  0.000
+INFO:root:validation 81.36  70.54  15.85  91.80  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:11, Train epoch time: 8.99 min, loss: 0.789990362683404
+INFO:root:Inference time:5.676 min
+INFO:root:validation [CTR] 88.08  79.66  15.26  99.12  0.000
+INFO:root:validation 81.56  74.15  15.26  93.11  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:12, Train epoch time: 8.99 min, loss: 0.7738180963997033
+INFO:root:Inference time:9.857 min
+INFO:root:validation [CTR] 85.57  77.25  16.33  97.74  0.000
+INFO:root:validation 81.36  73.55  16.33  93.78  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:13, Train epoch time: 12.70 min, loss: 0.7594761885861735
+INFO:root:Inference time:6.101 min
+INFO:root:validation [CTR] 90.58  83.97  17.20  104.48  0.000
+INFO:root:validation 86.57  80.16  17.20  100.57  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:14, Train epoch time: 9.21 min, loss: 0.7466770852763448
+INFO:root:Inference time:6.059 min
+INFO:root:validation [CTR] 92.18  83.87  16.26  104.28  0.000
+INFO:root:validation 88.48  80.36  16.26  100.67  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:15, Train epoch time: 9.19 min, loss: 0.7351221793146002
+INFO:root:Inference time:5.947 min
+INFO:root:validation [CTR] 90.88  82.46  16.54  103.22  0.000
+INFO:root:validation 86.17  77.96  16.54  98.61  0.000
+INFO:root:early stop count:4
+INFO:root:Epoch:16, Train epoch time: 8.95 min, loss: 0.724617413097951
+INFO:root:Inference time:5.982 min
+INFO:root:validation [CTR] 84.77  76.85  16.41  97.22  0.000
+INFO:root:validation 83.27  75.45  16.41  95.77  0.000
+INFO:root:early stop count:3
+INFO:root:Epoch:17, Train epoch time: 8.98 min, loss: 0.7146794264654328
+INFO:root:Inference time:6.043 min
+INFO:root:validation [CTR] 86.87  79.06  16.51  99.48  0.000
+INFO:root:validation 82.87  75.55  16.51  95.72  0.000
+INFO:root:early stop count:2
+INFO:root:Epoch:18, Train epoch time: 12.83 min, loss: 0.7055233783797172
+INFO:root:Inference time:6.088 min
+INFO:root:validation [CTR] 91.08  84.07  16.05  103.63  0.000
+INFO:root:validation 86.57  79.66  16.05  99.17  0.000
+INFO:root:early stop count:1
+INFO:root:Epoch:19, Train epoch time: 8.97 min, loss: 0.6966365742977615
+INFO:root:Inference time:6.084 min
+INFO:root:validation [CTR] 88.48  80.96  16.62  101.34  0.000
+INFO:root:validation 86.17  78.86  16.62  99.13  0.000
+INFO:root:early stop count:0
+INFO:root:Epoch:20, Train epoch time: 8.94 min, loss: 0.688942550474227
+INFO:root:Inference time:5.762 min
+INFO:root:validation [CTR] 84.87  77.96  16.04  97.45  0.000
+INFO:root:validation 83.77  76.75  16.04  96.30  0.000
+INFO:root:early stop count:-1
+INFO:root:Epoch:21, Train epoch time: 12.69 min, loss: 0.6812346115121357
+INFO:root:Inference time:6.085 min
+INFO:root:validation [CTR] 91.68  83.57  16.96  104.59  0.000
+INFO:root:validation 89.18  81.06  16.96  102.08  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:22, Train epoch time: 9.03 min, loss: 0.6735768370510675
+INFO:root:Inference time:6.119 min
+INFO:root:validation [CTR] 93.19  84.97  16.92  106.00  0.000
+INFO:root:validation 91.18  82.87  16.92  103.94  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:23, Train epoch time: 8.98 min, loss: 0.6670318600842327
+INFO:root:Inference time:5.986 min
+INFO:root:validation [CTR] 92.08  83.37  16.69  104.41  0.000
+INFO:root:validation 90.48  81.86  16.69  102.86  0.000
+INFO:root:early stop count:4
+INFO:root:Epoch:24, Train epoch time: 8.97 min, loss: 0.6602484381447825
+INFO:root:Inference time:6.095 min
+INFO:root:validation [CTR] 90.78  83.37  16.92  104.00  0.000
+INFO:root:validation 88.18  80.56  16.92  101.29  0.000
+INFO:root:early stop count:3
+INFO:root:Epoch:25, Train epoch time: 14.17 min, loss: 0.6537970733843429
+INFO:root:Inference time:8.069 min
+INFO:root:validation [CTR] 91.08  82.26  17.08  103.75  0.000
+INFO:root:validation 90.78  81.86  17.08  103.40  0.000
+INFO:root:early stop count:2
+INFO:root:Epoch:26, Train epoch time: 8.93 min, loss: 0.6473561404834272
+INFO:root:Inference time:6.057 min
+INFO:root:validation [CTR] 91.78  84.77  17.16  105.43  0.000
+INFO:root:validation 88.48  81.86  17.16  102.33  0.000
+INFO:root:early stop count:1
+INFO:root:Epoch:27, Train epoch time: 10.04 min, loss: 0.6417072639753313
+INFO:root:Inference time:11.079 min
+INFO:root:validation [CTR] 91.98  83.77  16.77  104.64  0.000
+INFO:root:validation 90.18  82.06  16.77  102.89  0.000
+INFO:root:early stop count:0
+INFO:root:Epoch:28, Train epoch time: 15.98 min, loss: 0.6359001633874263
+INFO:root:Inference time:6.713 min
+INFO:root:validation [CTR] 92.69  83.77  16.89  105.12  0.000
+INFO:root:validation 91.58  82.87  16.89  104.12  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:29, Train epoch time: 13.87 min, loss: 0.6304867403324487
+INFO:root:Inference time:8.287 min
+INFO:root:validation [CTR] 92.59  85.97  16.32  105.60  0.000
+INFO:root:validation 88.88  82.26  16.32  101.89  0.000
+INFO:root:early stop count:4
+INFO:root:Epoch:30, Train epoch time: 8.98 min, loss: 0.6253112838570405
+INFO:root:Inference time:5.950 min
+INFO:root:validation [CTR] 91.98  84.97  16.70  105.17  0.000
+INFO:root:validation 90.68  83.87  16.70  103.97  0.000
+INFO:root:early stop count:3
+INFO:root:Epoch:31, Train epoch time: 8.97 min, loss: 0.620668826913828
+INFO:root:Inference time:5.982 min
+INFO:root:validation [CTR] 90.88  82.87  16.60  103.48  0.000
+INFO:root:validation 89.88  81.76  16.60  102.42  0.000
+INFO:root:early stop count:2
+INFO:root:Epoch:32, Train epoch time: 8.96 min, loss: 0.6152784237872383
+INFO:root:Inference time:6.080 min
+INFO:root:validation [CTR] 93.59  86.37  17.48  107.46  0.000
+INFO:root:validation 91.18  84.17  17.48  105.16  0.000
+INFO:root:Saving model checkpoint to ./experiments_21/all_full_act_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:33, Train epoch time: 8.94 min, loss: 0.610760985528427
+INFO:root:Inference time:6.012 min
+INFO:root:validation [CTR] 92.99  86.57  16.61  106.39  0.000
+INFO:root:validation 90.48  84.07  16.61  103.88  0.000
+INFO:root:early stop count:4
+INFO:root:Epoch:34, Train epoch time: 8.95 min, loss: 0.6061476709070962
+INFO:root:Inference time:6.150 min
+INFO:root:validation [CTR] 92.28  84.57  17.21  105.64  0.000
+INFO:root:validation 90.08  82.57  17.21  103.53  0.000
+INFO:root:early stop count:3
+INFO:root:Epoch:35, Train epoch time: 8.95 min, loss: 0.6021209349480069
+INFO:root:Inference time:6.020 min
+INFO:root:validation [CTR] 92.18  82.87  16.30  103.83  0.000
+INFO:root:validation 91.18  82.06  16.30  102.93  0.000
+INFO:root:early stop count:2
+INFO:root:Epoch:36, Train epoch time: 8.95 min, loss: 0.5983008983424336
+INFO:root:Inference time:6.030 min
+INFO:root:validation [CTR] 92.99  85.77  16.59  105.97  0.000
+INFO:root:validation 90.78  83.37  16.59  103.66  0.000
+INFO:root:early stop count:1
+INFO:root:Epoch:37, Train epoch time: 8.95 min, loss: 0.5936821288953871
+INFO:root:Inference time:5.994 min
+INFO:root:validation [CTR] 91.78  84.27  16.76  104.79  0.000
+INFO:root:validation 90.08  82.57  16.76  103.08  0.000
+INFO:root:early stop count:0
+INFO:root:Epoch:38, Train epoch time: 8.95 min, loss: 0.5901243570868472
+INFO:root:Inference time:6.060 min
+INFO:root:validation [CTR] 91.18  84.17  16.57  104.24  0.000
+INFO:root:validation 89.58  82.67  16.57  102.69  0.000
+INFO:root:early stop count:-1
+INFO:root:Epoch:39, Train epoch time: 8.93 min, loss: 0.5866189837335521
+INFO:root:Inference time:5.963 min
+INFO:root:validation [CTR] 92.28  84.87  17.05  105.63  0.000
+INFO:root:validation 89.78  82.57  17.05  103.22  0.000
+INFO:root:early stop count:-2
+INFO:root:Epoch:40, Train epoch time: 8.93 min, loss: 0.5831117051320728
+INFO:root:Inference time:5.975 min
+INFO:root:validation [CTR] 90.58  81.66  16.64  102.77  0.000
+INFO:root:validation 89.68  80.76  16.64  101.86  0.000
+INFO:root:early stop count:-3
+INFO:root:Epoch:41, Train epoch time: 8.94 min, loss: 0.5801365875312373
+INFO:root:Inference time:6.055 min
+INFO:root:validation [CTR] 91.88  83.87  16.62  104.49  0.000
+INFO:root:validation 90.58  82.77  16.62  103.29  0.000
+INFO:root:early stop count:-4
+INFO:root:Epoch:42, Train epoch time: 8.96 min, loss: 0.5768966726537955
+INFO:root:Inference time:6.049 min
+INFO:root:validation [CTR] 92.99  84.87  16.86  105.79  0.000
+INFO:root:validation 90.88  82.67  16.86  103.64  0.000
+INFO:root:early stop count:-5
+INFO:root:Epoch:43, Train epoch time: 8.95 min, loss: 0.5738611880974516
+INFO:root:Inference time:6.005 min
+INFO:root:validation [CTR] 92.89  85.27  17.07  106.14  0.000
+INFO:root:validation 91.28  83.97  17.07  104.69  0.000
+INFO:root:early stop count:-6
+INFO:root:Epoch:44, Train epoch time: 8.91 min, loss: 0.5706992160562492
+INFO:root:Inference time:6.026 min
+INFO:root:validation [CTR] 93.29  84.67  16.84  105.81  0.000
+INFO:root:validation 91.08  82.67  16.84  103.71  0.000
+INFO:root:early stop count:-7
+INFO:root:Epoch:45, Train epoch time: 8.96 min, loss: 0.5679290410879103
+INFO:root:Inference time:6.080 min
+INFO:root:validation [CTR] 92.79  84.07  16.86  105.28  0.000
+INFO:root:validation 91.58  83.27  16.86  104.28  0.000
+INFO:root:early stop count:-8
+INFO:root:Epoch:46, Train epoch time: 9.52 min, loss: 0.5653341927401647
+INFO:root:Inference time:9.348 min
+INFO:root:validation [CTR] 92.59  83.27  16.46  104.39  0.000
+INFO:root:validation 91.58  82.46  16.46  103.49  0.000
+INFO:root:early stop count:-9
+INFO:root:Epoch:47, Train epoch time: 8.93 min, loss: 0.5630480502177371
+INFO:root:Inference time:5.996 min
+INFO:root:validation [CTR] 92.79  84.67  16.41  105.13  0.000
+INFO:root:validation 91.38  83.07  16.41  103.63  0.000
+INFO:root:early stop count:-10
+INFO:root:Epoch:48, Train epoch time: 8.95 min, loss: 0.5606391320246399
+INFO:root:Inference time:6.122 min
+INFO:root:validation [CTR] 91.98  83.77  16.85  104.73  0.000
+INFO:root:validation 90.98  82.87  16.85  103.78  0.000
+INFO:root:early stop count:-11
+INFO:root:Epoch:49, Train epoch time: 8.94 min, loss: 0.5583855272838727
+INFO:root:Inference time:6.030 min
+INFO:root:validation [CTR] 92.69  85.17  16.37  105.29  0.000
+INFO:root:validation 90.48  83.37  16.37  103.29  0.000
+INFO:root:early stop count:-12
+INFO:root:Epoch:50, Train epoch time: 8.92 min, loss: 0.5560482991041592
+INFO:root:Inference time:5.878 min
+INFO:root:validation [CTR] 91.88  83.27  16.31  103.89  0.000
+INFO:root:validation 91.18  82.46  16.31  103.14  0.000
+INFO:root:early stop count:-13
+INFO:root:Epoch:51, Train epoch time: 8.94 min, loss: 0.5544210189770453
+INFO:root:Inference time:6.008 min
+INFO:root:validation [CTR] 92.99  84.87  16.56  105.48  0.000
+INFO:root:validation 90.68  82.67  16.56  103.23  0.000
+INFO:root:early stop count:-14
+INFO:root:Epoch:52, Train epoch time: 8.92 min, loss: 0.5529075579821187
+INFO:root:Inference time:5.974 min
+INFO:root:validation [CTR] 90.78  82.16  16.43  102.90  0.000
+INFO:root:validation 89.58  81.16  16.43  101.80  0.000
+INFO:root:early stop count:-15
+INFO:root:Epoch:53, Train epoch time: 8.93 min, loss: 0.5511202296524123
+INFO:root:Inference time:5.960 min
+INFO:root:validation [CTR] 93.29  85.07  16.35  105.52  0.000
+INFO:root:validation 91.38  83.27  16.35  103.67  0.000
+INFO:root:early stop count:-16
+INFO:root:Epoch:54, Train epoch time: 8.97 min, loss: 0.5498909856372667
+INFO:root:Inference time:6.051 min
+INFO:root:validation [CTR] 93.09  85.37  16.58  105.80  0.000
+INFO:root:validation 90.78  83.47  16.58  103.70  0.000
+INFO:root:early stop count:-17
+INFO:root:Epoch:55, Train epoch time: 9.01 min, loss: 0.5486385510199207
+INFO:root:Inference time:6.037 min
+INFO:root:validation [CTR] 91.78  83.17  16.48  103.95  0.000
+INFO:root:validation 90.78  82.06  16.48  102.90  0.000
+INFO:root:early stop count:-18
+INFO:root:Epoch:56, Train epoch time: 8.98 min, loss: 0.5473669131339925
+INFO:root:Inference time:6.021 min
+INFO:root:validation [CTR] 92.38  83.87  16.62  104.74  0.000
+INFO:root:validation 90.48  82.26  16.62  102.99  0.000
+INFO:root:early stop count:-19
+INFO:root:Epoch:57, Train epoch time: 8.97 min, loss: 0.5460285452527348
+INFO:root:Inference time:5.987 min
+INFO:root:validation [CTR] 92.18  83.67  16.46  104.39  0.000
+INFO:root:validation 90.38  81.66  16.46  102.48  0.000
+INFO:root:early stop count:-20
+INFO:root:Epoch:58, Train epoch time: 8.98 min, loss: 0.5452073299041788
+INFO:root:Inference time:5.931 min
+INFO:root:validation [CTR] 92.18  83.67  16.30  104.23  0.000
+INFO:root:validation 90.48  81.96  16.30  102.52  0.000
+INFO:root:early stop count:-21
+INFO:root:Epoch:59, Train epoch time: 9.13 min, loss: 0.5447014324158416
+INFO:root:Inference time:6.004 min
+INFO:root:validation [CTR] 92.18  83.87  16.43  104.45  0.000
+INFO:root:validation 90.68  82.36  16.43  102.95  0.000
+INFO:root:early stop count:-22

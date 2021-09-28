@@ -1,0 +1,767 @@
+{
+    "MultiWOZ_dict": {
+      "hotel": {
+        "request": [
+          "area",
+          "stay",
+          "day",
+          "price",
+          "internet",
+          "parking",
+          "people",
+          "stars",
+          "type",
+          "time",
+          "name"
+        ],
+        "inform": [
+          "price",
+          "choice",
+          "parking",
+          "internet",
+          "name",
+          "type",
+          "area",
+          "address",
+          "postcode",
+          "stars",
+          "phone",
+          "none",
+          "reference"
+        ],
+        "offerbook": [
+          "none",
+          "reference",
+          "name",
+          "people",
+          "stay",
+          "day"
+        ],
+        "nobook": [
+          "day",
+          "none",
+          "stay",
+          "name",
+          "people",
+          "time",
+          "reference"
+        ],
+        "offerbooked": [
+          "reference",
+          "name",
+          "day",
+          "stay",
+          "people",
+          "address",
+          "area",
+          "none",
+          "internet",
+          "parking",
+          "phone",
+          "type",
+          "price",
+          "postcode",
+          "stars",
+          "time",
+          "choice"
+        ],
+        "recommend": [
+          "price",
+          "name",
+          "area",
+          "address",
+          "postcode",
+          "type",
+          "internet",
+          "parking",
+          "stars",
+          "none",
+          "phone",
+          "choice"
+        ],
+        "select": [
+          "none",
+          "price",
+          "type",
+          "area",
+          "name",
+          "stars",
+          "parking",
+          "internet",
+          "choice",
+          "phone",
+          "address"
+        ],
+        "nooffer": [
+          "area",
+          "type",
+          "none",
+          "price",
+          "stars",
+          "internet",
+          "parking",
+          "choice",
+          "name"
+        ]
+      },
+      "general": {
+        "reqmore": [
+          "none"
+        ],
+        "bye": [
+          "none"
+        ],
+        "welcome": [
+          "none"
+        ],
+        "greet": [
+          "none"
+        ],
+        "request": [
+          "people",
+          "stay",
+          "day",
+          "time"
+        ],
+        "offerbooked": [
+          "reference",
+          "stay",
+          "name",
+          "time",
+          "day",
+          "people",
+          "none"
+        ],
+        "offerbook": [
+          "none"
+        ],
+        "nobook": [
+          "none"
+        ]
+      },
+      "police": {
+        "inform": [
+          "name",
+          "phone",
+          "address",
+          "postcode"
+        ]
+      },
+      "train": {
+        "inform": [
+          "choice",
+          "leave",
+          "arrive",
+          "day",
+          "departure",
+          "price",
+          "time",
+          "id",
+          "destination",
+          "reference",
+          "none",
+          "people"
+        ],
+        "request": [
+          "leave",
+          "departure",
+          "day",
+          "destination",
+          "arrive",
+          "people",
+          "stay",
+          "time"
+        ],
+        "offerbook": [
+          "none",
+          "arrive",
+          "id",
+          "leave",
+          "people",
+          "departure",
+          "destination",
+          "day",
+          "choice",
+          "price",
+          "time",
+          "reference",
+          "name"
+        ],
+        "offerbooked": [
+          "time",
+          "reference",
+          "price",
+          "day",
+          "departure",
+          "people",
+          "id",
+          "destination",
+          "leave",
+          "arrive",
+          "none",
+          "name",
+          "choice"
+        ],
+        "nooffer": [
+          "destination",
+          "departure",
+          "leave",
+          "none",
+          "day",
+          "arrive",
+          "id",
+          "choice"
+        ],
+        "select": [
+          "leave",
+          "none",
+          "departure",
+          "arrive",
+          "id",
+          "day",
+          "destination",
+          "choice",
+          "price",
+          "people"
+        ],
+        "nobook": [
+          "none"
+        ]
+      },
+      "taxi": {
+        "request": [
+          "leave",
+          "arrive",
+          "departure",
+          "destination",
+          "people",
+          "time",
+          "day",
+          "stay"
+        ],
+        "inform": [
+          "car",
+          "phone",
+          "destination",
+          "leave",
+          "departure",
+          "arrive",
+          "none"
+        ],
+        "offerbooked": [
+          "reference",
+          "time",
+          "people",
+          "phone",
+          "car",
+          "name",
+          "none"
+        ],
+        "offerbook": [
+          "none",
+          "name"
+        ]
+      },
+      "attraction": {
+        "inform": [
+          "choice",
+          "address",
+          "name",
+          "type",
+          "phone",
+          "postcode",
+          "price",
+          "area",
+          "none",
+          "open"
+        ],
+        "request": [
+          "area",
+          "type",
+          "price",
+          "name",
+          "day",
+          "stay",
+          "people",
+          "time"
+        ],
+        "recommend": [
+          "price",
+          "name",
+          "type",
+          "address",
+          "postcode",
+          "phone",
+          "area",
+          "none",
+          "choice",
+          "open"
+        ],
+        "select": [
+          "area",
+          "type",
+          "none",
+          "name",
+          "choice",
+          "price",
+          "address",
+          "phone"
+        ],
+        "nooffer": [
+          "none",
+          "area",
+          "type",
+          "name",
+          "price",
+          "address",
+          "choice"
+        ],
+        "offerbook": [
+          "none",
+          "name"
+        ],
+        "offerbooked": [
+          "name",
+          "reference",
+          "area",
+          "type",
+          "none",
+          "people",
+          "time",
+          "day"
+        ],
+        "nobook": [
+          "none"
+        ]
+      },
+      "restaurant": {
+        "request": [
+          "food",
+          "area",
+          "price",
+          "day",
+          "time",
+          "people",
+          "name",
+          "stay"
+        ],
+        "nooffer": [
+          "price",
+          "food",
+          "area",
+          "choice",
+          "name",
+          "none"
+        ],
+        "inform": [
+          "food",
+          "area",
+          "price",
+          "name",
+          "postcode",
+          "address",
+          "choice",
+          "phone",
+          "reference",
+          "none"
+        ],
+        "offerbook": [
+          "none",
+          "time",
+          "people",
+          "day",
+          "name",
+          "reference"
+        ],
+        "offerbooked": [
+          "people",
+          "day",
+          "time",
+          "reference",
+          "name",
+          "address",
+          "postcode",
+          "food",
+          "none",
+          "area",
+          "price",
+          "phone",
+          "choice"
+        ],
+        "select": [
+          "food",
+          "none",
+          "name",
+          "price",
+          "area",
+          "address",
+          "choice"
+        ],
+        "recommend": [
+          "name",
+          "price",
+          "area",
+          "food",
+          "address",
+          "postcode",
+          "choice",
+          "phone",
+          "none"
+        ],
+        "nobook": [
+          "none",
+          "time",
+          "day",
+          "reference",
+          "people",
+          "name"
+        ]
+      },
+      "hospital": {
+        "request": [
+          "department"
+        ],
+        "inform": [
+          "phone",
+          "department",
+          "postcode",
+          "address"
+        ],
+        "offerbook": [
+          "none"
+        ],
+        "offerbooked": [
+          "time",
+          "reference",
+          "day"
+        ]
+      }
+    },
+    "ConvLab2_dict": {
+      "Hotel": {
+        "Request": [
+          "Area",
+          "Price",
+          "Internet",
+          "Parking",
+          "Stars",
+          "Type",
+          "Name"
+        ],
+        "Inform": [
+          "Parking",
+          "Internet",
+          "none",
+          "Choice",
+          "Price",
+          "Name",
+          "Type",
+          "Area",
+          "Addr",
+          "Post",
+          "Stars",
+          "Phone",
+          "Ref"
+        ],
+        "Select": [
+          "none",
+          "Parking",
+          "Internet",
+          "Price",
+          "Type",
+          "Name",
+          "Stars",
+          "Area",
+          "Choice",
+          "Phone",
+          "Addr"
+        ],
+        "Recommend": [
+          "Internet",
+          "Parking",
+          "none",
+          "Name",
+          "Type",
+          "Area",
+          "Addr",
+          "Post",
+          "Stars",
+          "Price",
+          "Phone",
+          "Choice"
+        ],
+        "NoOffer": [
+          "none",
+          "Internet",
+          "Parking",
+          "Type",
+          "Area",
+          "Price",
+          "Stars",
+          "Choice",
+          "Name"
+        ]
+      },
+      "Booking": {
+        "Inform": [
+          "none",
+          "Time",
+          "Day",
+          "Ref",
+          "Name",
+          "People",
+          "Stay"
+        ],
+        "Request": [
+          "Stay",
+          "Day",
+          "People",
+          "Time"
+        ],
+        "NoBook": [
+          "none",
+          "Day",
+          "Stay",
+          "Name",
+          "Time",
+          "Ref",
+          "People"
+        ],
+        "Book": [
+          "none",
+          "Ref",
+          "Name",
+          "Day",
+          "People",
+          "Time",
+          "Stay"
+        ]
+      },
+      "general": {
+        "reqmore": [
+          "none"
+        ],
+        "bye": [
+          "none"
+        ],
+        "welcome": [
+          "none"
+        ],
+        "greet": [
+          "none"
+        ]
+      },
+      "Train": {
+        "Request": [
+          "Depart",
+          "Day",
+          "Dest",
+          "Leave",
+          "Arrive",
+          "People"
+        ],
+        "OfferBook": [
+          "none",
+          "Id",
+          "Arrive",
+          "Leave",
+          "People",
+          "Depart",
+          "Dest",
+          "Day",
+          "Ticket",
+          "Time",
+          "Ref",
+          "Choice"
+        ],
+        "Inform": [
+          "none",
+          "Choice",
+          "Depart",
+          "Leave",
+          "Arrive",
+          "Day",
+          "Ticket",
+          "Time",
+          "Id",
+          "Dest",
+          "Ref",
+          "People"
+        ],
+        "Select": [
+          "none",
+          "Depart",
+          "Id",
+          "Day",
+          "Leave",
+          "Arrive",
+          "Dest",
+          "Choice",
+          "Ticket",
+          "People"
+        ],
+        "NoOffer": [
+          "none",
+          "Depart",
+          "Dest",
+          "Leave",
+          "Day",
+          "Id",
+          "Arrive",
+          "Choice"
+        ],
+        "OfferBooked": [
+          "none",
+          "Ref",
+          "Ticket",
+          "People",
+          "Id",
+          "Depart",
+          "Dest",
+          "Day",
+          "Leave",
+          "Arrive",
+          "Choice",
+          "Time"
+        ]
+      },
+      "Attraction": {
+        "Request": [
+          "Area",
+          "Type",
+          "Price",
+          "Name"
+        ],
+        "NoOffer": [
+          "none",
+          "Type",
+          "Area",
+          "Name",
+          "Addr",
+          "Choice",
+          "Fee"
+        ],
+        "Inform": [
+          "none",
+          "Fee",
+          "Choice",
+          "Addr",
+          "Name",
+          "Type",
+          "Post",
+          "Phone",
+          "Area",
+          "Price",
+          "Open"
+        ],
+        "Select": [
+          "none",
+          "Area",
+          "Type",
+          "Name",
+          "Choice",
+          "Fee",
+          "Price",
+          "Addr",
+          "Phone"
+        ],
+        "Recommend": [
+          "none",
+          "Name",
+          "Type",
+          "Fee",
+          "Addr",
+          "Post",
+          "Phone",
+          "Area",
+          "Price",
+          "Choice",
+          "Open"
+        ]
+      },
+      "Restaurant": {
+        "Request": [
+          "Food",
+          "Area",
+          "Price",
+          "Name"
+        ],
+        "Select": [
+          "none",
+          "Food",
+          "Name",
+          "Price",
+          "Area",
+          "Addr",
+          "Choice"
+        ],
+        "NoOffer": [
+          "none",
+          "Price",
+          "Food",
+          "Area",
+          "Choice",
+          "Name"
+        ],
+        "Inform": [
+          "none",
+          "Name",
+          "Price",
+          "Food",
+          "Area",
+          "Addr",
+          "Post",
+          "Choice",
+          "Phone",
+          "Ref"
+        ],
+        "Recommend": [
+          "none",
+          "Name",
+          "Price",
+          "Area",
+          "Food",
+          "Addr",
+          "Choice",
+          "Post",
+          "Phone"
+        ]
+      },
+      "Hospital": {
+        "Request": [
+          "Department"
+        ],
+        "Inform": [
+          "Phone",
+          "Department",
+          "Post",
+          "Addr"
+        ]
+      },
+      "Taxi": {
+        "Request": [
+          "Depart",
+          "Dest",
+          "Arrive",
+          "Leave"
+        ],
+        "Inform": [
+          "none",
+          "Car",
+          "Leave",
+          "Dest",
+          "Phone",
+          "Depart",
+          "Arrive"
+        ]
+      },
+      "Police": {
+        "Inform": [
+          "Name",
+          "Addr",
+          "Phone",
+          "Post"
+        ]
+      }
+    }
+  }
