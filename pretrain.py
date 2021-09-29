@@ -1852,6 +1852,7 @@ class Modal(object):
         eval_data = self.reader.get_eval_data(data)
         if cfg.debugging:
             eval_data=eval_data[:100]
+        result_path=os.path.join(cfg.eval_load_path, 'result.json')
         cfg.batch_size=cfg.eval_batch_size
         batches=self.reader.get_batches('test',data=eval_data)
 
@@ -1882,6 +1883,7 @@ class Modal(object):
             bleu, P, R, F1
         ))
         logging.info('Evaluation time:{:.2f} min'.format((time.time()-st)/60))
+        json.dump(result_collection, open(result_path, 'w'), indent=2)
         return bleu, P, R, F1
 
 def parse_arg_cfg(args):
