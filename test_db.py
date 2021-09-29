@@ -9,9 +9,8 @@ tokenizer=GPT2Tokenizer.from_pretrained('best_model')
 reader = MultiWozReader(tokenizer)
 evaluator = MultiWozEvaluator(reader)
 
-bspn="<sos_b> [restaurant]  food modern european pricerange moderate <eos_b>"
-domain='restaurant'
-constraint_dict = reader.bspan_to_constraint_dict(bspn)
-print('constraint_dict\n',constraint_dict)
-venues = reader.db.queryJsons(domain, constraint_dict[domain], return_name=True)
-print('venues:', venues)
+aspn="[hotel] [inform] parking yes price cheap name guest a and b house [request] internet"
+act=reader.aspan_to_act_dict(aspn, side='sys')
+print(act)
+act=reader.aspan_to_act_dict(aspn, side='user')
+print(act)

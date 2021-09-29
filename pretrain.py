@@ -59,14 +59,7 @@ class Modal(object):
             }
         logging.info('hotel database path:{}'.format(cfg.dbs['hotel']))
         self.reader = MultiWozReader(self.tokenizer)
-        self.sos_b_id=self.tokenizer.convert_tokens_to_ids('<sos_b>')
-        self.sos_a_id=self.tokenizer.convert_tokens_to_ids('<sos_a>')
-        self.sos_r_id=self.tokenizer.convert_tokens_to_ids('<sos_r>')
-        self.eos_b_id=self.tokenizer.convert_tokens_to_ids('<eos_b>')
-        self.eos_a_id=self.tokenizer.convert_tokens_to_ids('<eos_a>')
-        self.eos_r_id=self.tokenizer.convert_tokens_to_ids('<eos_r>')
-        self.sos_db_id=self.tokenizer.convert_tokens_to_ids('<sos_db>')
-        self.eos_db_id=self.tokenizer.convert_tokens_to_ids('<eos_db>')
+        self.get_special_ids()
         logging.info([self.sos_b_id, self.sos_a_id, self.sos_r_id, self.eos_b_id, self.eos_a_id,self.eos_r_id])
 
         # create model: gpt2
@@ -124,7 +117,23 @@ class Modal(object):
         if 'test' not in cfg.mode:
             json.dump(cfg.__dict__,open(os.path.join(cfg.exp_path,'cfg_all.json'),'w'),indent=2)
         self.global_output=4
-    
+    def get_special_ids(self):
+        self.sos_b_id=self.tokenizer.convert_tokens_to_ids('<sos_b>')
+        self.sos_a_id=self.tokenizer.convert_tokens_to_ids('<sos_a>')
+        self.sos_r_id=self.tokenizer.convert_tokens_to_ids('<sos_r>')
+        self.eos_b_id=self.tokenizer.convert_tokens_to_ids('<eos_b>')
+        self.eos_a_id=self.tokenizer.convert_tokens_to_ids('<eos_a>')
+        self.eos_r_id=self.tokenizer.convert_tokens_to_ids('<eos_r>')
+        self.sos_db_id=self.tokenizer.convert_tokens_to_ids('<sos_db>')
+        self.eos_db_id=self.tokenizer.convert_tokens_to_ids('<eos_db>')
+        self.sos_u_id=self.tokenizer.convert_tokens_to_ids('<sos_u>')
+        self.eos_u_id=self.tokenizer.convert_tokens_to_ids('<eos_u>')
+        if cfg.train_us:
+            self.sos_g_id=self.tokenizer.convert_tokens_to_ids('<sos_g>')
+            self.eos_g_id=self.tokenizer.convert_tokens_to_ids('<eos_g>')
+            self.sos_ua_id=self.tokenizer.convert_tokens_to_ids('<sos_ua>')
+            self.eos_ua_id=self.tokenizer.convert_tokens_to_ids('<eos_ua>')
+
     def pretrain(self, posterior=False):
         #logging.info(cfg.mode)
         if cfg.mode=='train':
@@ -333,10 +342,12 @@ class Modal(object):
         min_eval_loss=1000
         max_score=0
         early_stop_count=cfg.early_stop_count
-        epoch_th=0.1*cfg.epoch_num if 'distilgpt2' in cfg.gpt_path else -1
+        #epoch_th=0.05*cfg.epoch_num if 'distilgpt2' in cfg.gpt_path else -1
+        epoch_th=-1
         warmup_epochs=cfg.warmup_steps*cfg.gradient_accumulation_steps*cfg.batch_size//num_dials \
             if cfg.warmup_steps>=0 else int(cfg.epoch_num*cfg.warmup_ratio)
-
+        if cfg.debugging:
+            self.validate_us('dev')
         for epoch in range(cfg.epoch_num):
             epoch_step = 0
             tr_loss = 0.0
@@ -353,8 +364,12 @@ class Modal(object):
                     first_turn = (turn_num == 0)
                     side='user' if cfg.train_us else 'sys'
                     inputs, labels = self.reader.convert_batch_turn(turn_batch, pv_batch, first_turn, side=side)
-                    pv_batch = self.reader.get_pv_batch(pv_batch, turn_batch['user'],
-                        turn_batch['resp'], turn_batch['bspn'], side=side)
+                    if cfg.train_us:
+                        pv_batch = self.reader.get_pv_batch(pv_batch, turn_batch['user'],
+                            turn_batch['resp'], side=side)
+                    else:
+                        pv_batch = self.reader.get_pv_batch(pv_batch, turn_batch['user'],
+                            turn_batch['resp'], turn_batch['bspn'], side=side)
                     try:  # avoid OOM
                         self.model.train()
                         if log_inputs > 0:  # log inputs for the very first two turns
@@ -431,13 +446,21 @@ class Modal(object):
                         self.tb_writer.add_scalar('db_acc',eval_result['db_acc'],epoch)
                         score=eval_result['joint_acc']
                     else:
-                        eval_result=self.validate_fast(data='dev')
-                        self.tb_writer.add_scalar('joint_goal',eval_result['joint_acc'],epoch)
-                        self.tb_writer.add_scalar('match',eval_result['match'],epoch)
-                        self.tb_writer.add_scalar('success',eval_result['success'],epoch)
-                        self.tb_writer.add_scalar('bleu',eval_result['bleu'],epoch)
-                        self.tb_writer.add_scalar('combined_score',eval_result['score'],epoch)
-                        score=eval_result['score']
+                        if cfg.train_us:
+                            bleu, P, R, F1=self.validate_us(data='dev')
+                            self.tb_writer.add_scalar('P',P,epoch)
+                            self.tb_writer.add_scalar('R',R,epoch)
+                            self.tb_writer.add_scalar('F1',F1,epoch)
+                            self.tb_writer.add_scalar('bleu',bleu,epoch)
+                            score=F1*100
+                        else:
+                            eval_result=self.validate_fast(data='dev')
+                            self.tb_writer.add_scalar('joint_goal',eval_result['joint_acc'],epoch)
+                            self.tb_writer.add_scalar('match',eval_result['match'],epoch)
+                            self.tb_writer.add_scalar('success',eval_result['success'],epoch)
+                            self.tb_writer.add_scalar('bleu',eval_result['bleu'],epoch)
+                            self.tb_writer.add_scalar('combined_score',eval_result['score'],epoch)
+                            score=eval_result['score']
                     if score>max_score:
                         early_stop_count=cfg.early_stop_count
                         max_score=score
@@ -1191,6 +1214,22 @@ class Modal(object):
             aspn_gen.append(aspn)
         return aspn_gen
 
+    def get_user(self,u_tensor):
+        u_batch=u_tensor.cpu().tolist()
+        u_gen=[]
+
+        for i ,u in enumerate(u_batch):
+            if self.eos_u_id in u:
+                u=[self.sos_ua_id]+u[:u.index(self.eos_u_id)+1]
+            else:
+                u[-1]=self.eos_u_id
+                u=[self.sos_ua_id]+u
+            if u.count(self.sos_ua_id)>1:
+                last=u[::-1].index(self.sos_ua_id)+1
+                u=u[-last:]
+            u_gen.append(u)
+        return u_gen
+
     def get_resp(self,resp_tensor):
         resp_batch=resp_tensor.cpu().tolist()
         resp_gen=[]
@@ -1745,8 +1784,105 @@ class Modal(object):
                 turn_batch['db_gen']=db_gen
         return self.reader.inverse_transpose_batch(batch)
 
+    def generate_batch_us(self, batch):
+        batch=self.reader.transpose_batch(batch)
+        max_len=75
+
+        batch_size=len(batch[0]['dial_id'])
+        contexts=[[] for i in range(batch_size)]
+        bs_gen=[]
+        db_gen=[]
+        resp_gen=[]
+        pv_resp=None
+        device=self.model.device
+        self.model.eval()
+        with torch.no_grad():
+            for turn_num, turn_batch in enumerate(batch):
+                # we generate user act and user utterance together
+                past_key_values=None
+                end_flag=np.zeros(batch_size)
+                contexts=self.reader.convert_eval_batch_turn_us(turn_batch,pv_resp)
+                
+                if self.global_output>0 and cfg.mode=='test':
+                    logging.info(self.tokenizer.decode(contexts[0]))
+                    self.global_output-=1
+                
+                inputs,attentions=self.batch_align(contexts,left_len=max_len,return_attn=True)
+                inputs=torch.tensor(inputs).to(device)
+                attentions=torch.tensor(attentions).to(device)
+                for i in range(max_len):
+                    position_ids = attentions.long().cumsum(-1) - 1
+                    position_ids.masked_fill_(attentions == 0, 1)
+                    if past_key_values is not None:
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                    outputs=self.model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                            return_dict=True,use_cache=True,past_key_values=past_key_values)
+
+                    past_key_values=outputs.past_key_values
+                    preds=outputs.logits[:,-1,:].argmax(-1)#B
+                    if i==0:
+                        u_tensor=preds.unsqueeze(1)
+                    else:
+                        u_tensor=torch.cat([u_tensor,preds.unsqueeze(1)],dim=1)
+                    attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(device)),dim=1)
+                    inputs=preds.unsqueeze(1)
+                    end_flag+=(preds.cpu().numpy()==self.eos_u_id).astype(float)
+                    if sum(end_flag==0)==0:
+                        break
+                u_gen=self.get_user(u_tensor)
+                user_gen=[]
+                usr_act_gen=[]
+                for i, temp in enumerate(u_gen):
+                    if self.eos_ua_id in temp:
+                        usr_act=temp[:temp.index(self.eos_ua_id)+1]
+                    else:
+                        usr_act=temp[:-1]+[self.eos_ua_id]
+                    if self.sos_u_id in temp:
+                        user=temp[temp.index(self.sos_u_id):]
+                    else:
+                        user=[self.sos_u_id]+temp[1:]
+                    user_gen.append(user)
+                    usr_act_gen.append(usr_act)
+                pv_resp=turn_batch['resp']
+                turn_batch['usr_act_gen']=usr_act_gen
+                turn_batch['user_gen']=user_gen
+        return self.reader.inverse_transpose_batch(batch)
+
     def validate_us(self, data='dev'):
-        pass
+        eval_data = self.reader.get_eval_data(data)
+        if cfg.debugging:
+            eval_data=eval_data[:100]
+        cfg.batch_size=cfg.eval_batch_size
+        batches=self.reader.get_batches('test',data=eval_data)
+
+        # valid_losses = []
+        result_collection = []
+        st=time.time()
+        for batch in batches:
+            try:
+                if batch==[]:
+                    continue
+                batch=self.generate_batch_us(batch)
+                result_collection+=self.reader.convert_batch_ids_to_tokens(batch)
+            except RuntimeError as exception:
+                if "out of memory" in str(exception):
+                    logging.info("WARNING: ran out of memory during validation and batch will be divided by half, batch size:{}, turn num:{}"\
+                        .format(len(batch),len(batch[0])))
+                    if hasattr(torch.cuda, 'empty_cache'):
+                        with torch.cuda.device(self.device1):
+                            torch.cuda.empty_cache()
+                    #divide the batch in half if out of memory
+                    batches.insert(0,batch[:len(batch)//2])
+                    batches.insert(1,batch[len(batch)//2:])
+                else:
+                    logging.info(str(exception))
+                    raise exception
+        bleu, P, R, F1=self.evaluator.evaluate_us(result_collection)
+        logging.info('BLEU:{:.2f}, Avg_Precious:{:.3f}, Avg_Recall:{:.3f}, Avg_F1:{:.3f}'.format(
+            bleu, P, R, F1
+        ))
+        logging.info('Evaluation time:{:.2f} min'.format((time.time()-st)/60))
+        return bleu, P, R, F1
 
 def parse_arg_cfg(args):
     # add args to cfg
@@ -1879,11 +2015,14 @@ def main():
     elif args.mode =='test_pos':
         m.validate_pos(data='test')
     else:  # test
-        logging.info("Generate setting: \n\t use true_prev_bspn={} \n\t use true_prev_aspn={} \n\t use true_db_pointer={} \n\t use true_prev_resp={} \n\t use true_curr_bspn={} \n\t use true_curr_aspn={} \n\t use_all_previous_context={}".format(
-                            cfg.use_true_prev_bspn, cfg.use_true_prev_aspn, cfg.use_true_db_pointer, cfg.use_true_prev_resp,
-                            cfg.use_true_curr_bspn, cfg.use_true_curr_aspn, cfg.use_all_previous_context
-                        ))
-        m.validate_fast('test')
+        if cfg.train_us:
+            m.validate_us('test')
+        else:
+            logging.info("Generate setting: \n\t use true_prev_bspn={} \n\t use true_prev_aspn={} \n\t use true_db_pointer={} \n\t use true_prev_resp={} \n\t use true_curr_bspn={} \n\t use true_curr_aspn={} \n\t use_all_previous_context={}".format(
+                                cfg.use_true_prev_bspn, cfg.use_true_prev_aspn, cfg.use_true_db_pointer, cfg.use_true_prev_resp,
+                                cfg.use_true_curr_bspn, cfg.use_true_curr_aspn, cfg.use_all_previous_context
+                            ))
+            m.validate_fast('test')
 
 
 if __name__ == "__main__":

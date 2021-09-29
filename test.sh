@@ -1,4 +1,4 @@
-path=experiments_21/baseline_fix_1/best_score_model
+path=experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
 python train_semi.py -mode test\
     -cfg gpt_path=$path  cuda_device=$1\
     fast_validate=True model_act=True dataset=1\

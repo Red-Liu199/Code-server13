@@ -12,4 +12,5 @@ python pretrain.py -mode train\
     turn_level=True\
     only_target_loss=False\
     input_history=False\
-    input_prev_resp=True
+    input_prev_resp=True\
+    debugging=False

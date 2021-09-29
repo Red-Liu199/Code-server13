@@ -116,6 +116,9 @@ class _ReaderBase(object):
                 dial_turn = {}
                 turn_batch = turn_batch_list[turn_n]
                 for key, v_list in turn_batch.items():
+                    if idx_in_batch>=len(v_list):
+                        print('list out of range',key, v_list)
+                        continue
                     value = v_list[idx_in_batch]
                     dial_turn[key] = value
                 dialog.append(dial_turn)
@@ -448,9 +451,13 @@ class MultiWozReader(_ReaderBase):
         self.eos_r_id=self.tokenizer.convert_tokens_to_ids('<eos_r>')
         self.sos_db_id=self.tokenizer.convert_tokens_to_ids('<sos_db>')
         self.eos_db_id=self.tokenizer.convert_tokens_to_ids('<eos_db>')
+        self.sos_u_id=self.tokenizer.convert_tokens_to_ids('<sos_u>')
+        self.eos_u_id=self.tokenizer.convert_tokens_to_ids('<eos_u>')
         if cfg.train_us:
             self.sos_g_id=self.tokenizer.convert_tokens_to_ids('<sos_g>')
             self.eos_g_id=self.tokenizer.convert_tokens_to_ids('<eos_g>')
+            self.sos_ua_id=self.tokenizer.convert_tokens_to_ids('<sos_ua>')
+            self.eos_ua_id=self.tokenizer.convert_tokens_to_ids('<eos_ua>')
 
     def _build_vocab(self):
         self.vocab = utils.Vocab(cfg.vocab_size)
@@ -570,8 +577,8 @@ class MultiWozReader(_ReaderBase):
                         encoded_file = os.path.join(cfg.data_path, 'new_db_se_blank_encoded.data.json')
                     else:
                         encoded_file = os.path.join(cfg.data_path, 'new_db_se_blank_encoded.data2.json')
-                if cfg.fix_data:
-                    encoded_file=encoded_file[:-5]+'_fix.json'
+                    if cfg.fix_data:
+                        encoded_file=encoded_file[:-5]+'_fix.json'
                 # encoded: no sos, se_encoded: sos and eos
                 # db: add db results every turn
             else:
@@ -597,7 +604,7 @@ class MultiWozReader(_ReaderBase):
                 # not exists, encode data and save
                 data_path=cfg.data_path+cfg.data_file
                 self.data = json.loads(open(data_path, 'r', encoding='utf-8').read().lower())
-                if cfg.fix_data:
+                if cfg.fix_data and not cfg.train_us:
                     self.data=self.fix_dialog_state(self.data)
                     data_path=data_path[:-5]+'_fix.json'
                     json.dump(self.data, open(data_path, 'w'), indent=2)
@@ -789,7 +796,7 @@ class MultiWozReader(_ReaderBase):
         conslen = len(aspan)
         for idx, cons in enumerate(aspan):
             cons = self.vocab.decode(cons) if type(cons) is not str else cons
-            if cons == '<eos_a>':
+            if cons in ['<eos_a>', '<eos_ua>']:
                 break
             if '[' in cons and cons[1:-1] in ontology.dialog_acts:
                 domain = cons[1:-1]
@@ -804,7 +811,7 @@ class MultiWozReader(_ReaderBase):
                 vt = aspan[vidx]
                 vt = self.vocab.decode(vt) if type(vt) is not str else vt
                 no_param_act = True
-                while vidx < conslen and vt != '<eos_a>' and '[' not in vt:
+                while vidx < conslen and vt not in ['<eos_a>', '<eos_ua>'] and '[' not in vt:
                     no_param_act = False
                     acts.append(domain+'-'+cons[1:-1]+'-'+vt)
                     vidx += 1
@@ -816,17 +823,46 @@ class MultiWozReader(_ReaderBase):
                     acts.append(domain+'-'+cons[1:-1]+'-none')
         return acts
 
-    def aspan_to_act_dict(self, aspan):
+    def aspan_to_act_dict(self, aspan, side='sys'):
+        assert side in ['sys', 'user'] # sys act or user act
         act_list=self.aspan_to_act_list(aspan)
         act_dict={}
-        for act in act_list:
-            domain, intent, slot = act.split('-')
-            if domain not in act_dict:
-                act_dict[domain]={}
-            if intent not in act_dict[domain]:
-                act_dict[domain][intent]=[]
-            if slot not in act_dict[domain][intent]:
-                act_dict[domain][intent].append(slot)
+        pv_slot=''
+        if side=='sys':
+            for act in act_list:
+                domain, intent, slot = act.split('-')
+                if domain not in act_dict:
+                    act_dict[domain]={}
+                if intent not in act_dict[domain]:
+                    act_dict[domain][intent]=[]
+                if slot not in act_dict[domain][intent]:
+                    act_dict[domain][intent].append(slot)
+        else:
+            for act in act_list:
+                if act.count('-')!=2:
+                    continue
+                domain, intent, slot = act.split('-')
+                if domain not in act_dict:
+                    act_dict[domain]={}
+                if intent not in act_dict[domain]:
+                    if intent=='inform':
+                        act_dict[domain][intent]={}
+                    else:
+                        act_dict[domain][intent]=[]
+                if intent=='inform':
+                    if slot in ontology.all_slots:
+                        act_dict[domain][intent][slot]='' 
+                        pv_slot=slot                    
+                    else:# slot is in fact a value in this condition
+                        if pv_slot not in act_dict[domain][intent]:
+                            continue
+                        if act_dict[domain][intent][pv_slot]=='':
+                            act_dict[domain][intent][pv_slot]=slot
+                        else:
+                            act_dict[domain][intent][pv_slot]+= ' '+slot
+                else:
+                    if slot not in act_dict[domain][intent]:
+                        act_dict[domain][intent].append(slot)
         return act_dict
 
     def act_dict_to_aspan(self, act_dict):
@@ -931,12 +967,31 @@ class MultiWozReader(_ReaderBase):
                 new_batch.append(new_dial)
         return new_batch
 
+    def convert_batch_ids_to_tokens(self, dial_batch):
+        new_batch=[]
+        for dial in dial_batch:
+            new_dial=[]
+            for turn in dial:
+                new_turn={}
+                for key in turn:
+                    if key in ['user','bspn','aspn','resp','db', 'usr_act', 'goal' 'bspn_gen', 
+                        'aspn_gen', 'resp_gen', 'db_gen','user_gen', 'usr_act_gen']:
+                        # GPT2Tokenizer of transformers3.5 needs to be modified
+                        new_turn[key]=self.tokenizer.decode(turn[key])
+                    else:
+                        new_turn[key]=turn[key]
+                new_dial.append(new_turn)
+            new_batch.append(new_dial)
+        return new_batch
+
     def modified_encode(self, text):
         if int(transformers.__version__[0])>=3:
             if isinstance(text, str):
                 word_list=text.split()
             elif isinstance(text, list):
                 word_list=text
+            else:             
+                raise TypeError(text)
             special_token_pos=[]
             results=[]
             for idx, word in enumerate(word_list):
@@ -1040,7 +1095,7 @@ class MultiWozReader(_ReaderBase):
             bspn_labels['contexts_np'],bspn_labels['lengths']=utils.padSeqs_gpt(bspn_labels['contexts'], cfg.pad_id)
             return inputs,labels,bspn_labels
 
-    def get_pv_batch(self, pv_batch, user, resp, bspn, side='sys'):
+    def get_pv_batch(self, pv_batch, user, resp, bspn=None, side='sys'):
         assert side in ['sys', 'user']
         new_pv_batch=[] # pv_batch for next turn
         if side=='sys':
@@ -1160,6 +1215,24 @@ class MultiWozReader(_ReaderBase):
             else:
                 for hist, u, b, d in zip(pv_batch, turn_batch['user'], bspn_gen, db_gen):
                     eval_batch.append(hist+u+b+d+[self.sos_a_id])
+        return eval_batch
+    
+    def convert_eval_batch_turn_us(self, turn_batch, pv_resp, user_act=None):
+        eval_batch=[]
+        if user_act is None:# generate user act (and utterance)
+            if pv_resp==None: # first turn
+                for g in turn_batch['goal']:
+                    eval_batch.append(g+[self.sos_r_id, self.eos_r_id, self.sos_ua_id])
+            else:
+                for g, r in zip(turn_batch['goal'], pv_resp):
+                    eval_batch.append(g + r + [self.sos_ua_id])
+        else:# generate user utterance
+            if pv_resp==None:
+                for g, ua in zip(turn_batch['goal'], user_act):
+                    eval_batch.append(g + [self.sos_r_id, self.eos_r_id] + ua + [self.sos_u_id])
+            else:
+                for g, r, ua in zip(turn_batch['goal'], pv_resp, user_act):
+                    eval_batch.append(g + r + ua + [self.sos_u_id])
         return eval_batch
 
 

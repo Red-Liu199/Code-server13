@@ -267,6 +267,20 @@ class MultiWozEvaluator(object):
             sc = 0.0
         return sc
 
+    def bleu_metric_us(self, data):
+        gen, truth = [],[]
+        for dial in data:
+            for turn in dial:
+                gen.append(turn['user_gen'])
+                truth.append(turn['user'])
+        wrap_generated = [[_] for _ in gen]
+        wrap_truth = [[_] for _ in truth]
+        if gen and truth:
+            sc = self.bleu_scorer.score(zip(wrap_generated, wrap_truth))
+        else:
+            sc = 0.0
+        return sc
+
     def value_similar(self, a,b):
         return True if a==b else False
 
@@ -851,6 +865,63 @@ class MultiWozEvaluator(object):
                 goal[domain]["booking"] = true_goal[domain]['book']
         return goal
 
+    def evaluate_us(self, data):
+        bleu=self.bleu_metric_us(data)
+        total_turn=0
+        total_p=0
+        total_r=0
+        total_f1=0
+        eps=1e-10
+        for dial in data:
+            for turn in dial:
+                total_turn+=1
+                tp=0
+                fp=0
+                fn=0
+                ua=self.reader.aspan_to_act_dict(turn['usr_act'], side='user') # this transposing is not enough
+                ua_gen=self.reader.aspan_to_act_dict(turn['usr_act_gen'], side='user')
+                for domain in ua_gen:
+                    for intent in ua_gen[domain]:
+                        for slot in ua_gen[domain][intent]:
+                            if domain in ua:
+                                if intent in ua[domain]:
+                                    if slot in ua[domain][intent]:
+                                        if intent=='inform':
+                                            if ua[domain][intent][slot]==ua_gen[domain][intent][slot]:
+                                                tp+=1
+                                            else:
+                                                fp+=1
+                                        else:
+                                            tp+=1
+                                    else:
+                                        fp+=1
+                                else:
+                                    fp+=1
+                            else:
+                                fp+=1
+                for domain in ua:
+                    for intent in ua[domain]:
+                        for slot in ua[domain][intent]:
+                            if domain in ua_gen:
+                                if intent in ua_gen[domain]:
+                                    if slot not in ua_gen[domain][intent]:
+                                        fn+=1
+                                else:
+                                    fn+=1
+                            else:
+                                fn+=1
+                
+                precious=tp/(tp+fp+eps)
+                recall=tp/(tp+fn+eps)
+                f1=2*precious*recall/(precious+recall+eps)
+                total_f1+=f1
+                total_p+=precious
+                total_r+=recall
+        avg_f1=total_f1/total_turn
+        avg_p=total_p/total_turn
+        avg_r=total_r/total_turn
+        return bleu, avg_p, avg_r, avg_f1
+                
 
 if __name__ == '__main__':
     pass

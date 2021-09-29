@@ -291,3 +291,218 @@ INFO:root:Inference time:5.873 min
 INFO:root:validation [CTR] 88.68  81.26  16.60  101.57  0.560
 INFO:root:validation 85.57  78.46  16.60  98.61  0.560
 INFO:root:early stop count:4
+INFO:root:Epoch:17, Train epoch time: 8.87 min, loss: 0.5042607320015556
+INFO:root:Inference time:6.082 min
+INFO:root:validation [CTR] 86.87  78.96  16.18  99.10  0.552
+INFO:root:validation 85.37  77.66  16.18  97.70  0.552
+INFO:root:early stop count:3
+INFO:root:Epoch:18, Train epoch time: 8.95 min, loss: 0.4948824708587364
+INFO:root:Inference time:5.779 min
+INFO:root:validation [CTR] 88.38  79.66  16.07  100.08  0.564
+INFO:root:validation 87.37  78.76  16.07  99.13  0.564
+INFO:root:early stop count:2
+INFO:root:Epoch:19, Train epoch time: 8.92 min, loss: 0.4864660203951934
+INFO:root:Inference time:5.928 min
+INFO:root:validation [CTR] 88.18  80.86  16.42  100.94  0.560
+INFO:root:validation 86.87  79.66  16.42  99.68  0.560
+INFO:root:early stop count:1
+INFO:root:Epoch:20, Train epoch time: 8.90 min, loss: 0.4787796042686285
+INFO:root:Inference time:5.869 min
+INFO:root:validation [CTR] 84.77  76.65  16.61  97.32  0.568
+INFO:root:validation 84.27  76.15  16.61  96.82  0.568
+INFO:root:early stop count:0
+INFO:root:Epoch:21, Train epoch time: 8.92 min, loss: 0.47166292859470327
+INFO:root:Inference time:5.859 min
+INFO:root:validation [CTR] 91.18  83.77  16.52  103.99  0.573
+INFO:root:validation 89.68  82.46  16.52  102.59  0.573
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:22, Train epoch time: 8.93 min, loss: 0.4639099612283973
+INFO:root:Inference time:5.893 min
+INFO:root:validation [CTR] 90.08  81.26  17.23  102.90  0.572
+INFO:root:validation 89.38  80.66  17.23  102.25  0.572
+INFO:root:early stop count:4
+INFO:root:Epoch:23, Train epoch time: 8.94 min, loss: 0.45776948875402407
+INFO:root:Inference time:5.935 min
+INFO:root:validation [CTR] 90.58  82.46  16.71  103.24  0.572
+INFO:root:validation 88.08  80.26  16.71  100.88  0.572
+INFO:root:early stop count:3
+INFO:root:Epoch:24, Train epoch time: 8.93 min, loss: 0.4510349938756462
+INFO:root:Inference time:6.051 min
+INFO:root:validation [CTR] 91.78  83.87  16.95  104.78  0.571
+INFO:root:validation 89.68  81.96  16.95  102.77  0.571
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:25, Train epoch time: 8.94 min, loss: 0.44459406342525365
+INFO:root:Inference time:5.951 min
+INFO:root:validation [CTR] 89.18  79.56  16.84  101.21  0.581
+INFO:root:validation 87.68  78.66  16.84  100.01  0.581
+INFO:root:early stop count:4
+INFO:root:Epoch:26, Train epoch time: 8.99 min, loss: 0.4386623054831216
+INFO:root:Inference time:6.044 min
+INFO:root:validation [CTR] 86.07  79.16  16.71  99.32  0.569
+INFO:root:validation 83.57  76.85  16.71  96.92  0.569
+INFO:root:early stop count:3
+INFO:root:Epoch:27, Train epoch time: 8.92 min, loss: 0.43269144260471726
+INFO:root:Inference time:5.900 min
+INFO:root:validation [CTR] 90.18  81.76  16.31  102.28  0.575
+INFO:root:validation 88.88  80.56  16.31  101.03  0.575
+INFO:root:early stop count:2
+INFO:root:Epoch:28, Train epoch time: 8.92 min, loss: 0.42713260819483945
+INFO:root:Inference time:5.884 min
+INFO:root:validation [CTR] 90.68  81.26  16.47  102.44  0.579
+INFO:root:validation 88.68  79.46  16.47  100.53  0.579
+INFO:root:early stop count:1
+INFO:root:Epoch:29, Train epoch time: 8.93 min, loss: 0.4217319831969928
+INFO:root:Inference time:5.914 min
+INFO:root:validation [CTR] 91.98  83.47  15.80  103.53  0.565
+INFO:root:validation 88.78  80.46  15.80  100.42  0.565
+INFO:root:early stop count:0
+INFO:root:Epoch:30, Train epoch time: 8.87 min, loss: 0.4169120275520237
+INFO:root:Inference time:5.977 min
+INFO:root:validation [CTR] 93.39  83.97  16.50  105.17  0.570
+INFO:root:validation 91.08  82.16  16.50  103.12  0.570
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:31, Train epoch time: 8.85 min, loss: 0.41148078734940075
+INFO:root:Inference time:5.948 min
+INFO:root:validation [CTR] 89.98  81.56  16.15  101.92  0.576
+INFO:root:validation 88.58  80.06  16.15  100.47  0.576
+INFO:root:early stop count:4
+INFO:root:Epoch:32, Train epoch time: 8.85 min, loss: 0.4066135710044302
+INFO:root:Inference time:5.917 min
+INFO:root:validation [CTR] 92.48  85.07  17.33  106.11  0.573
+INFO:root:validation 89.88  82.77  17.33  103.65  0.573
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:33, Train epoch time: 8.90 min, loss: 0.40256802655675145
+INFO:root:Inference time:5.894 min
+INFO:root:validation [CTR] 92.08  83.97  16.38  104.40  0.580
+INFO:root:validation 89.98  82.57  16.38  102.65  0.580
+INFO:root:early stop count:4
+INFO:root:Epoch:34, Train epoch time: 8.91 min, loss: 0.39793859954921623
+INFO:root:Inference time:6.038 min
+INFO:root:validation [CTR] 90.98  82.77  16.40  103.27  0.570
+INFO:root:validation 88.48  80.46  16.40  100.87  0.570
+INFO:root:early stop count:3
+INFO:root:Epoch:35, Train epoch time: 8.92 min, loss: 0.39400616393207544
+INFO:root:Inference time:5.915 min
+INFO:root:validation [CTR] 88.68  79.66  15.81  99.97  0.583
+INFO:root:validation 87.17  78.56  15.81  98.67  0.583
+INFO:root:early stop count:2
+INFO:root:Epoch:36, Train epoch time: 8.91 min, loss: 0.3894755501621882
+INFO:root:Inference time:6.051 min
+INFO:root:validation [CTR] 92.59  83.77  16.44  104.62  0.575
+INFO:root:validation 90.58  82.16  16.44  102.81  0.575
+INFO:root:early stop count:1
+INFO:root:Epoch:37, Train epoch time: 8.94 min, loss: 0.38550387369137296
+INFO:root:Inference time:5.975 min
+INFO:root:validation [CTR] 89.88  81.96  16.76  102.68  0.573
+INFO:root:validation 87.37  79.46  16.76  100.18  0.573
+INFO:root:early stop count:0
+INFO:root:Epoch:38, Train epoch time: 8.93 min, loss: 0.382091521635107
+INFO:root:Inference time:6.072 min
+INFO:root:validation [CTR] 90.68  82.77  16.75  103.47  0.573
+INFO:root:validation 87.47  79.96  16.75  100.47  0.573
+INFO:root:early stop count:-1
+INFO:root:Epoch:39, Train epoch time: 8.91 min, loss: 0.3783059915192655
+INFO:root:Inference time:5.943 min
+INFO:root:validation [CTR] 91.58  82.46  16.56  103.58  0.587
+INFO:root:validation 90.38  81.56  16.56  102.53  0.587
+INFO:root:early stop count:-2
+INFO:root:Epoch:40, Train epoch time: 8.88 min, loss: 0.3749594567312652
+INFO:root:Inference time:6.022 min
+INFO:root:validation [CTR] 91.18  81.06  16.42  102.55  0.585
+INFO:root:validation 89.88  80.36  16.42  101.54  0.585
+INFO:root:early stop count:-3
+INFO:root:Epoch:41, Train epoch time: 8.90 min, loss: 0.371810673903559
+INFO:root:Inference time:5.966 min
+INFO:root:validation [CTR] 90.48  81.86  16.27  102.44  0.579
+INFO:root:validation 89.18  80.66  16.27  101.19  0.579
+INFO:root:early stop count:-4
+INFO:root:Epoch:42, Train epoch time: 8.90 min, loss: 0.3681512264862805
+INFO:root:Inference time:5.963 min
+INFO:root:validation [CTR] 91.18  81.96  16.58  103.15  0.585
+INFO:root:validation 89.98  81.06  16.58  102.10  0.585
+INFO:root:early stop count:-5
+INFO:root:Epoch:43, Train epoch time: 8.88 min, loss: 0.3654733600645663
+INFO:root:Inference time:6.029 min
+INFO:root:validation [CTR] 93.29  84.47  16.52  105.39  0.579
+INFO:root:validation 91.78  83.27  16.52  104.04  0.579
+INFO:root:Saving model checkpoint to ./experiments_21/all_baseline_fix_sd11_lr0.0001_bs2_ga16/best_score_model
+INFO:root:Epoch:44, Train epoch time: 8.89 min, loss: 0.36278076180290936
+INFO:root:Inference time:6.031 min
+INFO:root:validation [CTR] 92.48  81.26  16.44  103.32  0.582
+INFO:root:validation 90.08  79.46  16.44  101.21  0.582
+INFO:root:early stop count:4
+INFO:root:Epoch:45, Train epoch time: 8.91 min, loss: 0.36024647389326864
+INFO:root:Inference time:6.015 min
+INFO:root:validation [CTR] 92.38  83.77  16.47  104.55  0.575
+INFO:root:validation 89.98  81.66  16.47  102.30  0.575
+INFO:root:early stop count:3
+INFO:root:Epoch:46, Train epoch time: 8.89 min, loss: 0.35751191402003557
+INFO:root:Inference time:5.975 min
+INFO:root:validation [CTR] 91.88  83.97  16.55  104.48  0.572
+INFO:root:validation 88.58  80.86  16.55  101.27  0.572
+INFO:root:early stop count:2
+INFO:root:Epoch:47, Train epoch time: 8.90 min, loss: 0.3548348286804864
+INFO:root:Inference time:5.976 min
+INFO:root:validation [CTR] 91.48  81.06  16.24  102.52  0.576
+INFO:root:validation 87.98  78.26  16.24  99.36  0.576
+INFO:root:early stop count:1
+INFO:root:Epoch:48, Train epoch time: 8.89 min, loss: 0.35284963797726615
+INFO:root:Inference time:5.998 min
+INFO:root:validation [CTR] 90.98  80.16  16.18  101.75  0.576
+INFO:root:validation 89.18  78.66  16.18  100.10  0.576
+INFO:root:early stop count:0
+INFO:root:Epoch:49, Train epoch time: 8.90 min, loss: 0.3502969621752725
+INFO:root:Inference time:5.918 min
+INFO:root:validation [CTR] 91.78  81.66  16.08  102.81  0.573
+INFO:root:validation 89.18  79.46  16.08  100.40  0.573
+INFO:root:early stop count:-1
+INFO:root:Epoch:50, Train epoch time: 8.89 min, loss: 0.348648335239671
+INFO:root:Inference time:5.988 min
+INFO:root:validation [CTR] 90.78  80.26  16.27  101.79  0.575
+INFO:root:validation 89.28  79.16  16.27  100.49  0.575
+INFO:root:early stop count:-2
+INFO:root:Epoch:51, Train epoch time: 8.89 min, loss: 0.34692508787072324
+INFO:root:Inference time:5.975 min
+INFO:root:validation [CTR] 91.18  79.86  16.28  101.80  0.581
+INFO:root:validation 88.68  78.16  16.28  99.70  0.581
+INFO:root:early stop count:-3
+INFO:root:Epoch:52, Train epoch time: 8.91 min, loss: 0.34492753692038486
+INFO:root:Inference time:6.096 min
+INFO:root:validation [CTR] 91.88  81.96  16.29  103.21  0.578
+INFO:root:validation 90.08  80.26  16.29  101.46  0.578
+INFO:root:early stop count:-4
+INFO:root:Epoch:53, Train epoch time: 12.82 min, loss: 0.34297852192602707
+INFO:root:Inference time:9.361 min
+INFO:root:validation [CTR] 92.28  80.76  16.06  102.59  0.579
+INFO:root:validation 89.58  78.46  16.06  100.08  0.579
+INFO:root:early stop count:-5
+INFO:root:Epoch:54, Train epoch time: 9.17 min, loss: 0.3415642953113139
+INFO:root:Inference time:5.908 min
+INFO:root:validation [CTR] 91.68  81.06  16.11  102.49  0.578
+INFO:root:validation 89.28  78.86  16.11  100.18  0.578
+INFO:root:early stop count:-6
+INFO:root:Epoch:55, Train epoch time: 8.88 min, loss: 0.3404065930701379
+INFO:root:Inference time:6.019 min
+INFO:root:validation [CTR] 91.08  80.46  16.06  101.83  0.577
+INFO:root:validation 89.58  79.16  16.06  100.43  0.577
+INFO:root:early stop count:-7
+INFO:root:Epoch:56, Train epoch time: 8.91 min, loss: 0.33938651332675024
+INFO:root:Inference time:5.983 min
+INFO:root:validation [CTR] 91.38  81.16  16.22  102.49  0.572
+INFO:root:validation 89.68  79.76  16.22  100.93  0.572
+INFO:root:early stop count:-8
+INFO:root:Epoch:57, Train epoch time: 8.91 min, loss: 0.33793414314200115
+INFO:root:Inference time:5.966 min
+INFO:root:validation [CTR] 91.78  80.26  15.98  102.00  0.570
+INFO:root:validation 89.48  78.76  15.98  100.10  0.570
+INFO:root:early stop count:-9
+INFO:root:Epoch:58, Train epoch time: 8.91 min, loss: 0.33748487670922245
+INFO:root:Inference time:5.991 min
+INFO:root:validation [CTR] 91.48  80.36  15.98  101.90  0.568
+INFO:root:validation 89.48  78.86  15.98  100.15  0.568
+INFO:root:early stop count:-10
+INFO:root:Epoch:59, Train epoch time: 8.91 min, loss: 0.3366619372129525
+INFO:root:Inference time:6.006 min
+INFO:root:validation [CTR] 91.48  81.36  16.13  102.55  0.570
+INFO:root:validation 89.38  79.66  16.13  100.65  0.570
+INFO:root:early stop count:-11

@@ -27,3 +27,483 @@ INFO:root:  Num Epochs = 50
 INFO:root:  Batch size  = 4
 INFO:root:  Gradient Accumulation steps = 8
 INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:Epoch:0, Train epoch time: 24.30 min, epoch loss: 110819.7398
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:BLEU:0.00, Avg_Precious:0.000, Avg_Recall:0.000, Avg_F1:0.000
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:Epoch:0, Train epoch time: 24.48 min, epoch loss: 110819.7398
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:Epoch:0, Train epoch time: 23.99 min, epoch loss: 110819.7398
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:BLEU:0.00, Avg_Precious:0.000, Avg_Recall:0.000, Avg_F1:0.000
+INFO:root:Evaluation time:0.96 min
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  price id leave <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:Epoch:0, Train epoch time: 24.32 min, epoch loss: 110819.7398
+INFO:root:BLEU:4.43, Avg_Precious:0.000, Avg_Recall:0.000, Avg_F1:0.000
+INFO:root:Evaluation time:4.38 min
+INFO:root:Epoch:1, Train epoch time: 24.88 min, epoch loss: 24892.4491
+INFO:root:BLEU:8.49, Avg_Precious:0.133, Avg_Recall:0.130, Avg_F1:0.123
+INFO:root:Evaluation time:2.55 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:2, Train epoch time: 24.49 min, epoch loss: 18691.1775
+INFO:root:BLEU:9.95, Avg_Precious:0.224, Avg_Recall:0.256, Avg_F1:0.225
+INFO:root:Evaluation time:2.26 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:3, Train epoch time: 24.25 min, epoch loss: 16406.8060
+INFO:root:BLEU:10.32, Avg_Precious:0.257, Avg_Recall:0.277, Avg_F1:0.253
+INFO:root:Evaluation time:2.25 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:4, Train epoch time: 28.13 min, epoch loss: 15274.4656
+INFO:root:BLEU:10.62, Avg_Precious:0.303, Avg_Recall:0.307, Avg_F1:0.291
+INFO:root:Evaluation time:2.47 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:5, Train epoch time: 27.52 min, epoch loss: 14613.8601
+INFO:root:BLEU:12.43, Avg_Precious:0.332, Avg_Recall:0.322, Avg_F1:0.313
+INFO:root:Evaluation time:2.27 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:6, Train epoch time: 24.90 min, epoch loss: 14148.8078
+INFO:root:BLEU:12.71, Avg_Precious:0.336, Avg_Recall:0.370, Avg_F1:0.337
+INFO:root:Evaluation time:2.40 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:7, Train epoch time: 24.85 min, epoch loss: 13793.8525
+INFO:root:BLEU:12.77, Avg_Precious:0.344, Avg_Recall:0.311, Avg_F1:0.313
+INFO:root:Evaluation time:2.19 min
+INFO:root:Epoch:8, Train epoch time: 24.29 min, epoch loss: 13512.5274
+INFO:root:BLEU:12.74, Avg_Precious:0.344, Avg_Recall:0.360, Avg_F1:0.336
+INFO:root:Evaluation time:2.52 min
+INFO:root:Epoch:9, Train epoch time: 24.31 min, epoch loss: 13254.2708
+INFO:root:BLEU:12.90, Avg_Precious:0.354, Avg_Recall:0.344, Avg_F1:0.335
+INFO:root:Evaluation time:2.47 min
+INFO:root:Epoch:10, Train epoch time: 24.33 min, epoch loss: 12991.3484
+INFO:root:BLEU:12.70, Avg_Precious:0.345, Avg_Recall:0.355, Avg_F1:0.336
+INFO:root:Evaluation time:2.31 min
+INFO:root:early stop count:4
+INFO:root:Epoch:11, Train epoch time: 24.47 min, epoch loss: 12720.3009
+INFO:root:BLEU:13.27, Avg_Precious:0.364, Avg_Recall:0.354, Avg_F1:0.344
+INFO:root:Evaluation time:2.32 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:12, Train epoch time: 24.79 min, epoch loss: 12469.9969
+INFO:root:BLEU:13.32, Avg_Precious:0.369, Avg_Recall:0.363, Avg_F1:0.352
+INFO:root:Evaluation time:2.54 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:13, Train epoch time: 24.23 min, epoch loss: 12235.6984
+INFO:root:BLEU:13.06, Avg_Precious:0.371, Avg_Recall:0.371, Avg_F1:0.356
+INFO:root:Evaluation time:2.46 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:14, Train epoch time: 24.30 min, epoch loss: 11999.0439
+INFO:root:BLEU:12.82, Avg_Precious:0.369, Avg_Recall:0.367, Avg_F1:0.353
+INFO:root:Evaluation time:2.50 min
+INFO:root:early stop count:4
+INFO:root:Epoch:15, Train epoch time: 24.34 min, epoch loss: 11782.8126
+INFO:root:BLEU:13.45, Avg_Precious:0.382, Avg_Recall:0.377, Avg_F1:0.364
+INFO:root:Evaluation time:2.45 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:16, Train epoch time: 24.38 min, epoch loss: 11558.5956
+INFO:root:BLEU:13.46, Avg_Precious:0.378, Avg_Recall:0.381, Avg_F1:0.364
+INFO:root:Evaluation time:2.57 min
+INFO:root:early stop count:4
+INFO:root:Epoch:17, Train epoch time: 24.85 min, epoch loss: 11331.8522
+INFO:root:BLEU:13.58, Avg_Precious:0.377, Avg_Recall:0.384, Avg_F1:0.364
+INFO:root:Evaluation time:2.81 min
+INFO:root:early stop count:3
+INFO:root:Epoch:18, Train epoch time: 11.01 min, epoch loss: 11109.8424
+INFO:root:BLEU:13.45, Avg_Precious:0.372, Avg_Recall:0.373, Avg_F1:0.357
+INFO:root:Evaluation time:1.83 min
+INFO:root:early stop count:2
+INFO:root:Epoch:19, Train epoch time: 10.76 min, epoch loss: 10870.4249
+INFO:root:BLEU:13.52, Avg_Precious:0.379, Avg_Recall:0.389, Avg_F1:0.367
+INFO:root:Evaluation time:1.86 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:20, Train epoch time: 11.76 min, epoch loss: 10650.8855
+INFO:root:BLEU:12.92, Avg_Precious:0.375, Avg_Recall:0.377, Avg_F1:0.361
+INFO:root:Evaluation time:1.77 min
+INFO:root:early stop count:4
+INFO:root:Epoch:21, Train epoch time: 10.78 min, epoch loss: 10426.2038
+INFO:root:BLEU:13.20, Avg_Precious:0.371, Avg_Recall:0.378, Avg_F1:0.359
+INFO:root:Evaluation time:1.84 min
+INFO:root:early stop count:3
+INFO:root:Epoch:22, Train epoch time: 11.63 min, epoch loss: 10205.1567
+INFO:root:BLEU:13.05, Avg_Precious:0.376, Avg_Recall:0.378, Avg_F1:0.361
+INFO:root:Evaluation time:1.80 min
+INFO:root:early stop count:2
+INFO:root:Epoch:23, Train epoch time: 10.78 min, epoch loss: 9986.0782
+INFO:root:BLEU:13.28, Avg_Precious:0.382, Avg_Recall:0.378, Avg_F1:0.365
+INFO:root:Evaluation time:1.80 min
+INFO:root:early stop count:1
+INFO:root:Epoch:24, Train epoch time: 11.56 min, epoch loss: 9783.3091
+INFO:root:BLEU:13.14, Avg_Precious:0.368, Avg_Recall:0.375, Avg_F1:0.356
+INFO:root:Evaluation time:1.92 min
+INFO:root:early stop count:0
+INFO:root:Epoch:25, Train epoch time: 10.82 min, epoch loss: 9586.4041
+INFO:root:BLEU:13.08, Avg_Precious:0.377, Avg_Recall:0.379, Avg_F1:0.363
+INFO:root:Evaluation time:1.88 min
+INFO:root:early stop count:-1
+INFO:root:Epoch:26, Train epoch time: 10.82 min, epoch loss: 9400.1335
+INFO:root:BLEU:13.25, Avg_Precious:0.375, Avg_Recall:0.376, Avg_F1:0.360
+INFO:root:Evaluation time:1.85 min
+INFO:root:early stop count:-2
+INFO:root:Epoch:27, Train epoch time: 10.82 min, epoch loss: 9212.3775
+INFO:root:BLEU:13.05, Avg_Precious:0.377, Avg_Recall:0.370, Avg_F1:0.359
+INFO:root:Evaluation time:1.81 min
+INFO:root:early stop count:-3
+INFO:root:Epoch:28, Train epoch time: 10.82 min, epoch loss: 9047.2196
+INFO:root:BLEU:12.96, Avg_Precious:0.377, Avg_Recall:0.381, Avg_F1:0.363
+INFO:root:Evaluation time:1.85 min
+INFO:root:early stop count:-4
+INFO:root:Epoch:29, Train epoch time: 10.82 min, epoch loss: 8888.3644
+INFO:root:BLEU:12.91, Avg_Precious:0.380, Avg_Recall:0.375, Avg_F1:0.362
+INFO:root:Evaluation time:1.86 min
+INFO:root:early stop count:-5
+INFO:root:Epoch:30, Train epoch time: 10.82 min, epoch loss: 8736.1373
+INFO:root:BLEU:12.74, Avg_Precious:0.371, Avg_Recall:0.371, Avg_F1:0.356
+INFO:root:Evaluation time:1.80 min
+INFO:root:early stop count:-6
+INFO:root:Epoch:31, Train epoch time: 15.41 min, epoch loss: 8597.0279
+INFO:root:BLEU:12.65, Avg_Precious:0.369, Avg_Recall:0.370, Avg_F1:0.354
+INFO:root:Evaluation time:2.06 min
+INFO:root:early stop count:-7
+INFO:root:Epoch:32, Train epoch time: 14.58 min, epoch loss: 8469.3637
+INFO:root:BLEU:13.13, Avg_Precious:0.377, Avg_Recall:0.380, Avg_F1:0.362
+INFO:root:Evaluation time:2.18 min
+INFO:root:early stop count:-8
+INFO:root:Epoch:33, Train epoch time: 10.85 min, epoch loss: 8350.9703
+INFO:root:BLEU:13.19, Avg_Precious:0.373, Avg_Recall:0.377, Avg_F1:0.359
+INFO:root:Evaluation time:1.81 min
+INFO:root:early stop count:-9
+INFO:root:Epoch:34, Train epoch time: 16.06 min, epoch loss: 8233.2319
+INFO:root:BLEU:12.78, Avg_Precious:0.374, Avg_Recall:0.371, Avg_F1:0.357
+INFO:root:Evaluation time:1.84 min
+INFO:root:early stop count:-10
