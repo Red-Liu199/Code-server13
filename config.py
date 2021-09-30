@@ -27,7 +27,7 @@ class _Config:
         self.multi_acts_path = 'data/multi-woz-2.1-processed/multi_act_mapping_train.json'
         self.exp_path = 'to be generated'
         self.log_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-        self.fix_data=False
+        self.fix_data=True
 
         #key training settings
         self.spv_proportion=50
@@ -186,6 +186,8 @@ class _Config:
 
         self.DS_path="experiments_21/DS_base/best_score_model"
         self.US_path="experiments_21/US_base/best_loss_model"
+        self.DS_device=2
+        self.US_device=2
         self.fix_db=True
 
     def __str__(self):

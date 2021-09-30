@@ -1,9 +1,16 @@
 import json
 slot_list_act=[]
 intent_list=[]
+from reader import MultiWozReader
+from transformers import GPT2Tokenizer
+import json
+import ontology
+tokenizer=GPT2Tokenizer.from_pretrained('experiments_21/turn-level-DS/best_score_model')
+reader = MultiWozReader(tokenizer)
+
 def act_dict_to_aspn(act):
     #<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>
-    slot_map={'post':'postcode','addr':'address','ref':'reference','dest':'destination','depart':'departure'}
+    slot_map={'post':'postcode','addr':'address','ref':'reference','dest':'destination','depart':'departure', 'price':'pricerange'}
     act_list=[]
     for key in act:
         domain=key.split('-')[0].lower()
@@ -132,7 +139,7 @@ def count(data):
 
 
 if __name__ == "__main__":
-    path1='data/multi-woz-2.1-processed/data_for_damd.json'
+    path1='data/multi-woz-2.1-processed/data_for_damd_fix.json'
     path2='data/MultiWOZ_2.1/data.json'
     save_path='data/multi-woz-2.1-processed/data_for_us.json'
     data1=json.load(open(path1,'r', encoding='utf-8'))
@@ -145,21 +152,27 @@ if __name__ == "__main__":
         dial1=data1[dial_id]
         dial2=data2[dial_id_up]
         new_data[dial_id]={}
-        gpan=goal_to_gpan(dial1['goal'],slot_list_goal)
+        goal=dial1['goal']
+        goal=reader.goal_norm(goal)
         new_data[dial_id]=[]
+        pv_user_act=None
         for turn_id, turn in enumerate(dial1['log']):
+            if pv_user_act is not None:
+                goal=reader.update_goal(goal, pv_user_act)
+            turn_domain=turn['turn_domain'].split()
+            cur_domain=turn_domain[0] if len(turn_domain)==1 else turn_domain[1]
+            cur_domain=cur_domain[1:-1] if cur_domain.startswith('[') else cur_domain
+            gpan=reader.goal_to_gpan(goal, cur_domain)
             entry={}
             entry['goal']=gpan
-            for field in ['user','resp','constraint','sys_act','turn_num','turn_domain']:
+            for field in ['user','resp','constraint','sys_act','turn_domain', 'turn_num']:
                 entry[field]=turn[field]
             if 'dialog_act' in dial2['log'][2*turn_id]:
                 entry['usr_act']=act_dict_to_aspn(dial2['log'][2*turn_id]['dialog_act'])
             else:
                 entry['usr_act']=''
+            pv_user_act=reader.aspan_to_act_dict(entry['usr_act'], side='user')
             new_data[dial_id].append(entry)
-    print('slots in user act:\n',slot_list_act)
-    print('slots in goal:\n',slot_list_goal)
-    print('intent in user act:\n',intent_list)
 
     json.dump(new_data, open(save_path, 'w'), indent=2)
     

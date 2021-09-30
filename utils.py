@@ -7,6 +7,32 @@ import transformers
 import ontology
 import torch
 
+def modified_encode(tokenizer, text):
+    if int(transformers.__version__[0])>=3:
+        if isinstance(text, str):
+            word_list=text.split()
+        elif isinstance(text, list):
+            word_list=text
+        else:             
+            raise TypeError(text)
+        special_token_pos=[]
+        results=[]
+        for idx, word in enumerate(word_list):
+            if word in tokenizer.additional_special_tokens:
+                special_token_pos.append(idx)
+        for j, idx in enumerate(special_token_pos):
+            if j<len(special_token_pos)-1:
+                next_idx=special_token_pos[j+1]
+                results+=tokenizer.encode(word_list[idx]) + tokenizer.encode(' '+' '.join(word_list[idx+1:next_idx]))
+            else:
+                results+=tokenizer.encode(word_list[idx])
+                if idx<len(word_list)-1:# the last word is not a special token
+                    results+=tokenizer.encode(' '+' '.join(word_list[idx+1:]))
+        return results
+
+    else:
+        return tokenizer.encode(text)
+
 def kl_loss(p_proba, q_proba): # [B, T, V] or [T,V]
     eps=1e-45
     dim=p_proba.dim()

@@ -10,4 +10,4 @@ python train_semi.py -mode train\
     train_us=True\
     save_type=min_loss\
     exp_no=US_722\
-    cuda_device=0
+    cuda_device=2

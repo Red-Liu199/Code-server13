@@ -1,0 +1,1699 @@
+[
+  [
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day friday <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that leaves on friday and goes to cambridge. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train]  destination cambridge <eos_b> <sos_db> [db_3] <eos_db> <sos_a> [train] [request]  departure <eos_a>",
+      "resp": "<sos_r>  where will you be departing from? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [train] [inform]  departure peterborough <eos_ua>",
+      "user": "<sos_u>  i will be departing from peterborough. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  day choice [request]  leave <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains leaving on [value_day] . what time would you like to travel? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge arrive 12:45 <eos_ua>",
+      "user": "<sos_u>  i would like to arrive in cambridge by 12:45. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive leave id [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [train] [inform]  people 2 [train] [request]  reference <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 2 tickets. can i have the reference number? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you so much for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b> <sos_db> <eos_a>",
+      "resp": "<sos_r>  you are welcome. have a great day! <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you, you too. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . can i help with anything else today? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  destination arrive id departure leave <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  and arrives in [value_destination]  at [value_arrive] . will that work for you? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [train] [inform]  people 2 <eos_ua>",
+      "user": "<sos_u>  yes, that will work. can you book 2 tickets for me please? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b> <sos_db> <eos_a>",
+      "resp": "<sos_r>  you are welcome. have a great day! <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you, you too. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . can i help with anything else today? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  destination arrive id departure leave <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  and arrives in [value_destination]  at [value_arrive] . will that work for you? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [train] [inform]  people 2 <eos_ua>",
+      "user": "<sos_u>  yes, that will work. can you book 2 tickets for me please? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b> <sos_db> <eos_a>",
+      "resp": "<sos_r>  you are welcome. have a great day! <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you, you too. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . can i help with anything else today? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  destination arrive id departure leave <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  and arrives in [value_destination]  at [value_arrive] . will that work for you? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [train] [inform]  people 2 <eos_ua>",
+      "user": "<sos_u>  yes, that will work. can you book 2 tickets for me please? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b> <sos_db> <eos_a>",
+      "resp": "<sos_r>  you are welcome. have a great day! <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you, you too. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . can i help with anything else today? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type theatre area centre [request] price phone postcode [train] [inform] destination cambridge day friday arrive 12:45 departure peterborough [book] people 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day friday departure peterborough arrive 12:45 people 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  destination arrive id departure leave <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  and arrives in [value_destination]  at [value_arrive] . will that work for you? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[restaurant] [inform] pricerange cheap area north [request] address",
+      "usr_act": "<sos_ua> [restaurant] [inform]  price cheap area north <eos_ua>",
+      "user": "<sos_u>  i am looking for a cheap restaurant in the north part of town. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  pricerange cheap area north <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_price] [value_food]  restaurant in the [value_area]  part of town. <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] pricerange cheap area north [request] address",
+      "usr_act": "<sos_ua> [restaurant] [request]  address <eos_ua>",
+      "user": "<sos_u>  what is the address? <eos_u>",
+      "bspn": "<sos_b> [restaurant]  pricerange cheap area north <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  address <eos_a>",
+      "resp": "<sos_r> [value_address] <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [train] [inform]  destination ely day wednesday <eos_ua>",
+      "user": "<sos_u>  i need a train to ely on wednesday. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [request]  departure <eos_a>",
+      "resp": "<sos_r>  where will you be departing from? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [train] [inform]  departure cambridge <eos_ua>",
+      "user": "<sos_u>  i will be departing from cambridge. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  choice [request]  leave arrive <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains available. do you have a specific time you would like to leave or arrive? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [train] [inform]  arrive 11:15 <eos_ua>",
+      "user": "<sos_u>  i would like to arrive by 11:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge arrive 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive choice leave id [offerbook] <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains that meet your needs. the [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book you a ticket? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [train] [request]  time ticket <eos_ua>",
+      "user": "<sos_u>  what is the travel time and price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge arrive 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price time [offerbook] <eos_a>",
+      "resp": "<sos_r>  the travel time is [value_time]  and the price is [value_price] . would you like me to book you a ticket? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge arrive 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [train] [request]  time ticket <eos_ua>",
+      "user": "<sos_u>  i just need the travel time and price. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge arrive 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price time <eos_a>",
+      "resp": "<sos_r>  the price is [value_price]  and the travel time is [value_time] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge arrive 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [db_nores] <eos_db> <sos_a> [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all. thank you. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge arrive 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id destination arrive leave departure <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  and arrives in [value_destination]  at [value_arrive] . will that work for you? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [train] [request]  time ticket <eos_ua>",
+      "user": "<sos_u>  yes, that will work. can you tell me the travel time and price please? <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge arrive 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [db_1] <eos_db> <sos_a> [train] [inform]  price time <eos_a>",
+      "resp": "<sos_r>  the travel time is [value_time]  and the price is [value_price] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you so much for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge arrive 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price id arrive leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . the price is [value_price] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] name trinity college [request] type [train] [inform] destination ely day wednesday arrive 11:15 departure cambridge [request] time price",
+      "usr_act": "<sos_ua> [train] [request]  time <eos_ua>",
+      "user": "<sos_u>  what is the travel time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day wednesday departure cambridge arrive 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  time [offerbook] <eos_a>",
+      "resp": "<sos_r>  the travel time is [value_time] . would you like me to book it? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [inform]  destination broxbourne departure cambridge <eos_ua>",
+      "user": "<sos_u>  i am looking for a train departing from cambridge going to broxbourne. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [request]  day <eos_a>",
+      "resp": "<sos_r>  what day will you be travelling? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [inform]  day thursday <eos_ua>",
+      "user": "<sos_u>  i will be leaving on thursday. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  day choice departure destination [request]  leave arrive <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains leaving [value_departure]  and going to [value_destination]  on [value_day] . do you have a specific time you would like to leave or arrive? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [inform]  leave 17:45 <eos_ua>",
+      "user": "<sos_u>  i would like to leave after 17:45. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap stars 4 parking yes [request] area postcode [train] [inform] leave 17:45 destination broxbourne day thursday departure cambridge [request] price",
+      "usr_act": "<sos_ua> [train] [request]  ticket <eos_ua>",
+      "user": "<sos_u>  what is the price? <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne departure cambridge day thursday leave 17:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price [offerbook] <eos_a>",
+      "resp": "<sos_r>  the price is [value_price] . would you like me to book it for you? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[restaurant] [inform] food chinese area south [request] address pricerange",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food chinese area south <eos_ua>",
+      "user": "<sos_u>  i am looking for a restaurant serving chinese food in the south part of town. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food chinese area south <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_food]  restaurant in the [value_area]  part of town. <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] food chinese area south [request] address pricerange",
+      "usr_act": "<sos_ua> [restaurant] [request]  price address <eos_ua>",
+      "user": "<sos_u>  what is the address and price range? <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food chinese area south <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  price address <eos_a>",
+      "resp": "<sos_r>  they are in the [value_price]  price range and their address is [value_address] . <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[restaurant] [inform] food italian pricerange moderate [book] time 17:15 day friday people 8",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food italian price moderate <eos_ua>",
+      "user": "<sos_u>  i am looking for a moderate -ly priced italian restaurant. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food italian pricerange moderate <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_price] [value_food]  restaurant -s. what area of town would you like to dine in? <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] food italian pricerange moderate [book] time 17:15 day friday people 8",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area don't care <eos_ua>",
+      "user": "<sos_u>  i don't care. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food italian pricerange moderate <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name area <eos_a>",
+      "resp": "<sos_r> [value_name]  is located in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] food italian pricerange moderate [book] time 17:15 day friday people 8",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 17:15 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 17:15 on friday? <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food italian pricerange moderate people 8 day friday time 17:15 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day tuesday <eos_ua>",
+      "user": "<sos_u>  i am looking for a train to cambridge on tuesday. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [request]  departure <eos_a>",
+      "resp": "<sos_r>  where will you be departing from? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [inform]  departure stevenage <eos_ua>",
+      "user": "<sos_u>  i will be departing from stevenage. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  choice [request]  leave arrive <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains available. do you have a specific time in mind? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [inform]  arrive 20:15 <eos_ua>",
+      "user": "<sos_u>  i need to arrive by 20:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive id [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area east internet yes pricerange cheap parking yes [book] people 5 day tuesday stay 2 [train] [inform] destination cambridge day tuesday arrive 20:15 departure stevenage [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  what is the departure time? <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day tuesday departure stevenage arrive 20:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  destination broxbourne day thursday <eos_ua>",
+      "user": "<sos_u>  i am looking for a train to broxbourne on thursday. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [request]  departure <eos_a>",
+      "resp": "<sos_r>  where will you be departing from? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  departure cambridge <eos_ua>",
+      "user": "<sos_u>  i will be departing from cambridge. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  day choice departure destination [request]  leave <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains from [value_departure]  to [value_destination]  on [value_day] . what time would you like to depart? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  arrive 10:30 <eos_ua>",
+      "user": "<sos_u>  i would like to arrive by 10:30. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 10:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive leave id [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  people 8 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 8 tickets. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you so much. that is all i need today. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference [general] [bye] <eos_a>",
+      "resp": "<sos_r>  your train has been booked. your reference number is [value_reference] . have a great day! <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you, you as well! <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [hotel] [inform]  type guesthouse parking yes internet yes <eos_ua>",
+      "user": "<sos_u>  i am also looking for a guest house with free parking and free wifi. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  options available. is there a particular area of town you would like to stay in? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [hotel] [inform]  parking yes <eos_ua>",
+      "user": "<sos_u>  no, but i would like free parking. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel]  parking yes internet yes type guest house area dontcare [train]  destination broxbourne day thursday <eos_a>",
+      "resp": "<sos_r>  i would recommend the [value_name] . it is a [value_type]  in the [value_area] . it does not offer free parking but does offer free wifi. <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [hotel] [request]  address postcode <eos_ua>",
+      "user": "<sos_u>  that sounds great. can i get the address, postcode and the postcode please? <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel]  parking yes internet yes type guest house [train]  destination broxbourne day thursday departure cambridge <eos_a>",
+      "resp": "<sos_r>  the address is [value_address] , postcode [value_postcode] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  destination broxbourne day thursday <eos_ua>",
+      "user": "<sos_u>  thanks. i also need a train to broxbourne on thursday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  choice [request]  leave <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains that meet your needs. what time would you like to depart? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  arrive 10:30 <eos_ua>",
+      "user": "<sos_u>  i would like to arrive by 10:30. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive id [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  people 8 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 8 tickets. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [hotel] [inform]  type guesthouse parking yes internet yes <eos_ua>",
+      "user": "<sos_u>  i am also looking for a guest house with free parking and free wifi. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel]  parking yes internet yes type guest house [train]  destination broxbourne day thursday departure cambridge <eos_a>",
+      "resp": "<sos_r>  i have many [value_type]  with free wifi and parking. can you tell me what area of town you would like to stay in? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [hotel] [inform]  type guesthouse stars 4 <eos_ua>",
+      "user": "<sos_u>  i would like a 4 star guest house. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house stars 4 [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  name area [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [hotel] [request]  address postcode <eos_ua>",
+      "user": "<sos_u>  no, i just need the address and postcode. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house stars 4 [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  address postcode [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  the address is [value_address] , postcode [value_postcode] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  destination broxbourne day thursday <eos_ua>",
+      "user": "<sos_u>  i am also looking for a train to broxbourne on thursday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house stars 4 [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  choice [request]  leave <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains that meet your needs. what time would you like to depart? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  arrive 10:30 <eos_ua>",
+      "user": "<sos_u>  i would like to arrive by 10:30. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house stars 4 [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive id [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [train] [inform]  people 8 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 8 tickets. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house stars 4 [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [hotel] [inform]  type guesthouse parking yes internet yes <eos_ua>",
+      "user": "<sos_u>  i am also looking for a guest house with free parking and free wifi. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house stars 4 [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel]  parking yes internet yes type guest house stars 4 [train]  destination broxbourne day thursday departure <eos_a>",
+      "resp": "<sos_r>  i would be happy to help with your request, first i 'll need to know what day you will be arriving? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] internet yes type guesthouse stars 4 parking yes [request] area postcode address [train] [inform] destination broxbourne day thursday arrive 10:30 departure cambridge [book] people 8",
+      "usr_act": "<sos_ua> [hotel] [inform]  day thursday <eos_ua>",
+      "user": "<sos_u>  i will be arriving on thursday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes internet yes type guest house stars 4 day thursday [train]  destination broxbourne day thursday departure cambridge arrive 10:30 people 8 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [request]  people stay <eos_a>",
+      "resp": "<sos_r>  how many people and for how many days? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[police] [inform] [request] postcode address",
+      "usr_act": "<sos_ua> <eos_ua>",
+      "user": "<sos_u>  i am looking for help with a car accident dispute. <eos_u>",
+      "bspn": "<sos_b> <eos_b>",
+      "db": "<sos_db> [db_0] <eos_db>",
+      "aspn": "<sos_a> [police] [inform]  name phone <eos_a>",
+      "resp": "<sos_r>  the [value_name] 's telephone number is [value_phone] . <eos_r>"
+    },
+    {
+      "gpan": "[police] [inform] [request] postcode address",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> <eos_b>",
+      "db": "<sos_db> [db_0] <eos_db>",
+      "aspn": "<sos_a> <eos_b> <sos_db> [db_nores] <eos_db> <sos_a> [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  you are welcome. is there anything else i can help you with? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  destination london liverpool street departure cambridge <eos_ua>",
+      "user": "<sos_u>  i am looking for a train departing from cambridge going to london liverpool street. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  choice departure destination [request]  day <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains from [value_departure]  to [value_destination] . what day would you like to travel? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  day saturday <eos_ua>",
+      "user": "<sos_u>  i would like to leave on saturday. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day saturday <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  day leave departure destination id [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  on [value_day] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day saturday people 6 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [hotel] [inform]  name avalon <eos_ua>",
+      "user": "<sos_u>  i am also looking for a hotel called avalon. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon [train]  destination london liverpool street departure cambridge day saturday people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  type area name price [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_type]  in the [value_area] . it is [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 3 day wednesday people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 3 nights starting on wednesday for 6 people. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  destination london liverpool street day saturday departure cambridge leave 13:45 <eos_ua>",
+      "user": "<sos_u>  i also need a train leaving cambridge after 13:45 on saturday. i am going to london liverpool street. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave departure arrive id destination [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  and arrives at [value_destination]  at [value_arrive] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [hotel] [inform]  name avalon <eos_ua>",
+      "user": "<sos_u>  i am also looking for a hotel called avalon. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  type internet parking stars name price area [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_stars]  star [value_type]  in the [value_area] . it has free parking and wifi. it is in the [value_price]  price range. would you like to book a room? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 3 day wednesday people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 3 nights starting on wednesday. there are 6 people. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  destination london liverpool street day saturday departure cambridge leave 13:45 <eos_ua>",
+      "user": "<sos_u>  i also need a train leaving cambridge after 13:45 on saturday. i am going to london liverpool street. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave departure arrive id destination [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  and arrives at [value_destination]  at [value_arrive] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [hotel] [inform]  name avalon <eos_ua>",
+      "user": "<sos_u>  i am also looking for a hotel called avalon. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  type internet parking stars name price area [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_stars]  star [value_type]  in the [value_area] . it has free parking and wifi. it is in the [value_price]  price range. would you like to book a room? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 3 day wednesday people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 3 nights starting on wednesday. there are 6 people. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  destination london liverpool street day saturday departure cambridge leave 13:45 <eos_ua>",
+      "user": "<sos_u>  i also need a train leaving cambridge after 13:45 on saturday. i am going to london liverpool street. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave departure arrive id destination [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  and arrives at [value_destination]  at [value_arrive] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [hotel] [inform]  name avalon <eos_ua>",
+      "user": "<sos_u>  i am also looking for a hotel called avalon. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  type internet parking stars name price area [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_stars]  star [value_type]  in the [value_area] . it has free parking and wifi. it is in the [value_price]  price range. would you like to book a room? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 3 day wednesday people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 3 nights starting on wednesday. there are 6 people. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  destination london liverpool street day saturday departure cambridge leave 13:45 <eos_ua>",
+      "user": "<sos_u>  i also need a train leaving cambridge after 13:45 on saturday. i am going to london liverpool street. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave departure arrive id destination [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves [value_departure]  at [value_leave]  and arrives at [value_destination]  at [value_arrive] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name avalon [book] people 6 day wednesday stay 3 [train] [inform] leave 13:45 destination london liverpool street day saturday departure cambridge [book] people 6",
+      "usr_act": "<sos_ua> [hotel] [inform]  name avalon <eos_ua>",
+      "user": "<sos_u>  i am also looking for a hotel called avalon. <eos_u>",
+      "bspn": "<sos_b> [hotel]  name avalon people 6 day wednesday stay 3 [train]  destination london liverpool street departure cambridge day saturday people 6 leave 13:45 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  type internet parking stars name price area [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_stars]  star [value_type]  in the [value_area] . it has free parking and wifi. it is in the [value_price]  price range. would you like to book a room? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [inform]  destination broxbourne day thursday <eos_ua>",
+      "user": "<sos_u>  i am looking for a train going to broxbourne leaving on thursday. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [request]  departure <eos_a>",
+      "resp": "<sos_r>  where will you be departing from? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [inform]  departure cambridge <eos_ua>",
+      "user": "<sos_u>  i am leaving from cambridge. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  day choice departure destination [request]  leave <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains from [value_departure]  to [value_destination]  on [value_day] . what time would you like to depart? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [inform]  arrive 16:45 <eos_ua>",
+      "user": "<sos_u>  i would like to arrive by 16:45. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive leave id [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id arrive leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id arrive leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id arrive leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id arrive leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id arrive leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id arrive leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id arrive leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id arrive leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave]  and arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination broxbourne day thursday arrive 16:45 departure cambridge [request] leave",
+      "usr_act": "<sos_ua> [train] [request]  leave <eos_ua>",
+      "user": "<sos_u>  no, i just need the departure time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination broxbourne day thursday departure cambridge arrive 16:45 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  leave <eos_a>",
+      "resp": "<sos_r>  the departure time is [value_leave] . <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[taxi] [inform] destination ali baba departure carolina bed and breakfast arrive 10:00 [request] car phone",
+      "usr_act": "<sos_ua> [taxi] [inform]  destination ali baba departure carolina bed and breakfast arrive 10:00 <eos_ua>",
+      "user": "<sos_u>  i need a taxi to pick me up from carolina bed and breakfast and take me to ali baba. i need to arrive by 10:00. <eos_u>",
+      "bspn": "<sos_b> [taxi]  destination ali baba departure carolina bed and breakfast arrive 10:00 <eos_b>",
+      "db": "<sos_db> [db_nores] <eos_db>",
+      "aspn": "<sos_a> [taxi] [inform]  phone car <eos_a>",
+      "resp": "<sos_r>  booking completed! booked car type : [value_car]  contact number : [value_phone] <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[taxi] [inform] leave 02:45 destination the junction departure alexander bed and breakfast [request] car phone",
+      "usr_act": "<sos_ua> [taxi] [inform]  destination the junction departure alexander bed and breakfast <eos_ua>",
+      "user": "<sos_u>  i need a taxi to take me to the junction from alexander bed and breakfast <eos_u>",
+      "bspn": "<sos_b> [taxi]  destination the junction departure alexander bed and breakfast <eos_b>",
+      "db": "<sos_db> [db_nores] <eos_db>",
+      "aspn": "<sos_a> [taxi] [request]  leave arrive <eos_a>",
+      "resp": "<sos_r>  sure! when would you like to arrive or leave by? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] leave 02:45 destination the junction departure alexander bed and breakfast [request] car phone",
+      "usr_act": "<sos_ua> [taxi] [inform]  leave 02:45 <eos_ua>",
+      "user": "<sos_u>  i want to leave after 02:45 <eos_u>",
+      "bspn": "<sos_b> [taxi]  destination the junction departure alexander bed and breakfast leave 02:45 <eos_b>",
+      "db": "<sos_db> [db_nores] <eos_db>",
+      "aspn": "<sos_a> [taxi] [inform]  car phone <eos_a>",
+      "resp": "<sos_r>  booking completed! booked car type : [value_car]  contact number : [value_phone] <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [train] [inform]  destination london liverpool street departure cambridge <eos_ua>",
+      "user": "<sos_u>  i am looking for a train departing from cambridge going to london liverpool street. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  choice departure destination [request]  day <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains from [value_departure]  to [value_destination] . what day would you like to travel? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [train] [inform]  day monday <eos_ua>",
+      "user": "<sos_u>  i would like to leave on monday. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  choice [request]  leave arrive <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains that day. do you have a preferred time you would like to leave or arrive? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [train] [inform]  leave 17:30 <eos_ua>",
+      "user": "<sos_u>  i would like to leave after 17:30. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [train] [request]  time ticket <eos_ua>",
+      "user": "<sos_u>  no, i just need the price and travel time. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  price time <eos_a>",
+      "resp": "<sos_r>  the price is [value_price]  and the travel time is [value_time] . <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 5 day wednesday people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 6 people for 5 nights starting on wednesday. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . can i help with anything else today? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [bye] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . have a great day! <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you, you too. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  your train reference number is [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_a>",
+      "resp": "<sos_r>  thank you for using our service today! <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_a>",
+      "resp": "<sos_r>  thank you for using our service today! <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_a>",
+      "resp": "<sos_r>  thank you for using our service today! <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_a>",
+      "resp": "<sos_r>  thank you for using our service today! <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_a>",
+      "resp": "<sos_r>  thank you for using our service today! <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] parking yes type guesthouse area south [book] stay 5 day wednesday people 6 [train] [inform] leave 17:30 destination london liverpool street day monday departure cambridge [request] price time id",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train]  destination london liverpool street departure cambridge day monday leave 17:30 people 6 <eos_a>",
+      "resp": "<sos_r>  thank you for using our service today! <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[attraction] [inform] type college [request] postcode phone [restaurant] [inform] pricerange moderate area north [book] time 13:45 day tuesday people 4",
+      "usr_act": "<sos_ua> [restaurant] [inform]  price moderate area north <eos_ua>",
+      "user": "<sos_u>  i am looking for a restaurant in the north that is moderate -ly priced. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  pricerange moderate area north <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  price area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area]  and in the [value_price]  price range. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type college [request] postcode phone [restaurant] [inform] pricerange moderate area north [book] time 13:45 day tuesday people 4",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 13:45 day tuesday people 4 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 4 people at 13:45 on tuesday? <eos_u>",
+      "bspn": "<sos_b> [restaurant]  pricerange moderate area north people 4 day tuesday time 13:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food chinese price cheap <eos_ua>",
+      "user": "<sos_u>  i am looking for a cheap chinese restaurant. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food chinese pricerange cheap <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_price] [value_food]  restaurant -s. what area of town would you like? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area centre <eos_ua>",
+      "user": "<sos_u>  i would like it to be in the centre. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food chinese pricerange cheap area centre <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name area price [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area]  and [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 11:15 day saturday people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a table for 6 at 11:15 on saturday. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [train] [inform]  destination stevenage departure cambridge <eos_ua>",
+      "user": "<sos_u>  i am also looking for a train from cambridge to stevenage. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  choice [request]  day <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains that meet your needs. what day would you like to travel? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [train] [inform]  day saturday <eos_ua>",
+      "user": "<sos_u>  i would like to leave on saturday. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  day choice [request]  leave <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains on [value_day] . what time would you like to depart? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [train] [inform]  destination stevenage arrive 15:45 <eos_ua>",
+      "user": "<sos_u>  i would like to arrive in stevenage by 15:45. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive id [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food chinese price cheap <eos_ua>",
+      "user": "<sos_u>  i am also looking for a cheap chinese restaurant. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_a>",
+      "resp": "<sos_r>  i have booked you a table for [value_people]  on [value_day]  at [value_time]  at [value_name] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [request]  reference <eos_ua>",
+      "user": "<sos_u>  can i have the reference number please? <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_a>",
+      "resp": "<sos_r>  yes, the reference number is [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you so much for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food chinese price cheap <eos_ua>",
+      "user": "<sos_u>  i am also looking for a cheap chinese restaurant. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_a>",
+      "resp": "<sos_r>  i have booked you a table for [value_people]  on [value_day]  at [value_time]  at [value_name] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [request]  reference <eos_ua>",
+      "user": "<sos_u>  can i have the reference number please? <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_a>",
+      "resp": "<sos_r>  yes, the reference number is [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you so much for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food chinese price cheap <eos_ua>",
+      "user": "<sos_u>  i am also looking for a cheap chinese restaurant. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_a>",
+      "resp": "<sos_r>  i have booked you a table for [value_people]  on [value_day]  at [value_time]  at [value_name] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [request]  reference <eos_ua>",
+      "user": "<sos_u>  can i have the reference number please? <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_a>",
+      "resp": "<sos_r>  yes, the reference number is [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you so much for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food chinese price cheap <eos_ua>",
+      "user": "<sos_u>  i am also looking for a cheap chinese restaurant. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_a>",
+      "resp": "<sos_r>  i have booked you a table for [value_people]  on [value_day]  at [value_time]  at [value_name] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [request]  reference <eos_ua>",
+      "user": "<sos_u>  can i have the reference number please? <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_a>",
+      "resp": "<sos_r>  yes, the reference number is [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you so much for your help. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination stevenage day saturday arrive 15:45 departure cambridge [book] people 6 [restaurant] [inform] food chinese pricerange cheap [book] people 6 day saturday time 11:15",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food chinese price cheap <eos_ua>",
+      "user": "<sos_u>  i am also looking for a cheap chinese restaurant. <eos_u>",
+      "bspn": "<sos_b> [train]  destination stevenage departure cambridge day saturday arrive 15:45 people 6 [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant]  food chinese pricerange cheap area centre people 6 day saturday time 11:15 <eos_a>",
+      "resp": "<sos_r>  i have booked you a table for [value_people]  on [value_day]  at [value_time]  at [value_name] . <eos_r>"
+    }
+  ]
+]

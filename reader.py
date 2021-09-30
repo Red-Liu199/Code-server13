@@ -729,6 +729,102 @@ class MultiWozReader(_ReaderBase):
         
         return encoded_dial
 
+    def update_goal(self, goal, user_act):
+        for domain in user_act:
+            if domain not in goal:
+                continue
+            for intent, sv in user_act[domain].items():
+                if intent=='inform':
+                    for slot, value in sv.items():
+                        slot='pricerange' if slot=='price' else slot
+                        if  'inform' in goal[domain] and slot in goal[domain]['inform']:
+                            if goal[domain]['inform'][slot]==value:
+                                goal[domain]['inform'].pop(slot)
+                            if goal[domain]['inform']=={}:
+                                goal[domain].pop('inform')
+                        elif 'book' in goal[domain] and slot in goal[domain]['book']:
+                            if goal[domain]['book'][slot]==value:
+                                goal[domain]['book'].pop(slot)
+                            if goal[domain]['book']=={}:
+                                goal[domain].pop('book')
+                elif intent=='request':
+                    for slot in sv:
+                        slot='pricerange' if slot=='price' else slot
+                        if 'request' in goal[domain] and slot in goal[domain]['request']:
+                            goal[domain]['request'].pop(goal[domain]['request'].index(slot))
+                            if goal[domain]['request']==[]:
+                                goal[domain].pop('request')
+            if goal[domain]=={}:
+                goal.pop(domain)
+        return goal
+
+    def goal_to_gpan(self, goal, cur_domain):
+        if goal=={}:
+            return ''
+        domain_gpan=[]
+        domain_idx=0
+        cur_domain_idx=-1
+        for domain in goal:
+            if domain==cur_domain:
+                cur_domain_idx=domain_idx
+            domain_idx+=1
+            goal_list=[]
+            goal_list.append('['+domain+']')
+            for intent in goal[domain]:
+                goal_list.append('['+intent+']')
+                if isinstance(goal[domain][intent],dict):
+                    for s, v in goal[domain][intent].items():
+                        goal_list.append(s)
+                        goal_list.append(v)
+                elif isinstance(goal[domain][intent],list):
+                    for s in goal[domain][intent]:
+                        goal_list.append(s)
+            domain_gpan.append(' '.join(goal_list))
+        # current domain must be the last
+        if cur_domain!='general' and cur_domain_idx>=0:
+            domain_gpan[cur_domain_idx], domain_gpan[-1] = domain_gpan[-1], domain_gpan[cur_domain_idx]
+        return ' '.join(domain_gpan)
+
+    def goal_norm(self, goal):
+        new_goal={}
+        for domain in goal:
+            new_goal[domain]={}
+            for intent in goal[domain]:
+                if intent in ['fail_book','fail_info']:
+                    continue
+                elif intent in ['info', 'book']:
+                    new_intent='inform' if intent=='info' else intent
+                    new_goal[domain][new_intent]={}
+                    for slot, value in goal[domain][intent].items():
+                        slot=slot.lower()
+                        if slot in ['pre_invalid','invalid']:
+                            continue
+                        else:
+                            if slot=='trainid':
+                                slot='id'
+                            elif slot=='car type':
+                                slot='car'
+                            elif slot=='entrance fee':
+                                slot='fee'
+                            elif slot=='duration':
+                                slot='time'
+                            elif slot=='arriveby':
+                                slot='arrive'
+                            elif slot=='leaveat':
+                                slot='leave'
+                            elif slot=='price':
+                                slot='pricerange'
+                        new_goal[domain][new_intent][slot]=value.lower()
+                
+                elif intent=='reqt':
+                    new_goal[domain]['request']=[]
+                    for slot in goal[domain][intent]:
+                        slot='pricerange' if slot=='price' else slot
+                        new_goal[domain]['request'].append(slot.lower())
+
+        return new_goal
+
+
     def bspan_to_constraint_dict(self, bspan, bspn_mode='bspn'):
         bspan = bspan.split() if isinstance(bspan, str) else bspan
         constraint_dict = {}
@@ -847,7 +943,7 @@ class MultiWozReader(_ReaderBase):
                 if intent not in act_dict[domain]:
                     if intent=='inform':
                         act_dict[domain][intent]={}
-                    else:
+                    elif intent=='request':
                         act_dict[domain][intent]=[]
                 if intent=='inform':
                     if slot in ontology.all_slots:
@@ -860,7 +956,7 @@ class MultiWozReader(_ReaderBase):
                             act_dict[domain][intent][pv_slot]=slot
                         else:
                             act_dict[domain][intent][pv_slot]+= ' '+slot
-                else:
+                elif intent=='request':
                     if slot not in act_dict[domain][intent]:
                         act_dict[domain][intent].append(slot)
         return act_dict
@@ -944,7 +1040,8 @@ class MultiWozReader(_ReaderBase):
                 for turn in dial:
                     new_turn={}
                     for key in turn:
-                        if key in ['user','bspn','aspn','resp','db', 'usr_act', 'bspn_gen', 'aspn_gen', 'resp_gen', 'db_gen']:
+                        if key in ['user','bspn','aspn','resp','db', 'usr_act', 'bspn_gen', 'aspn_gen', 
+                            'resp_gen', 'db_gen', 'user_gen', 'usr_act_gen', 'gpan']:
                             # GPT2Tokenizer of transformers3.5 needs to be modified
                             new_turn[key]=self.modified_encode(turn[key])
                         else:
@@ -974,8 +1071,8 @@ class MultiWozReader(_ReaderBase):
             for turn in dial:
                 new_turn={}
                 for key in turn:
-                    if key in ['user','bspn','aspn','resp','db', 'usr_act', 'goal' 'bspn_gen', 
-                        'aspn_gen', 'resp_gen', 'db_gen','user_gen', 'usr_act_gen']:
+                    if key in ['user','bspn','aspn','resp','db', 'usr_act', 'goal', 'bspn_gen', 
+                        'aspn_gen', 'resp_gen', 'db_gen','user_gen', 'usr_act_gen','sys_act']:
                         # GPT2Tokenizer of transformers3.5 needs to be modified
                         new_turn[key]=self.tokenizer.decode(turn[key])
                     else:
@@ -1009,6 +1106,24 @@ class MultiWozReader(_ReaderBase):
 
         else:
             return self.tokenizer.encode(text)
+
+    def batch_align(self,contexts,left_len,return_attn=False):
+        max_len=max([len(context) for context in contexts])
+        max_len=min(1024-left_len,max_len)
+        new_contexts=[]
+        attentions=[]
+        for id, context in enumerate(contexts):
+            if len(context)<max_len:
+                new_context=(max_len-len(context))*[cfg.pad_id]+context
+                attention=(max_len-len(context))*[0]+len(context)*[1]
+            else:
+                new_context=context[-max_len:]
+                attention=len(new_context)*[1]
+            new_contexts.append(new_context)
+            attentions.append(attention)
+        if return_attn:
+            return new_contexts, attentions
+        return new_contexts
 
     def convert_batch_session(self, dial_batch,
         posterior_train=False, only_resp_label=False,bspn_label=False,bspn_pri=False,rl_train=False):

@@ -871,13 +871,13 @@ class MultiWozEvaluator(object):
         total_p=0
         total_r=0
         total_f1=0
+        tp=0
+        fp=0
+        fn=0
         eps=1e-10
         for dial in data:
             for turn in dial:
                 total_turn+=1
-                tp=0
-                fp=0
-                fn=0
                 ua=self.reader.aspan_to_act_dict(turn['usr_act'], side='user') # this transposing is not enough
                 ua_gen=self.reader.aspan_to_act_dict(turn['usr_act_gen'], side='user')
                 for domain in ua_gen:
@@ -910,17 +910,24 @@ class MultiWozEvaluator(object):
                                     fn+=1
                             else:
                                 fn+=1
-                
+                '''
                 precious=tp/(tp+fp+eps)
                 recall=tp/(tp+fn+eps)
                 f1=2*precious*recall/(precious+recall+eps)
                 total_f1+=f1
                 total_p+=precious
                 total_r+=recall
+                '''
+        precious=tp/(tp+fp+eps)
+        recall=tp/(tp+fn+eps)
+        f1=2*precious*recall/(precious+recall+eps)
+        return bleu, precious, recall, f1
+        '''
         avg_f1=total_f1/total_turn
         avg_p=total_p/total_turn
         avg_r=total_r/total_turn
         return bleu, avg_p, avg_r, avg_f1
+        '''
                 
 
 if __name__ == '__main__':

@@ -1123,23 +1123,6 @@ class Modal(object):
                                 contexts[id]=context[:-1]+data[id][turn_num]['user']+data[id][turn_num]['resp']+[self.sos_b_id]
             return contexts
 
-    def batch_align(self,contexts,left_len,return_attn=False):
-        max_len=max([len(context) for context in contexts])
-        max_len=min(1024-left_len,max_len)
-        new_contexts=[]
-        attentions=[]
-        for id, context in enumerate(contexts):
-            if len(context)<max_len:
-                new_context=(max_len-len(context))*[cfg.pad_id]+context
-                attention=(max_len-len(context))*[0]+len(context)*[1]
-            else:
-                new_context=context[-max_len:]
-                attention=len(new_context)*[1]
-            new_contexts.append(new_context)
-            attentions.append(attention)
-        if return_attn:
-            return new_contexts, attentions
-        return new_contexts
 
     def get_bspn(self,bs_tensor,return_db=False,data=None,turn_num=None):
         #return db, data and turn_num must be together
@@ -1245,7 +1228,7 @@ class Modal(object):
                         end_flag=np.zeros(len(batch))
                         contexts=self.convert_eval_batch(batch,contexts,turn_num,bs_gen,\
                             prior=prior,resp_gen=resp,aspn_gen=aspn_gen)
-                        inputs,attentions=self.batch_align(contexts,left_len=max_len,return_attn=True)
+                        inputs,attentions=self.reader.batch_align(contexts,left_len=max_len,return_attn=True)
                         inputs=torch.tensor(inputs).to(device)
                         attentions=torch.tensor(attentions).to(device)
                         if self.global_output>0 and cfg.example_log:
@@ -1280,7 +1263,7 @@ class Modal(object):
                             bs_gen=self.get_bspn(bs_tensor,return_db=False,data=batch,turn_num=turn_num)
                             temp_contexts=self.convert_eval_batch(batch,contexts,turn_num,bs_gen,\
                                 prior=prior,resp_gen=resp,aspn_gen=aspn_gen, gen_db=True)
-                            inputs,attentions=self.batch_align(temp_contexts,left_len=1,return_attn=True)
+                            inputs,attentions=self.reader.batch_align(temp_contexts,left_len=1,return_attn=True)
                             inputs=torch.tensor(inputs).to(device)
                             attentions=torch.tensor(attentions).to(device)
                             position_ids = attentions.long().cumsum(-1) - 1
@@ -1299,7 +1282,7 @@ class Modal(object):
                             past_key_values=None
                             end_flag=np.zeros(len(batch))
                             #note that the left_len should be max_len_a, but i set it to max_len to reduce the case of out of memory
-                            inputs,attentions=self.batch_align(contexts,left_len=max_len,return_attn=True)
+                            inputs,attentions=self.reader.batch_align(contexts,left_len=max_len,return_attn=True)
                             inputs=torch.tensor(inputs).to(device)
                             attentions=torch.tensor(attentions).to(device)
                             if self.global_output>0 and cfg.example_log:
@@ -1558,7 +1541,7 @@ class Modal(object):
                     logging.info(self.tokenizer.decode(contexts[0]))
                     self.global_output-=1
                 '''
-                inputs,attentions=self.batch_align(contexts,left_len=bs_max_len,return_attn=True)
+                inputs,attentions=self.reader.batch_align(contexts,left_len=bs_max_len,return_attn=True)
                 inputs=torch.tensor(inputs).to(self.device1)
                 attentions=torch.tensor(attentions).to(self.device1)
                 if not cfg.use_true_curr_bspn:#generate
@@ -1595,7 +1578,7 @@ class Modal(object):
                 if self.global_output>0 and cfg.mode=='test':
                     logging.info(self.tokenizer.decode(contexts[0]))
                 '''
-                inputs,attentions=self.batch_align(contexts,left_len=resp_max_len,return_attn=True)
+                inputs,attentions=self.reader.batch_align(contexts,left_len=resp_max_len,return_attn=True)
                 inputs=torch.tensor(inputs).to(self.device1)#B,T
                 attentions=torch.tensor(attentions).to(self.device1)
                 for i in range(resp_max_len):
@@ -1670,7 +1653,7 @@ class Modal(object):
                     logging.info(self.tokenizer.decode(contexts[0]))
                     self.global_output-=1
                 '''
-                inputs,attentions=self.batch_align(contexts,left_len=bs_max_len,return_attn=True)
+                inputs,attentions=self.reader.batch_align(contexts,left_len=bs_max_len,return_attn=True)
                 inputs=torch.tensor(inputs).to(device)
                 attentions=torch.tensor(attentions).to(device)
                 for i in range(bs_max_len):
@@ -1702,7 +1685,7 @@ class Modal(object):
                 
                 #if self.global_output>0 and cfg.mode=='test':
                  #   logging.info(self.tokenizer.decode(contexts[0]))
-                inputs,attentions=self.batch_align(contexts,left_len=resp_max_len,return_attn=True)
+                inputs,attentions=self.reader.batch_align(contexts,left_len=resp_max_len,return_attn=True)
                 inputs=torch.tensor(inputs).to(device)
                 attentions=torch.tensor(attentions).to(device)
                 for i in range(resp_max_len):

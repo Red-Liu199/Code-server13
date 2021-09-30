@@ -1,0 +1,1492 @@
+[
+  [
+    {
+      "gpan": "[restaurant] [inform] food british pricerange moderate area west [request] address postcode phone",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british price moderate <eos_ua>",
+      "user": "<sos_u>  i am looking for a restaurant that serves british food in the moderate price range. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_price] [value_food]  restaurant -s. do you have a particular area of town you would like to dine in? <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] food british pricerange moderate area west [request] address postcode phone",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area west <eos_ua>",
+      "user": "<sos_u>  i would like to dine in the west. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area west <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name area food price [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_price] [value_food]  restaurant in the [value_area] . would you like me to book a reservation for you? <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] food british pricerange moderate area west [request] address postcode phone",
+      "usr_act": "<sos_ua> [restaurant] [request]  phone postcode address <eos_ua>",
+      "user": "<sos_u>  no, i just need the address, postcode, and phone number. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area west <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  phone address postcode <eos_a>",
+      "resp": "<sos_r>  the address is [value_address] , postcode [value_postcode] , and the phone number is [value_phone] . <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] food british pricerange moderate area west [request] address postcode phone",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you, goodbye. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area west <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [general] [bye] <eos_a>",
+      "resp": "<sos_r>  thank you for using the cambridge restaurant system. goodbye. <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [hotel] [inform]  none none <eos_ua>",
+      "user": "<sos_u>  i am looking for a place to stay. <eos_u>",
+      "bspn": "<sos_b> <eos_b>",
+      "db": "<sos_db> [db_0] <eos_db>",
+      "aspn": "<sos_a> [hotel] [request]  area <eos_a>",
+      "resp": "<sos_r>  what area of town interests you most? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [attraction] [inform]  area don't care <eos_ua>",
+      "user": "<sos_u>  i don't care. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [request]  price <eos_a>",
+      "resp": "<sos_r>  do you have a price range? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [hotel] [inform]  price do nt care <eos_ua>",
+      "user": "<sos_u>  no, i don't care about the price range. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  price name internet type parking area stars <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_price] [value_stars]  star [value_type]  in the [value_area]  with free wifi and parking. <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [hotel] [request]  postcode phone <eos_ua>",
+      "user": "<sos_u>  that sounds great. can i get the phone number and postcode please? <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  phone postcode [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  sure, the phone number is [value_phone]  and the postcode is [value_postcode] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you! <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book a room for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is ok. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbook] <eos_a>",
+      "resp": "<sos_r>  would you like me to book it for you? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british price moderate <eos_ua>",
+      "user": "<sos_u>  i am looking for a restaurant that serves british food in the moderate price range. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_price] [value_food]  restaurant -s. do you have a particular area of town you would like to dine in? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area centre <eos_ua>",
+      "user": "<sos_u>  i would like to be in the centre. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area centre <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [recommend]  name [inform]  choice [offerbook] <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s that meet your criteria. i would recommend [value_name] . would you like me to book a table for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 14:30 day saturday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a table for 4 at 14:30 on saturday. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference name [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  i have booked you a table at [value_name] . your reference number is [value_reference] . can i help you with anything else today? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british price moderate <eos_ua>",
+      "user": "<sos_u>  i am also looking for a moderate -ly priced british restaurant. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s in the city. do you have a preference for the area of town you would like to dine in? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area centre <eos_ua>",
+      "user": "<sos_u>  i would like to be in the centre. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  name reference <eos_a>",
+      "resp": "<sos_r>  i have booked you at [value_name] . your reference number is [value_reference] . <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british price moderate <eos_ua>",
+      "user": "<sos_u>  i am also looking for a moderate -ly priced british restaurant. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  choice [request]  area <eos_a>",
+      "resp": "<sos_r>  i have [value_choice]  restaurant -s available. what area of town would you like? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area centre <eos_ua>",
+      "user": "<sos_u>  i would like it to be in the centre. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [recommend]  name [inform]  choice [offerbook] <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s that meet your criteria. i would recommend [value_name] . would you like me to book a table for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 14:30 day saturday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a table for 4 at 14:30 on saturday. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel price moderate area centre <eos_ua>",
+      "user": "<sos_u>  yes, i am also looking for a moderate -ly priced hotel in the same area as the restaurant. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  name area price [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area]  and [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 5 day saturday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a room for 4 people for 5 nights starting on saturday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british area centre <eos_ua>",
+      "user": "<sos_u>  i am also looking for a british restaurant in the same area as the hotel. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r>  i have [value_name] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 5 day saturday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 4 people for 5 nights starting on saturday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british area centre <eos_ua>",
+      "user": "<sos_u>  i am also looking for a british restaurant in the same area as the hotel. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r>  i have [value_name] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 5 day saturday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 4 people for 5 nights starting on saturday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british area centre <eos_ua>",
+      "user": "<sos_u>  i am also looking for a british restaurant in the same area as the hotel. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r>  i have [value_name] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 5 day saturday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 4 people for 5 nights starting on saturday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british area centre <eos_ua>",
+      "user": "<sos_u>  i am also looking for a british restaurant in the same area as the hotel. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r>  i have [value_name] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 5 day saturday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 4 people for 5 nights starting on saturday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british area centre <eos_ua>",
+      "user": "<sos_u>  i am also looking for a british restaurant in the same area as the hotel. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r>  i have [value_name] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 14:30 [request] car phone [hotel] [inform] pricerange moderate area centre type hotel internet yes [book] people 4 day saturday stay 5 [restaurant] [inform] food british pricerange moderate area centre [book] people 4 day saturday time 14:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 5 day saturday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need it for 4 people for 5 nights starting on saturday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area centre pricerange moderate people 4 day saturday stay 5 [restaurant]  food british pricerange moderate area centre people 4 day saturday time 14:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hospital] [inform] [request] address postcode",
+      "usr_act": "<sos_ua> <eos_ua>",
+      "user": "<sos_u>  i am looking for help with a car accident dispute. <eos_u>",
+      "bspn": "<sos_b> <eos_b>",
+      "db": "<sos_db> [db_0] <eos_db>",
+      "aspn": "<sos_a> [police] [inform]  name phone <eos_a>",
+      "resp": "<sos_r>  the [value_name] 's telephone number is [value_phone] . <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] address postcode",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> <eos_b>",
+      "db": "<sos_db> [db_0] <eos_db>",
+      "aspn": "<sos_a> [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  is there anything else i can help you with? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[attraction] [inform] type museum area west [request] phone",
+      "usr_act": "<sos_ua> [attraction] [inform]  area west type museum <eos_ua>",
+      "user": "<sos_u>  i am looking for a museum in the west part of town. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type museum area west <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area type choice [request]  price <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_type]  in the [value_area] . do you have a specific price range in mind? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type museum area west [request] phone",
+      "usr_act": "<sos_ua> [attraction] [request]  phone <eos_ua>",
+      "user": "<sos_u>  no, just the 1 you like best. can you give me the phone number? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type museum area west <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [attraction] [recommend]  phone name [general] [reqmore] <eos_a>",
+      "resp": "<sos_r> [value_name]  is a great place to visit. their phone number is [value_phone] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type museum area west [request] phone",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you! <eos_u>",
+      "bspn": "<sos_b> [attraction]  type museum area west <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [general] [welcome] [bye] <eos_a>",
+      "resp": "<sos_r>  you are welcome. have a great day! <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hotel] [inform] pricerange cheap internet yes type guesthouse parking yes   [book] people 8 day saturday stay 2",
+      "usr_act": "<sos_ua> [hotel] [inform]  type guesthouse parking yes <eos_ua>",
+      "user": "<sos_u>  i am looking for a guest house that has free parking. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes type guest house <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  choice parking type [request]  area price <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_type]  that offer free parking. is there a certain part of town or price range you would like to stay in? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap internet yes type guesthouse parking yes   [book] people 8 day saturday stay 2",
+      "usr_act": "<sos_ua> [hotel] [inform]  price cheap <eos_ua>",
+      "user": "<sos_u>  i would like 1 in the cheap price range. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes type guest house pricerange cheap <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  price choice type [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_price] [value_type]  in cambridge. is there a particular area you would like to stay in? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap internet yes type guesthouse parking yes   [book] people 8 day saturday stay 2",
+      "usr_act": "<sos_ua> [hotel] [inform]  internet yes <eos_ua>",
+      "user": "<sos_u>  no, but i would like free wifi. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes type guest house pricerange cheap internet yes <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [recommend]  name [inform]  choice <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  options. may i recommend [value_name] ? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap internet yes type guesthouse parking yes   [book] people 8 day saturday stay 2",
+      "usr_act": "<sos_ua> <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book it for me? <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes type guest house pricerange cheap internet yes <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [request]  stay day people <eos_a>",
+      "resp": "<sos_r>  i would be happy to. how many people, what day and how many nights? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap internet yes type guesthouse parking yes   [book] people 8 day saturday stay 2",
+      "usr_act": "<sos_ua> [hotel] [inform]  stay 2 day saturday people 8 <eos_ua>",
+      "user": "<sos_u>  8 people, 2 nights, starting saturday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes type guest house pricerange cheap internet yes people 8 day saturday stay 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] pricerange cheap internet yes type guesthouse parking yes   [book] people 8 day saturday stay 2",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  parking yes type guest house pricerange cheap internet yes people 8 day saturday stay 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [general] [bye] <eos_a>",
+      "resp": "<sos_r>  thank you for calling. goodbye. <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hotel] [inform] area centre pricerange expensive stars 4 internet yes [request] parking address [restaurant] [inform] food european pricerange expensive area centre [book] people 7 day thursday time 13:45",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food european price expensive <eos_ua>",
+      "user": "<sos_u>  i am looking for an expensive restaurant that serves european food. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food european pricerange expensive <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_price] [value_food]  restaurant -s. what area of town would you like to dine in? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area centre pricerange expensive stars 4 internet yes [request] parking address [restaurant] [inform] food european pricerange expensive area centre [book] people 7 day thursday time 13:45",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area centre <eos_ua>",
+      "user": "<sos_u>  i would like to dine in the centre please. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food european pricerange expensive area centre <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  choice name [offerbook] <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s that meet your criteria. [value_name] , [value_name] , and [value_name] . would you like to book a table with 1 of these? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area centre pricerange expensive stars 4 internet yes [request] parking address [restaurant] [inform] food european pricerange expensive area centre [book] people 7 day thursday time 13:45",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 13:45 day thursday people 7 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a table for 7 people at 13:45 on thursday. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food european pricerange expensive area centre people 7 day thursday time 13:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference name [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  i have booked you at [value_name] . your reference number is [value_reference] . can i help you with anything else? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] area centre pricerange expensive stars 4 internet yes [request] parking address [restaurant] [inform] food european pricerange expensive area centre [book] people 7 day thursday time 13:45",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food european pricerange expensive area centre people 7 day thursday time 13:45 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [general] [welcome] [bye] <eos_a>",
+      "resp": "<sos_r>  you are welcome. have a great day! <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[restaurant] [inform] food indian pricerange moderate area east   [book] time 16:30 day monday people 4",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food indian price moderate <eos_ua>",
+      "user": "<sos_u>  i am looking for a moderate -ly priced indian restaurant. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food indian pricerange moderate <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_price] [value_food]  restaurant -s. what area of town would you like to dine in? <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] food indian pricerange moderate area east   [book] time 16:30 day monday people 4",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area east <eos_ua>",
+      "user": "<sos_u>  i would like to dine in the east. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food indian pricerange moderate area east <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [select] [inform]  choice name <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s that meet your criteria. [value_name] , [value_name] , and [value_name] . which 1 would you like more information on? <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] food indian pricerange moderate area east   [book] time 16:30 day monday people 4",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 16:30 day monday people 4 <eos_ua>",
+      "user": "<sos_u>  i would like to book a table for 4 people at 16:30 on monday. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food indian pricerange moderate area east people 4 day monday time 16:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference name [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  i have booked you a table at [value_name] . your reference number is [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] food indian pricerange moderate area east   [book] time 16:30 day monday people 4",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food indian pricerange moderate area east people 4 day monday time 16:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [general] [bye] <eos_a>",
+      "resp": "<sos_r>  thank you for using our system today! <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hotel] [inform] name archway house [book] people 2 day saturday stay 2 [restaurant] [inform] food italian pricerange cheap area centre [request] phone postcode address",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food italian price cheap <eos_ua>",
+      "user": "<sos_u>  i am looking for a cheap italian restaurant. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food italian pricerange cheap <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_price] [value_food]  restaurant -s in town. is there a particular area you would like to dine in? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name archway house [book] people 2 day saturday stay 2 [restaurant] [inform] food italian pricerange cheap area centre [request] phone postcode address",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area centre <eos_ua>",
+      "user": "<sos_u>  i would like to dine in the centre of town. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food italian pricerange cheap area centre <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  choice name [offerbook] <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s that meet your criteria. [value_name] , [value_name] , and [value_name] . would you like to book a table with 1 of these? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name archway house [book] people 2 day saturday stay 2 [restaurant] [inform] food italian pricerange cheap area centre [request] phone postcode address",
+      "usr_act": "<sos_ua> [restaurant] [request]  phone postcode address <eos_ua>",
+      "user": "<sos_u>  yes, can i get the phone number, postcode, and address of the lucky star? <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food italian pricerange cheap area centre name lucky star <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  phone postcode address [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  sure, the address is [value_address] , postcode [value_postcode] , and the phone number is [value_phone] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hotel] [inform] name archway house [book] people 2 day saturday stay 2 [restaurant] [inform] food italian pricerange cheap area centre [request] phone postcode address",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food italian pricerange cheap area centre name lucky star <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [general] [welcome] [bye] <eos_a>",
+      "resp": "<sos_r>  you are welcome. have a great day! <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day monday <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that leaves on monday and goes to cambridge. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [train] [request]  departure <eos_a>",
+      "resp": "<sos_r>  where will you be departing from? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  departure stevenage <eos_ua>",
+      "user": "<sos_u>  i will be departing from stevenage. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  choice [request]  leave <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  trains available. what time would you like to leave? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  leave 09:15 <eos_ua>",
+      "user": "<sos_u>  i would like to leave after 09:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [request]  id <eos_ua>",
+      "user": "<sos_u>  no, i just need the trainid. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id <eos_a>",
+      "resp": "<sos_r>  the trainid [value_id] tr9589. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day monday departure stevenage leave 09:15 <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that departs from stevenage and goes to cambridge on monday. i need to leave after 09:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [request]  id <eos_ua>",
+      "user": "<sos_u>  no, i just need the trainid. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id <eos_a>",
+      "resp": "<sos_r>  the trainid [value_id] tr9589. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day monday departure stevenage leave 09:15 <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that departs from stevenage and goes to cambridge on monday. i need to leave after 09:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [request]  id <eos_ua>",
+      "user": "<sos_u>  no, i just need the trainid. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id <eos_a>",
+      "resp": "<sos_r>  the trainid [value_id] tr9589. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day monday departure stevenage leave 09:15 <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that departs from stevenage and goes to cambridge on monday. i need to leave after 09:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [request]  id <eos_ua>",
+      "user": "<sos_u>  no, i just need the trainid. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id <eos_a>",
+      "resp": "<sos_r>  the trainid [value_id] tr9589. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day monday departure stevenage leave 09:15 <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that departs from stevenage and goes to cambridge on monday. i need to leave after 09:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [request]  id <eos_ua>",
+      "user": "<sos_u>  no, i just need the trainid. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id <eos_a>",
+      "resp": "<sos_r>  the trainid [value_id] tr9589. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day monday departure stevenage leave 09:15 <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that departs from stevenage and goes to cambridge on monday. i need to leave after 09:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [request]  id <eos_ua>",
+      "user": "<sos_u>  no, i just need the trainid. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id <eos_a>",
+      "resp": "<sos_r>  the trainid [value_id] tr9589. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day monday departure stevenage leave 09:15 <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that departs from stevenage and goes to cambridge on monday. i need to leave after 09:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [request]  id <eos_ua>",
+      "user": "<sos_u>  no, i just need the trainid. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id <eos_a>",
+      "resp": "<sos_r>  the trainid [value_id] tr9589. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day monday departure stevenage leave 09:15 <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that departs from stevenage and goes to cambridge on monday. i need to leave after 09:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [request]  id <eos_ua>",
+      "user": "<sos_u>  no, i just need the trainid. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id <eos_a>",
+      "resp": "<sos_r>  the trainid [value_id] tr9589. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [inform]  destination cambridge day monday departure stevenage leave 09:15 <eos_ua>",
+      "user": "<sos_u>  i am looking for a train that departs from stevenage and goes to cambridge on monday. i need to leave after 09:15. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id leave [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  leaves at [value_leave] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] area centre [request] type postcode [train] [inform] leave 09:15 destination cambridge day monday departure stevenage [request] id",
+      "usr_act": "<sos_ua> [train] [request]  id <eos_ua>",
+      "user": "<sos_u>  no, i just need the trainid. <eos_u>",
+      "bspn": "<sos_b> [train]  destination cambridge day monday departure stevenage leave 09:15 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  id <eos_a>",
+      "resp": "<sos_r>  the trainid [value_id] tr9589. <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food chinese area south <eos_ua>",
+      "user": "<sos_u>  i am looking for a chinese restaurant in the south. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food chinese area south <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_food]  restaurant in the [value_area] . it is in the [value_price]  price range. <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [attraction] [inform]  area south type entertainment <eos_ua>",
+      "user": "<sos_u>  yes, i am looking for entertainment in the south. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [attraction] [inform]  area south type entertainment <eos_ua>",
+      "user": "<sos_u>  yes, i am looking for entertainment in the south. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [attraction] [inform]  area south type entertainment <eos_ua>",
+      "user": "<sos_u>  yes, i am looking for entertainment in the south. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [attraction] [inform]  area south type entertainment <eos_ua>",
+      "user": "<sos_u>  yes, i am looking for entertainment in the south. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [attraction] [inform]  area south type entertainment <eos_ua>",
+      "user": "<sos_u>  yes, i am looking for entertainment in the south. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [attraction] [inform]  area south type entertainment <eos_ua>",
+      "user": "<sos_u>  yes, i am looking for entertainment in the south. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [attraction] [inform]  area south type entertainment <eos_ua>",
+      "user": "<sos_u>  yes, i am looking for entertainment in the south. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [attraction] [inform]  area south type entertainment <eos_ua>",
+      "user": "<sos_u>  yes, i am looking for entertainment in the south. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [attraction] [inform]  area south type entertainment <eos_ua>",
+      "user": "<sos_u>  yes, i am looking for entertainment in the south. <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [attraction] [inform]  area name <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[attraction] [inform] type entertainment area south [request] postcode phone address [restaurant] [inform] food chinese pricerange expensive area south [book] people 8 day friday time 12:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 12:30 day friday people 8 <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book a table for 8 people at 12:30 on friday? <eos_u>",
+      "bspn": "<sos_b> [attraction]  type entertainment area south [restaurant]  food chinese area south people 8 day friday time 12:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british area west <eos_ua>",
+      "user": "<sos_u>  i am looking for a british restaurant in the west. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british area west <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [select]  price [inform]  choice <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s that meet your criteria. would you prefer a [value_price]  or [value_price]  price range? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  price expensive <eos_ua>",
+      "user": "<sos_u>  i would like an expensive 1 please. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british area west pricerange expensive <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is available, would you like to book that? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 10:30 day saturday people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a table for 6 people at 10:30 on saturday. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [train] [inform]  destination ely day saturday arrive 16:30 departure cambridge <eos_ua>",
+      "user": "<sos_u>  i am also looking for a train that leaves cambridge on saturday and arrives in ely by 16:30. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive id [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  arrives at [value_arrive] . would you like me to book it? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british area west <eos_ua>",
+      "user": "<sos_u>  i am also looking for a british restaurant in the west. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s in the west. do you have a preference for the area? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area west <eos_ua>",
+      "user": "<sos_u>  yes, i would like to dine in the west. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [select] [inform]  name choice <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s that meet your criteria. [value_name] , [value_name] , and [value_name] . which 1 would you like more information on? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 10:30 day saturday people 6 name travellers rest <eos_ua>",
+      "user": "<sos_u>  travellers rest sounds good. can you book a table for 6 people at 10:30 on saturday? <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [train] [inform]  destination ely day saturday arrive 16:30 departure cambridge <eos_ua>",
+      "user": "<sos_u>  i am also looking for a train that leaves cambridge on saturday and arrives in ely by 16:30. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive id destination [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  arrives in [value_destination]  at [value_arrive] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british area west <eos_ua>",
+      "user": "<sos_u>  i am also looking for a british restaurant in the west. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s in the west. do you have a preference for the area? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area west <eos_ua>",
+      "user": "<sos_u>  yes, i would like to dine in the west. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [select] [inform]  name choice <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s that meet your criteria. [value_name] , [value_name] , and [value_name] . which 1 would you like more information on? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 10:30 day saturday people 6 name travellers rest <eos_ua>",
+      "user": "<sos_u>  travellers rest sounds good. can you book a table for 6 people at 10:30 on saturday? <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [train] [inform]  destination ely day saturday arrive 16:30 departure cambridge <eos_ua>",
+      "user": "<sos_u>  i am also looking for a train that leaves cambridge on saturday and arrives in ely by 16:30. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive id destination [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  arrives in [value_destination]  at [value_arrive] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food british area west <eos_ua>",
+      "user": "<sos_u>  i am also looking for a british restaurant in the west. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s in the west. do you have a preference for the area? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area west <eos_ua>",
+      "user": "<sos_u>  yes, i would like to dine in the west. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [select] [inform]  name choice <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  restaurant -s that meet your criteria. [value_name] , [value_name] , and [value_name] . which 1 would you like more information on? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 10:30 day saturday people 6 name travellers rest <eos_ua>",
+      "user": "<sos_u>  travellers rest sounds good. can you book a table for 6 people at 10:30 on saturday? <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [train] [inform]  destination ely day saturday arrive 16:30 departure cambridge <eos_ua>",
+      "user": "<sos_u>  i am also looking for a train that leaves cambridge on saturday and arrives in ely by 16:30. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [inform]  arrive id destination [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_id]  arrives in [value_destination]  at [value_arrive] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] destination ely day saturday arrive 16:30 departure cambridge [book] people 6 [restaurant] [inform] food british pricerange expensive area west [book] people 6 day saturday time 10:30",
+      "usr_act": "<sos_ua> [train] [inform]  people 6 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need 6 tickets. <eos_u>",
+      "bspn": "<sos_b> [train]  destination ely day saturday arrive 16:30 departure cambridge people 6 [restaurant]  food british area west pricerange expensive people 6 day saturday time 10:30 <eos_b>",
+      "db": "<sos_db> [db_2] <eos_db>",
+      "aspn": "<sos_a> [train] [offerbooked]  reference price [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful, the total fee is [value_price]  payable at the station. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food indian price expensive <eos_ua>",
+      "user": "<sos_u>  i am looking for an expensive indian restaurant. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food indian pricerange expensive <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price choice [request]  area <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_price] [value_food]  restaurant -s. what part of town would you like to dine in? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  area south <eos_ua>",
+      "user": "<sos_u>  i would like to stay in the south. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food indian pricerange expensive area south <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  meets your criteria. would you like to make a reservation? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 18:30 day tuesday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a table for 4 on tuesday at 18:30. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel price expensive area south <eos_ua>",
+      "user": "<sos_u>  yes, i am also looking for an expensive hotel in the south. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  name area price [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is in the [value_area]  and [value_price] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel price expensive <eos_ua>",
+      "user": "<sos_u>  i would like to find an expensive hotel. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  meets your criteria. would you like to book it? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel parking yes <eos_ua>",
+      "user": "<sos_u>  does it have free parking? <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  parking <eos_a>",
+      "resp": "<sos_r>  yes, it does have free parking. <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel price expensive <eos_ua>",
+      "user": "<sos_u>  i also need a hotel in the expensive price range. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  meets your criteria. would you like to book a room? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel parking yes <eos_ua>",
+      "user": "<sos_u>  does it have free parking? <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  parking [offerbook] <eos_a>",
+      "resp": "<sos_r>  yes, it does have free parking. would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [request]  postcode <eos_ua>",
+      "user": "<sos_u>  no, i just need the postcode. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  postcode [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  the postcode is [value_postcode] . is there anything else i can help you with today? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food indian price expensive <eos_ua>",
+      "user": "<sos_u>  yes, i am also looking for an expensive indian restaurant. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name area price [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is an [value_price]  restaurant in the [value_area] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 18:30 day tuesday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a table for 4 people at 18:30 on tuesday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel price expensive area south <eos_ua>",
+      "user": "<sos_u>  yes, i am also looking for an expensive hotel in the south. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  meets your criteria. would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel parking yes <eos_ua>",
+      "user": "<sos_u>  does it have free parking? <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  parking <eos_a>",
+      "resp": "<sos_r>  yes, it does have free parking. <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel price expensive <eos_ua>",
+      "user": "<sos_u>  i also need a hotel in the expensive price range. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  meets your criteria. would you like to book a room? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel parking yes <eos_ua>",
+      "user": "<sos_u>  does it have free parking? <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  parking [offerbook] <eos_a>",
+      "resp": "<sos_r>  yes, it does have free parking. would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [request]  postcode <eos_ua>",
+      "user": "<sos_u>  no, i just need the postcode. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  postcode [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  the postcode is [value_postcode] . is there anything else i can help you with today? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food indian price expensive <eos_ua>",
+      "user": "<sos_u>  yes, i am also looking for an expensive indian restaurant. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  name area price [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is an [value_price]  restaurant in the [value_area] . would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 18:30 day tuesday people 4 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a table for 4 people at 18:30 on tuesday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel price expensive area south <eos_ua>",
+      "user": "<sos_u>  yes, i am also looking for an expensive hotel in the south. <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  name [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  meets your criteria. would you like me to book it for you? <eos_r>"
+    },
+    {
+      "gpan": "[taxi] [inform] arrive 18:30 [request] car phone [hotel] [inform] pricerange expensive area south type hotel parking yes [request] postcode [restaurant] [inform] food indian pricerange expensive [book] people 4 day tuesday time 18:30",
+      "usr_act": "<sos_ua> [hotel] [inform]  type hotel parking yes <eos_ua>",
+      "user": "<sos_u>  does it have free parking? <eos_u>",
+      "bspn": "<sos_b> [hotel]  area south pricerange expensive type hotel parking yes [restaurant]  food indian pricerange expensive area south people 4 day tuesday time 18:30 <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  parking <eos_a>",
+      "resp": "<sos_r>  yes, it does have free parking. <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[restaurant] [inform] pricerange expensive area centre [book] time 16:15 day tuesday people 7",
+      "usr_act": "<sos_ua> [restaurant] [inform]  price expensive area centre <eos_ua>",
+      "user": "<sos_u>  i am looking for an expensive restaurant in the centre. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  pricerange expensive area centre <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  choice [request]  food <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  options. what type of food would you like? <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] pricerange expensive area centre [book] time 16:15 day tuesday people 7",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food indian <eos_ua>",
+      "user": "<sos_u>  indian food would be great. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  pricerange expensive area centre food indian <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [recommend]  name [inform]  choice [offerbook] <eos_a>",
+      "resp": "<sos_r>  there are [value_choice]  options. i would recommend [value_name] . would you like to book a table? <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] pricerange expensive area centre [book] time 16:15 day tuesday people 7",
+      "usr_act": "<sos_ua> [restaurant] [inform]  time 16:15 day tuesday people 7 <eos_ua>",
+      "user": "<sos_u>  yes, please. i need a table for 7 people on tuesday at 16:15. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  pricerange expensive area centre food indian people 7 day tuesday time 16:15 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. the table will be reserved for 15 minutes. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[restaurant] [inform] pricerange expensive area centre [book] time 16:15 day tuesday people 7",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all i need. thank you for your help! <eos_u>",
+      "bspn": "<sos_b> [restaurant]  pricerange expensive area centre food indian people 7 day tuesday time 16:15 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [general] [welcome] [bye] <eos_a>",
+      "resp": "<sos_r>  you are welcome. have a great day! <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[hospital] [inform] [request] phone address",
+      "usr_act": "<sos_ua> [hotel] [inform]  none none <eos_ua>",
+      "user": "<sos_u>  i am looking for a hotel. <eos_u>",
+      "bspn": "<sos_b> [hotel]  type hotel <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [request]  area <eos_a>",
+      "resp": "<sos_r>  sure, what part of town would you like to stay in? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone address",
+      "usr_act": "<sos_ua> [hotel] [inform]  area do nt care <eos_ua>",
+      "user": "<sos_u>  i don't care. <eos_u>",
+      "bspn": "<sos_b> [hotel]  type hotel area dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  choice type [request]  price <eos_a>",
+      "resp": "<sos_r>  there are [value_choice] [value_type]  in the city. do you have a price range in mind? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone address",
+      "usr_act": "<sos_ua> <eos_ua>",
+      "user": "<sos_u>  no, i don't care. <eos_u>",
+      "bspn": "<sos_b> [hotel]  type hotel area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  price name type area <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_price] [value_type]  in the [value_area] . <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone address",
+      "usr_act": "<sos_ua> <eos_ua>",
+      "user": "<sos_u>  is there anything else? <eos_u>",
+      "bspn": "<sos_b> [hotel]  type hotel area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [inform]  price name internet type parking area stars <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_price] [value_type]  in the [value_area]  with [value_stars]  stars and free internet and parking. <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone address",
+      "usr_act": "<sos_ua> <eos_ua>",
+      "user": "<sos_u>  that sounds good. can you book that? <eos_u>",
+      "bspn": "<sos_b> [hotel]  type hotel area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [request]  day stay people <eos_a>",
+      "resp": "<sos_r>  sure, i can book that. what day will you be arriving, how many nights are you staying, and how many people are in your party? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone address",
+      "usr_act": "<sos_ua> <eos_ua>",
+      "user": "<sos_u>  i am not sure yet. <eos_u>",
+      "bspn": "<sos_b> [hotel]  type hotel area dontcare pricerange dontcare <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [request]  day <eos_a>",
+      "resp": "<sos_r>  i am sorry, i need to know what day you will be arriving, how many nights you will be staying, and how many people are in your party. <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone address",
+      "usr_act": "<sos_ua> <eos_ua>",
+      "user": "<sos_u>  i will be staying for 2 nights starting on friday. <eos_u>",
+      "bspn": "<sos_b> [hotel]  type hotel area dontcare pricerange dontcare people 2 day friday stay 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [hotel] [offerbooked]  reference [general] [reqmore] <eos_a>",
+      "resp": "<sos_r>  booking was successful. reference number is : [value_reference] . is there anything else i can help you with? <eos_r>"
+    },
+    {
+      "gpan": "[hospital] [inform] [request] phone address",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  no, that is all. thank you. <eos_u>",
+      "bspn": "<sos_b> [hotel]  type hotel area dontcare pricerange dontcare people 2 day friday stay 2 <eos_b>",
+      "db": "<sos_db> [db_3] <eos_db>",
+      "aspn": "<sos_a> [general] [bye] <eos_a>",
+      "resp": "<sos_r>  thank you for using our system today! <eos_r>"
+    }
+  ],
+  [
+    {
+      "gpan": "[train] [inform] leave 12:15 destination cambridge day sunday departure london liverpool street [request] price [restaurant] [inform] food vietnamese pricerange cheap area west [request] postcode address phone",
+      "usr_act": "<sos_ua> [restaurant] [inform]  food vietnamese price cheap <eos_ua>",
+      "user": "<sos_u>  i am looking for a cheap vietnamese restaurant. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food vietnamese pricerange cheap <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  food price name [offerbook] <eos_a>",
+      "resp": "<sos_r> [value_name]  is a [value_price] [value_food]  restaurant. would you like to book a table? <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] leave 12:15 destination cambridge day sunday departure london liverpool street [request] price [restaurant] [inform] food vietnamese pricerange cheap area west [request] postcode address phone",
+      "usr_act": "<sos_ua> [restaurant] [request]  phone postcode address <eos_ua>",
+      "user": "<sos_u>  no, i just need the postcode, address, and phone number. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food vietnamese pricerange cheap <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [restaurant] [inform]  address postcode phone <eos_a>",
+      "resp": "<sos_r>  the address is [value_address] , postcode [value_postcode] , and phone number is [value_phone] . <eos_r>"
+    },
+    {
+      "gpan": "[train] [inform] leave 12:15 destination cambridge day sunday departure london liverpool street [request] price [restaurant] [inform] food vietnamese pricerange cheap area west [request] postcode address phone",
+      "usr_act": "<sos_ua> [general]  [thank] <eos_ua>",
+      "user": "<sos_u>  thank you for your help. <eos_u>",
+      "bspn": "<sos_b> [restaurant]  food vietnamese pricerange cheap <eos_b>",
+      "db": "<sos_db> [db_1] <eos_db>",
+      "aspn": "<sos_a> [general] [welcome] [bye] <eos_a>",
+      "resp": "<sos_r>  you are welcome. goodbye. <eos_r>"
+    }
+  ]
+]

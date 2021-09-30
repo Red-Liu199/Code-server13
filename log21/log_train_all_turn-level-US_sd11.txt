@@ -535,3 +535,30 @@ INFO:root:Epoch:41, Train epoch time: 60.31 min, epoch loss: 7624.4547
 INFO:root:BLEU:12.74, Avg_Precious:0.374, Avg_Recall:0.378, Avg_F1:0.360
 INFO:root:Evaluation time:3.96 min
 INFO:root:early stop count:-17
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Encoding data now and save the encoded data in ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:hotel database path:db/hotel_db_processed.json
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Encoding data now and save the encoded data in ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:encoded file saved in ./data/multi-woz-2.1-processed/encoded_us_data.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:[50314, 50315, 50313, 50308, 50309, 50307]
+INFO:root:Prior model loaded from ../distilgpt2
+INFO:root:***** Running turn-level training *****
+INFO:root:  Num Training steps(one turn in a batch of dialogs) per epoch = 14195
+INFO:root:  Num Turns = 56565
+INFO:root:  Num Dialogs = 8421
+INFO:root:  Num Epochs = 50
+INFO:root:  Batch size  = 4
+INFO:root:  Gradient Accumulation steps = 8
+INFO:root:  Total optimization steps = 88718
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street day sunday arrive 20:15 departure cambridge [request]  pricerange id leave <eos_g> <sos_r> <eos_r> <sos_ua> [train] [inform]  day sunday arrive 20:15 <eos_ua> <sos_u>  i need a train for sunday please. i prefer 1 that arrives by 20:15 <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  destination birmingham new street departure cambridge [request]  pricerange id leave <eos_g> <sos_r>  we have [value_choice]  those! where is your destination? <eos_r> <sos_ua> [train] [inform]  destination birmingham new street <eos_ua> <sos_u>  i am heading to birmingham new street. <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request]  address [train] [inform]  departure cambridge [request]  pricerange id leave <eos_g> <sos_r> [value_id]  arrives by [value_arrive] . does that work for you? <eos_r> <sos_ua> [train] [request]  leave ticket id <eos_ua> <sos_u>  yes, that would be fine. i 'll need the price, trainid, and departure time, please? <eos_u>
+INFO:root:Input examples:
+INFO:root:<sos_g> [train] [inform]  departure cambridge [request]  pricerange [attraction] [inform]  type concerthall area centre [request]  address <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
+INFO:root:Epoch:0, Train epoch time: 14.88 min, epoch loss: 112803.0246

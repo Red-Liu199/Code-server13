@@ -8,7 +8,6 @@ python pretrain.py -mode train\
     cuda_device=$1\
     train_us=True\
     save_type=max_score\
-    fix_data=False\
     turn_level=True\
     only_target_loss=False\
     input_history=False\
