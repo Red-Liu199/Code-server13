@@ -10,7 +10,7 @@ reader = MultiWozReader(tokenizer)
 
 def act_dict_to_aspn(act):
     #<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>
-    slot_map={'post':'postcode','addr':'address','ref':'reference','dest':'destination','depart':'departure', 'price':'pricerange'}
+    slot_map={'post':'postcode','addr':'address','ref':'reference','dest':'destination','depart':'departure', 'fee':'price', 'entrance fee':'price'}
     act_list=[]
     for key in act:
         domain=key.split('-')[0].lower()
@@ -70,8 +70,8 @@ def goal_to_gpan(goal, slot_list_goal=None):
                             slot='id'
                         if slot=='car type':
                             slot='car'
-                        if slot=='entrance fee':
-                            slot='fee'
+                        if slot in ['entrance fee', 'fee']:
+                            slot='price'
                         if slot=='duration':
                             slot='time'
                         slot='arrive' if slot=='arriveby' else slot
@@ -156,9 +156,10 @@ if __name__ == "__main__":
         goal=reader.goal_norm(goal)
         new_data[dial_id]=[]
         pv_user_act=None
+        pv_constraint=None
         for turn_id, turn in enumerate(dial1['log']):
             if pv_user_act is not None:
-                goal=reader.update_goal(goal, pv_user_act)
+                goal=reader.update_goal(goal, pv_user_act, pv_constraint)
             turn_domain=turn['turn_domain'].split()
             cur_domain=turn_domain[0] if len(turn_domain)==1 else turn_domain[1]
             cur_domain=cur_domain[1:-1] if cur_domain.startswith('[') else cur_domain
@@ -172,6 +173,7 @@ if __name__ == "__main__":
             else:
                 entry['usr_act']=''
             pv_user_act=reader.aspan_to_act_dict(entry['usr_act'], side='user')
+            pv_constraint=reader.bspan_to_constraint_dict(entry['constraint'])
             new_data[dial_id].append(entry)
 
     json.dump(new_data, open(save_path, 'w'), indent=2)

@@ -3,8 +3,8 @@
 python pretrain.py -mode train\
     -cfg  lr=1e-4\
     gradient_accumulation_steps=8 batch_size=4\
-    epoch_num=50\
-    exp_no=turn-level-US\
+    epoch_num=40\
+    exp_no=turn-level-US-10-5\
     cuda_device=$1\
     train_us=True\
     save_type=max_score\

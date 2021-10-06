@@ -81,6 +81,7 @@ class _ReaderBase(object):
                     turn_l[k].append(this_turn[k])
             dial_batch.append(turn_l)
         return dial_batch
+    
 
     def inverse_transpose_turn(self, turn_list):
         """
@@ -672,7 +673,6 @@ class MultiWozReader(_ReaderBase):
                 bs_list.append(cons_dict[domain][slot])
         return ' '.join(bs_list)
 
-
     def _get_encoded_data(self, fn, dial):
         if cfg.train_us:
             return self._get_encoded_us_data(fn,dial)
@@ -729,7 +729,8 @@ class MultiWozReader(_ReaderBase):
         
         return encoded_dial
 
-    def update_goal(self, goal, user_act):
+    def update_goal(self, init_goal, user_act, constraint=None):
+        goal=deepcopy(init_goal)
         for domain in user_act:
             if domain not in goal:
                 continue
@@ -756,9 +757,24 @@ class MultiWozReader(_ReaderBase):
                                 goal[domain].pop('request')
             if goal[domain]=={}:
                 goal.pop(domain)
+        if constraint:
+            for domain, sv in constraint.items():
+                if domain in goal:
+                    for slot, value in sv.items():
+                        slot='pricerange' if slot=='price' else slot
+                        if  'inform' in goal[domain] and slot in goal[domain]['inform']:
+                            if goal[domain]['inform'][slot]==value:
+                                goal[domain]['inform'].pop(slot)
+                            if goal[domain]['inform']=={}:
+                                goal[domain].pop('inform')
+                        elif 'book' in goal[domain] and slot in goal[domain]['book']:
+                            if goal[domain]['book'][slot]==value:
+                                goal[domain]['book'].pop(slot)
+                            if goal[domain]['book']=={}:
+                                goal[domain].pop('book')
         return goal
 
-    def goal_to_gpan(self, goal, cur_domain):
+    def goal_to_gpan(self, goal, cur_domain=None):
         if goal=={}:
             return ''
         domain_gpan=[]
@@ -788,6 +804,14 @@ class MultiWozReader(_ReaderBase):
     def goal_norm(self, goal):
         new_goal={}
         for domain in goal:
+            '''
+            if 'book' in goal[domain]:
+                if 'reqt' in goal[domain]:
+                    if 'reference' not in goal[domain]['reqt']:
+                        goal[domain]['reqt'].append('reference')
+                else:
+                    goal[domain]['reqt']=['reference']
+            '''
             new_goal[domain]={}
             for intent in goal[domain]:
                 if intent in ['fail_book','fail_info']:
@@ -804,24 +828,20 @@ class MultiWozReader(_ReaderBase):
                                 slot='id'
                             elif slot=='car type':
                                 slot='car'
-                            elif slot=='entrance fee':
-                                slot='fee'
+                            elif slot in ['entrance fee', 'fee']:
+                                slot='price'
                             elif slot=='duration':
                                 slot='time'
                             elif slot=='arriveby':
                                 slot='arrive'
                             elif slot=='leaveat':
                                 slot='leave'
-                            elif slot=='price':
-                                slot='pricerange'
                         new_goal[domain][new_intent][slot]=value.lower()
-                
                 elif intent=='reqt':
                     new_goal[domain]['request']=[]
                     for slot in goal[domain][intent]:
-                        slot='pricerange' if slot=='price' else slot
                         new_goal[domain]['request'].append(slot.lower())
-
+        
         return new_goal
 
 
@@ -1080,6 +1100,77 @@ class MultiWozReader(_ReaderBase):
                 new_dial.append(new_turn)
             new_batch.append(new_dial)
         return new_batch
+
+    def transpose_ds_turn_batch(self, batch, rewards):
+        turn_batches=[]
+        label_batches=[]
+        reward_batches=[]
+        turn_batch=[]
+        label_batch=[]
+        reward_batch=[]
+        for dial, reward in zip(batch, rewards):
+            pv_turn=None
+            for turn, R in zip(dial, reward):
+                if pv_turn:
+                    turn_batch.append(pv_turn['bspn']+pv_turn['resp']+\
+                        turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+                    label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
+                        turn['user']+turn['bspn']+turn['db'])+turn['aspn']+[cfg.pad_id]*len(turn['resp']))
+                else:
+                    turn_batch.append(turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+                    label_batch.append([cfg.pad_id]*len(turn['user']+turn['bspn']+turn['db'])+\
+                        turn['aspn']+[cfg.pad_id]*len(turn['resp']))
+                reward_batch.append(R)
+                if len(turn_batch)==cfg.trainging_batch_size:
+                    turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+                    label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+                    turn_batches.append(turn_batch_np)
+                    label_batches.append(label_batch_np)
+                    reward_batches.append(reward_batch)
+                    turn_batch=[]
+                    label_batch=[]
+                    reward_batch=[]
+        if turn_batch!=[]:
+            turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+            label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+            turn_batches.append(turn_batch_np)
+            label_batches.append(label_batch_np)
+            reward_batches.append(reward_batch)
+        return turn_batches, label_batches, reward_batches
+    
+    def transpose_us_turn_batch(self, batch, rewards, tokenizer):
+        sos_g_id=tokenizer.convert_tokens_to_ids('<sos_g>')
+        eos_g_id=tokenizer.convert_tokens_to_ids('<eos_g>')
+        turn_batches=[]
+        label_batches=[]
+        reward_batches=[]
+        turn_batch=[]
+        label_batch=[]
+        reward_batch=[]
+        for dial, reward in zip(batch, rewards):
+            pv_turn=None
+            for turn, R in zip(dial, reward):
+                pv_resp=pv_turn['resp'] if pv_turn else [sos_g_id,  eos_g_id]
+                turn_batch.append(turn['gpan']+pv_resp+turn['usr_act']+turn['user'])
+                label_batch.append([cfg.pad_id]*len(turn['gpan']+pv_resp)+\
+                    turn['usr_act']+[cfg.pad_id]*len(turn['user']))
+                reward_batch.append(R)
+                if len(turn_batch)==cfg.trainging_batch_size:
+                    turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+                    label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+                    turn_batches.append(turn_batch_np)
+                    label_batches.append(label_batch_np)
+                    reward_batches.append(reward_batch)
+                    turn_batch=[]
+                    label_batch=[]
+                    reward_batch=[]
+        if turn_batch!=[]:
+            turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+            label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+            turn_batches.append(turn_batch_np)
+            label_batches.append(label_batch_np)
+            reward_batches.append(reward_batch)
+        return turn_batches, label_batches, reward_batches
 
     def modified_encode(self, text):
         if int(transformers.__version__[0])>=3:

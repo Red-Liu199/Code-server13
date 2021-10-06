@@ -655,7 +655,10 @@ class MultiWozEvaluator(object):
         for t, turn in enumerate(dialog):
             if t == 0 and turn['user']=='': 
                 continue 
-            sent_t = turn['resp_gen']
+            if 'resp_gen' in turn:
+                sent_t = turn['resp_gen']
+            else: # evaluate the interaction quality between user simulator and dialog system
+                sent_t = turn['resp']
             # sent_t = turn['resp']
             for domain in goal.keys():
                 # for computing success
@@ -673,7 +676,10 @@ class MultiWozEvaluator(object):
                     if domain in ['restaurant', 'hotel', 'attraction', 'train']:
                         # HERE YOU CAN PUT YOUR BELIEF STATE ESTIMATION
                         if not cfg.use_true_curr_bspn and not cfg.use_true_bspn_for_ctr_eval:
-                            bspn = turn['bspn_gen']
+                            if 'bspn_gen' in turn:
+                                bspn = turn['bspn_gen']
+                            else:# evaluate the interaction quality between user simulator and dialog system
+                                bspn = turn['bspn']
                         else:
                             bspn = turn['bspn']
                         # bspn = turn['bspn']

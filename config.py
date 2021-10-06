@@ -176,7 +176,7 @@ class _Config:
         #user simulator setting
         self.rl_with_us=True # whether or not interact with user simulator 
         self.train_us=False # setting when pre-training user simulator 
-        self.joint_train=False # train DS and US together in RL exp
+        self.joint_train=True # train DS and US together in RL exp
         self.goal_from_data=True # whether or not use goals in original data
         self.traverse_data=True # traverse all data in training set for one RL epoch
         self.save_by_reward=True # save the model with max average reward
@@ -187,8 +187,11 @@ class _Config:
         self.DS_path="experiments_21/DS_base/best_score_model"
         self.US_path="experiments_21/US_base/best_loss_model"
         self.DS_device=2
-        self.US_device=2
+        self.US_device=3
         self.fix_db=True
+
+        self.interaction_batch_size=32
+        self.trainging_batch_size=8
 
     def __str__(self):
         s = ''

@@ -562,3 +562,199 @@ INFO:root:<sos_g> [attraction] [inform]  type concerthall area centre [request] 
 INFO:root:Input examples:
 INFO:root:<sos_g> [train] [inform]  departure cambridge [request]  pricerange [attraction] [inform]  type concerthall area centre [request]  address <eos_g> <sos_r>  the train will depart [value_departure]  at [value_leave]  and the price is [value_price] . <eos_r> <sos_ua> [attraction] [inform]  type concerthall <eos_ua> <sos_u>  i would also like to find a nice concerthall in the middle of town. <eos_u>
 INFO:root:Epoch:0, Train epoch time: 14.88 min, epoch loss: 112803.0246
+INFO:root:BLEU:6.08, Avg_Precious:0.000, Avg_Recall:0.000, Avg_F1:0.000
+INFO:root:Evaluation time:4.12 min
+INFO:root:Epoch:1, Train epoch time: 14.80 min, epoch loss: 27396.3877
+INFO:root:BLEU:11.06, Avg_Precious:0.333, Avg_Recall:0.399, Avg_F1:0.363
+INFO:root:Evaluation time:2.42 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:2, Train epoch time: 14.75 min, epoch loss: 20600.9219
+INFO:root:BLEU:13.33, Avg_Precious:0.503, Avg_Recall:0.643, Avg_F1:0.564
+INFO:root:Evaluation time:2.11 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:3, Train epoch time: 14.80 min, epoch loss: 18095.0236
+INFO:root:BLEU:14.49, Avg_Precious:0.521, Avg_Recall:0.672, Avg_F1:0.586
+INFO:root:Evaluation time:2.45 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:4, Train epoch time: 14.77 min, epoch loss: 16826.0927
+INFO:root:BLEU:15.15, Avg_Precious:0.523, Avg_Recall:0.671, Avg_F1:0.588
+INFO:root:Evaluation time:2.47 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:5, Train epoch time: 14.67 min, epoch loss: 16072.3908
+INFO:root:BLEU:16.02, Avg_Precious:0.562, Avg_Recall:0.645, Avg_F1:0.600
+INFO:root:Evaluation time:2.40 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:6, Train epoch time: 14.63 min, epoch loss: 15542.8322
+INFO:root:BLEU:15.97, Avg_Precious:0.531, Avg_Recall:0.687, Avg_F1:0.599
+INFO:root:Evaluation time:2.53 min
+INFO:root:Epoch:7, Train epoch time: 14.34 min, epoch loss: 15134.4063
+INFO:root:BLEU:16.24, Avg_Precious:0.575, Avg_Recall:0.614, Avg_F1:0.594
+INFO:root:Evaluation time:2.26 min
+INFO:root:Epoch:8, Train epoch time: 14.68 min, epoch loss: 14796.4608
+INFO:root:BLEU:16.04, Avg_Precious:0.553, Avg_Recall:0.678, Avg_F1:0.609
+INFO:root:Evaluation time:2.54 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:9, Train epoch time: 14.66 min, epoch loss: 14511.1900
+INFO:root:BLEU:17.09, Avg_Precious:0.560, Avg_Recall:0.685, Avg_F1:0.616
+INFO:root:Evaluation time:2.51 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:10, Train epoch time: 14.69 min, epoch loss: 14209.8771
+INFO:root:BLEU:16.24, Avg_Precious:0.549, Avg_Recall:0.704, Avg_F1:0.617
+INFO:root:Evaluation time:2.58 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:11, Train epoch time: 14.62 min, epoch loss: 13913.8144
+INFO:root:BLEU:16.83, Avg_Precious:0.569, Avg_Recall:0.664, Avg_F1:0.613
+INFO:root:Evaluation time:2.44 min
+INFO:root:early stop count:4
+INFO:root:Epoch:12, Train epoch time: 14.23 min, epoch loss: 13648.9266
+INFO:root:BLEU:16.49, Avg_Precious:0.573, Avg_Recall:0.652, Avg_F1:0.610
+INFO:root:Evaluation time:2.46 min
+INFO:root:early stop count:3
+INFO:root:Epoch:13, Train epoch time: 14.73 min, epoch loss: 13406.0755
+INFO:root:BLEU:16.72, Avg_Precious:0.561, Avg_Recall:0.692, Avg_F1:0.620
+INFO:root:Evaluation time:2.56 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:14, Train epoch time: 14.62 min, epoch loss: 13178.4656
+INFO:root:BLEU:16.26, Avg_Precious:0.561, Avg_Recall:0.690, Avg_F1:0.619
+INFO:root:Evaluation time:2.62 min
+INFO:root:early stop count:4
+INFO:root:Epoch:15, Train epoch time: 14.65 min, epoch loss: 12971.5988
+INFO:root:BLEU:16.93, Avg_Precious:0.566, Avg_Recall:0.689, Avg_F1:0.621
+INFO:root:Evaluation time:2.48 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:16, Train epoch time: 14.32 min, epoch loss: 12766.2748
+INFO:root:BLEU:16.64, Avg_Precious:0.556, Avg_Recall:0.694, Avg_F1:0.618
+INFO:root:Evaluation time:2.64 min
+INFO:root:early stop count:4
+INFO:root:Epoch:17, Train epoch time: 14.60 min, epoch loss: 12568.3548
+INFO:root:BLEU:16.73, Avg_Precious:0.561, Avg_Recall:0.695, Avg_F1:0.621
+INFO:root:Evaluation time:2.56 min
+INFO:root:early stop count:3
+INFO:root:Epoch:18, Train epoch time: 14.60 min, epoch loss: 12384.6930
+INFO:root:BLEU:16.93, Avg_Precious:0.562, Avg_Recall:0.697, Avg_F1:0.622
+INFO:root:Evaluation time:2.59 min
+INFO:root:Saving model checkpoint to ./experiments_21/all_turn-level-US_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Epoch:19, Train epoch time: 14.67 min, epoch loss: 12208.8168
+INFO:root:BLEU:16.71, Avg_Precious:0.551, Avg_Recall:0.698, Avg_F1:0.616
+INFO:root:Evaluation time:2.61 min
+INFO:root:early stop count:4
+INFO:root:Epoch:20, Train epoch time: 14.64 min, epoch loss: 12032.6676
+INFO:root:BLEU:16.59, Avg_Precious:0.555, Avg_Recall:0.698, Avg_F1:0.619
+INFO:root:Evaluation time:2.60 min
+INFO:root:early stop count:3
+INFO:root:Epoch:21, Train epoch time: 14.35 min, epoch loss: 11867.5026
+INFO:root:BLEU:16.78, Avg_Precious:0.571, Avg_Recall:0.679, Avg_F1:0.620
+INFO:root:Evaluation time:2.60 min
+INFO:root:early stop count:2
+INFO:root:Epoch:22, Train epoch time: 14.68 min, epoch loss: 11706.2314
+INFO:root:BLEU:16.13, Avg_Precious:0.568, Avg_Recall:0.676, Avg_F1:0.617
+INFO:root:Evaluation time:2.49 min
+INFO:root:early stop count:1
+INFO:root:Epoch:23, Train epoch time: 14.71 min, epoch loss: 11548.9982
+INFO:root:BLEU:16.47, Avg_Precious:0.561, Avg_Recall:0.695, Avg_F1:0.621
+INFO:root:Evaluation time:2.69 min
+INFO:root:early stop count:0
+INFO:root:Epoch:24, Train epoch time: 14.60 min, epoch loss: 11404.1782
+INFO:root:BLEU:16.35, Avg_Precious:0.558, Avg_Recall:0.691, Avg_F1:0.617
+INFO:root:Evaluation time:2.64 min
+INFO:root:early stop count:-1
+INFO:root:Epoch:25, Train epoch time: 14.66 min, epoch loss: 11254.1012
+INFO:root:BLEU:16.36, Avg_Precious:0.556, Avg_Recall:0.691, Avg_F1:0.616
+INFO:root:Evaluation time:2.55 min
+INFO:root:early stop count:-2
+INFO:root:Epoch:26, Train epoch time: 14.61 min, epoch loss: 11117.0685
+INFO:root:BLEU:16.39, Avg_Precious:0.562, Avg_Recall:0.685, Avg_F1:0.617
+INFO:root:Evaluation time:2.59 min
+INFO:root:early stop count:-3
+INFO:root:Epoch:27, Train epoch time: 14.62 min, epoch loss: 10979.3162
+INFO:root:BLEU:16.25, Avg_Precious:0.563, Avg_Recall:0.679, Avg_F1:0.616
+INFO:root:Evaluation time:2.62 min
+INFO:root:early stop count:-4
+INFO:root:Epoch:28, Train epoch time: 14.64 min, epoch loss: 10852.3857
+INFO:root:BLEU:16.02, Avg_Precious:0.558, Avg_Recall:0.688, Avg_F1:0.616
+INFO:root:Evaluation time:2.67 min
+INFO:root:early stop count:-5
+INFO:root:Epoch:29, Train epoch time: 14.69 min, epoch loss: 10721.7307
+INFO:root:BLEU:16.08, Avg_Precious:0.567, Avg_Recall:0.676, Avg_F1:0.617
+INFO:root:Evaluation time:2.56 min
+INFO:root:early stop count:-6
+INFO:root:Epoch:30, Train epoch time: 14.36 min, epoch loss: 10602.5273
+INFO:root:BLEU:16.38, Avg_Precious:0.562, Avg_Recall:0.679, Avg_F1:0.615
+INFO:root:Evaluation time:2.57 min
+INFO:root:early stop count:-7
+INFO:root:Epoch:31, Train epoch time: 14.69 min, epoch loss: 10488.0364
+INFO:root:BLEU:15.98, Avg_Precious:0.562, Avg_Recall:0.679, Avg_F1:0.615
+INFO:root:Evaluation time:2.58 min
+INFO:root:early stop count:-8
+INFO:root:Epoch:32, Train epoch time: 14.62 min, epoch loss: 10368.3221
+INFO:root:BLEU:15.79, Avg_Precious:0.556, Avg_Recall:0.685, Avg_F1:0.614
+INFO:root:Evaluation time:2.71 min
+INFO:root:early stop count:-9
+INFO:root:Epoch:33, Train epoch time: 14.68 min, epoch loss: 10265.6871
+INFO:root:BLEU:16.20, Avg_Precious:0.560, Avg_Recall:0.686, Avg_F1:0.617
+INFO:root:Evaluation time:2.66 min
+INFO:root:early stop count:-10
+INFO:root:Epoch:34, Train epoch time: 13.58 min, epoch loss: 10162.1131
+INFO:root:BLEU:15.87, Avg_Precious:0.560, Avg_Recall:0.688, Avg_F1:0.618
+INFO:root:Evaluation time:2.33 min
+INFO:root:early stop count:-11
+INFO:root:Epoch:35, Train epoch time: 11.29 min, epoch loss: 10063.6373
+INFO:root:BLEU:15.79, Avg_Precious:0.563, Avg_Recall:0.674, Avg_F1:0.613
+INFO:root:Evaluation time:2.28 min
+INFO:root:early stop count:-12
+INFO:root:Epoch:36, Train epoch time: 11.33 min, epoch loss: 9971.4593
+INFO:root:BLEU:16.05, Avg_Precious:0.559, Avg_Recall:0.672, Avg_F1:0.610
+INFO:root:Evaluation time:2.30 min
+INFO:root:early stop count:-13
+INFO:root:Epoch:37, Train epoch time: 11.32 min, epoch loss: 9883.7476
+INFO:root:BLEU:15.89, Avg_Precious:0.559, Avg_Recall:0.687, Avg_F1:0.616
+INFO:root:Evaluation time:2.30 min
+INFO:root:early stop count:-14
+INFO:root:Epoch:38, Train epoch time: 11.33 min, epoch loss: 9796.6284
+INFO:root:BLEU:15.96, Avg_Precious:0.555, Avg_Recall:0.683, Avg_F1:0.612
+INFO:root:Evaluation time:2.35 min
+INFO:root:early stop count:-15
+INFO:root:Epoch:39, Train epoch time: 11.29 min, epoch loss: 9716.8514
+INFO:root:BLEU:15.64, Avg_Precious:0.559, Avg_Recall:0.676, Avg_F1:0.612
+INFO:root:Evaluation time:2.38 min
+INFO:root:early stop count:-16
+INFO:root:Epoch:40, Train epoch time: 11.29 min, epoch loss: 9637.5045
+INFO:root:BLEU:15.84, Avg_Precious:0.560, Avg_Recall:0.672, Avg_F1:0.611
+INFO:root:Evaluation time:2.34 min
+INFO:root:early stop count:-17
+INFO:root:Epoch:41, Train epoch time: 11.33 min, epoch loss: 9569.4044
+INFO:root:BLEU:15.61, Avg_Precious:0.559, Avg_Recall:0.683, Avg_F1:0.615
+INFO:root:Evaluation time:2.36 min
+INFO:root:early stop count:-18
+INFO:root:Epoch:42, Train epoch time: 11.34 min, epoch loss: 9494.8971
+INFO:root:BLEU:15.60, Avg_Precious:0.560, Avg_Recall:0.675, Avg_F1:0.612
+INFO:root:Evaluation time:2.33 min
+INFO:root:early stop count:-19
+INFO:root:Epoch:43, Train epoch time: 11.30 min, epoch loss: 9441.3810
+INFO:root:BLEU:15.63, Avg_Precious:0.560, Avg_Recall:0.674, Avg_F1:0.612
+INFO:root:Evaluation time:2.30 min
+INFO:root:early stop count:-20
+INFO:root:Epoch:44, Train epoch time: 11.30 min, epoch loss: 9387.4892
+INFO:root:BLEU:15.67, Avg_Precious:0.558, Avg_Recall:0.671, Avg_F1:0.609
+INFO:root:Evaluation time:2.34 min
+INFO:root:early stop count:-21
+INFO:root:Epoch:45, Train epoch time: 11.31 min, epoch loss: 9331.3173
+INFO:root:BLEU:15.40, Avg_Precious:0.558, Avg_Recall:0.676, Avg_F1:0.611
+INFO:root:Evaluation time:2.34 min
+INFO:root:early stop count:-22
+INFO:root:Epoch:46, Train epoch time: 11.35 min, epoch loss: 9282.8002
+INFO:root:BLEU:15.62, Avg_Precious:0.558, Avg_Recall:0.677, Avg_F1:0.612
+INFO:root:Evaluation time:2.31 min
+INFO:root:early stop count:-23
+INFO:root:Epoch:47, Train epoch time: 11.28 min, epoch loss: 9240.5916
+INFO:root:BLEU:15.50, Avg_Precious:0.557, Avg_Recall:0.672, Avg_F1:0.609
+INFO:root:Evaluation time:2.30 min
+INFO:root:early stop count:-24
+INFO:root:Epoch:48, Train epoch time: 11.32 min, epoch loss: 9209.6101
+INFO:root:BLEU:15.55, Avg_Precious:0.557, Avg_Recall:0.672, Avg_F1:0.609
+INFO:root:Evaluation time:2.30 min
+INFO:root:early stop count:-25
+INFO:root:Epoch:49, Train epoch time: 11.34 min, epoch loss: 9178.4342
+INFO:root:BLEU:15.53, Avg_Precious:0.557, Avg_Recall:0.675, Avg_F1:0.610
+INFO:root:Evaluation time:2.35 min
+INFO:root:early stop count:-26
