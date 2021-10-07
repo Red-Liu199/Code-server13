@@ -946,6 +946,8 @@ class MultiWozReader(_ReaderBase):
         pv_slot=''
         if side=='sys':
             for act in act_list:
+                if act.count('-')!=2:
+                    continue
                 domain, intent, slot = act.split('-')
                 if domain not in act_dict:
                     act_dict[domain]={}
@@ -1121,7 +1123,7 @@ class MultiWozReader(_ReaderBase):
                     label_batch.append([cfg.pad_id]*len(turn['user']+turn['bspn']+turn['db'])+\
                         turn['aspn']+[cfg.pad_id]*len(turn['resp']))
                 reward_batch.append(R)
-                if len(turn_batch)==cfg.trainging_batch_size:
+                if len(turn_batch)==cfg.training_batch_size:
                     turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
                     label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
                     turn_batches.append(turn_batch_np)
@@ -1155,7 +1157,7 @@ class MultiWozReader(_ReaderBase):
                 label_batch.append([cfg.pad_id]*len(turn['gpan']+pv_resp)+\
                     turn['usr_act']+[cfg.pad_id]*len(turn['user']))
                 reward_batch.append(R)
-                if len(turn_batch)==cfg.trainging_batch_size:
+                if len(turn_batch)==cfg.training_batch_size:
                     turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
                     label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
                     turn_batches.append(turn_batch_np)

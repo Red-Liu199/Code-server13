@@ -191,7 +191,7 @@ class _Config:
         self.fix_db=True
 
         self.interaction_batch_size=32
-        self.trainging_batch_size=8
+        self.training_batch_size=8
 
     def __str__(self):
         s = ''

@@ -2,10 +2,13 @@ import torch
 import random
 import time
 import os
+import logging
 import argparse
 import numpy as np
 import ontology
 import json
+import shutil
+import torch.nn as nn
 from config import global_config as cfg
 from reader import MultiWozReader
 from eval import MultiWozEvaluator
@@ -28,6 +31,8 @@ class turn_level_session(object):
         self.evaluator=MultiWozEvaluator(self.reader)
         self.get_special_ids()
         self.end_tokens=set(['[general]', '[bye]', '[welcome]', '[thank]', '<sos_a>', '<eos_a>', '<sos_ua>', '<eos_ua>'])
+        self.golbal_output=3
+        # tensorboard
         if cfg.save_log:
             log_path='./log_rl/log_{}'.format(cfg.exp_no)
             if os.path.exists(log_path):
@@ -101,12 +106,13 @@ class turn_level_session(object):
     def run_RL(self):
         cfg.origin_batch_size=cfg.batch_size
         cfg.batch_size=cfg.batch_size*cfg.gradient_accumulation_steps
-        self.optimizer, self.scheduler=self.get_sep_optimizers(num_dials=cfg.rl_dial_per_epoch, model=self.DS)
+        self.optimizer, self.scheduler=self.get_optimizers(num_dials=cfg.rl_dial_per_epoch, model=self.DS)
         if cfg.joint_train:
-            self.optimizer_us, self.scheduler_us=self.get_sep_optimizers(num_dials=cfg.rl_dial_per_epoch, model=self.US)
+            self.optimizer_us, self.scheduler_us=self.get_optimizers(num_dials=cfg.rl_dial_per_epoch, model=self.US)
         # sample some dialogs for validation
-        for _ in range(4): # total dialogs 128
-            dial_id_batches.append(random.sample(self.reader.train_list + self.reader.dev_list, 32))
+        dial_id_batches=[]
+        for _ in range(4): # total dialogs 4*interaction_batch_size
+            dial_id_batches.append(random.sample(self.reader.train_list + self.reader.dev_list, cfg.interaction_batch_size))
         if cfg.init_eval:
             logging.info('Initial validation')
             self.validate(dial_id_batches)
@@ -122,7 +128,7 @@ class turn_level_session(object):
             logging.info('Epoch:{}, time:{:.3f} min'.format(epoch, (time.time()-st)/60))
             logging.info('Training -- Avg DS reward:{:3f}, avg US reward:{:3f}'.format(avg_DS_reward, avg_US_reward))
             
-            DS_reward, US_reward, success, match =self.validate(dial_id_batches)
+            DS_reward, US_reward, avg_turn, success, match =self.validate(dial_id_batches)
             eval_metric=success
 
             if eval_metric>max_score:
@@ -154,6 +160,7 @@ class turn_level_session(object):
                 self.tb_writer.add_scalar('Train_US_reward', avg_US_reward, epoch)        
                 self.tb_writer.add_scalar('Dev_DS_reward', DS_reward, epoch)
                 self.tb_writer.add_scalar('Dev_US_reward', US_reward, epoch)
+                self.tb_writer.add_scalar('Avg_turns', avg_turn, epoch)
                 self.tb_writer.add_scalar('Match', match, epoch)
                 self.tb_writer.add_scalar('Success', success, epoch)
 
@@ -161,12 +168,11 @@ class turn_level_session(object):
     def run_RL_epoch(self):
         avg_US_reward=0
         avg_DS_reward=0
-        for _ in range(cfg.rl_dial_per_epoch):
-                break
+        for _ in range(cfg.rl_dial_per_epoch//cfg.interaction_batch_size):
             self.DS.eval()
             self.US.eval()
             gen_batch, US_reward_batch, DS_reward_batch, _ , _=\
-                    self.interact_by_batch(cfg.batch_size, return_reward=True)
+                    self.interact_by_batch(cfg.interaction_batch_size, return_reward=True)
             avg_US_reward+=sum([np.mean(reward) for reward in US_reward_batch])
             avg_DS_reward+=sum([np.mean(reward) for reward in DS_reward_batch])
             self.DS.train()
@@ -182,47 +188,55 @@ class turn_level_session(object):
                 outputs=self.DS(input_tensor)
                 loss=self.calculate_loss(outputs, label_tensor, reward_batch)
                 loss.backward()
-            self.optimizer.step()
-            if self.scheduler:
-                self.scheduler.step()
+                # we optimize after every minibatch
+                self.optimizer.step()
+                if self.scheduler:
+                    self.scheduler.step()
             for turn_batch, label_batch, reward_batch in zip(us_turn_batches, us_label_batches, us_reward_batches):
                 input_tensor = torch.from_numpy(turn_batch).long().to(self.US.device)
                 label_tensor = torch.from_numpy(label_batch).long().to(self.US.device)
                 outputs=self.US(input_tensor)
                 loss=self.calculate_loss(outputs, label_tensor, reward_batch)
                 loss.backward()
-            if cfg.joint_train:
-                self.optimizer_us.step()
-                if self.scheduler_us:
-                    self.scheduler_us.step()
-                self.optimizer_us.zero_grad()
+                if cfg.joint_train:
+                    self.optimizer_us.step()
+                    if self.scheduler_us:
+                        self.scheduler_us.step()
+                    self.optimizer_us.zero_grad()
         avg_DS_reward/=cfg.rl_dial_per_epoch
         avg_US_reward/=cfg.rl_dial_per_epoch
         return avg_DS_reward, avg_US_reward
     
-    def validate(self, batch_id_batches):
+    def validate(self, dial_id_batches):
+        logging.info("Start validation")
         avg_US_reward=0
         avg_DS_reward=0
         success=0
         match=0
         total=0
+        avg_turn=0
+        all_dials=[]
         st=time.time()
         for dial_id_batch in dial_id_batches:
             total+=len(dial_id_batch)
             gen_batch, US_reward_batch, DS_reward_batch, batch_success, batch_match=\
-                self.interact_by_batch(32, dial_id_batch, return_reward=True)
+                self.interact_by_batch(len(dial_id_batch), dial_id_batch, return_reward=True)
+            avg_turn+=sum([len(dial) for dial in gen_batch])
             avg_US_reward+=sum([np.mean(reward) for reward in US_reward_batch])
             avg_DS_reward+=sum([np.mean(reward) for reward in DS_reward_batch])
             success+=batch_success
             match+=batch_match
+            all_dials+=gen_batch
         success/=total
         match/=total
         avg_US_reward/=total
         avg_DS_reward/=total
-        logging.info('Validation time:{:.2f} min'.format((timt.time()-st)/60))
-        logging.info('Avg_US_reward:{:3f}, avg_DS_reward:{:3f}, success rate:{:2f}, \
-            match rate:{:.2f}'.format(avg_US_reward, avg_DS_reward, success, match))
-        return avg_DS_reward, avg_US_reward, success, match
+        avg_turn/=total
+        logging.info('Validation dialogs:{},  time:{:.2f} min'.format(total, (time.time()-st)/60))
+        logging.info('Avg_US_reward:{:3f}, avg_DS_reward:{:3f}, avg turns:{}, success rate:{:2f}, \
+            match rate:{:.2f}'.format(avg_US_reward, avg_DS_reward, avg_turn, success, match))
+        json.dump(all_dials, open(os.path.join(cfg.exp_path, 'validate_result.json'), 'w'), indent=2)
+        return avg_DS_reward, avg_US_reward, avg_turn, success, match
 
     def save_model(self):
         self.DS.save_pretrained(os.path.join(cfg.exp_path,'best_DS'))
@@ -452,7 +466,10 @@ class turn_level_session(object):
                 success, match=self.get_metrics(dial_id, gen_dial)
                 total_success+=success
                 total_match+=match
-
+            
+            if self.golbal_output>0:
+                logging.info('Reward example:{}'.format(US_reward_batch[0]))
+                self.golbal_output-=1
             return gen_batch, US_reward_batch, DS_reward_batch, total_success, total_match
 
         return gen_batch
@@ -717,7 +734,7 @@ class turn_level_session(object):
             loss += reward*loss_fct(logit.view(-1, logit.size(-1)), label.view(-1))
 
         # avg loss
-        not_ignore = shift_labels.ne(pad_id)
+        not_ignore = shift_labels.ne(cfg.pad_id)
         num_targets = not_ignore.long().sum().item()
 
         loss /= num_targets
@@ -732,6 +749,10 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     parse_arg_cfg(args)
+    cfg.exp_path=os.path.join(cfg.rl_save_path,cfg.exp_no)
+    if not os.path.exists(cfg.exp_path):
+        os.mkdir(cfg.exp_path)
+    cfg._init_logging_handler('train')
     DS_path='experiments_21/turn-level-DS/best_score_model'
     US_path='experiments_21/all_turn-level-US-10-5_sd11_lr0.0001_bs4_ga8/best_score_model'
     dials1=[]
