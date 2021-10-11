@@ -10,7 +10,7 @@ reader = MultiWozReader(tokenizer)
 
 def act_dict_to_aspn(act):
     #<sos_a> [restaurant] [offerbooked]  reference [general] [reqmore] <eos_a>
-    slot_map={'post':'postcode','addr':'address','ref':'reference','dest':'destination','depart':'departure', 'fee':'price', 'entrance fee':'price'}
+    slot_map={'post':'postcode','addr':'address','ref':'reference','dest':'destination','depart':'departure', 'fee':'price', 'entrance fee':'price', 'ticket':'price'}
     act_list=[]
     for key in act:
         domain=key.split('-')[0].lower()

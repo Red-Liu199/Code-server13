@@ -1,0 +1,82 @@
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Dialogs per rl epoch:512
+INFO:root:Reward example:[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+INFO:root:Reward example:[4.0, 0, 2.0]
+INFO:root:Reward example:[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+INFO:root:Epoch:0, time:11.666 min
+INFO:root:Training -- Avg DS reward:0.978055, avg US reward:1.198249
+INFO:root:Start validation
+INFO:root:Validation dialogs:128,  time:0.48 min
+INFO:root:Avg_US_reward:2.211441, avg_DS_reward:0.562500, avg turns:1.0859375, success rate:0.000000,             match rate:0.14
+INFO:root:Epoch:1, time:1.561 min
+INFO:root:Training -- Avg DS reward:1.056641, avg US reward:0.531909
+INFO:root:Start validation
+INFO:root:Validation dialogs:128,  time:0.23 min
+INFO:root:Avg_US_reward:0.476562, avg_DS_reward:0.562500, avg turns:1.0, success rate:0.000000,             match rate:0.14
+INFO:root:Epoch:2, time:1.478 min
+INFO:root:Training -- Avg DS reward:1.011719, avg US reward:0.441406
+INFO:root:Start validation
+INFO:root:Validation dialogs:128,  time:0.23 min
+INFO:root:Avg_US_reward:0.500000, avg_DS_reward:0.562500, avg turns:1.0, success rate:0.000000,             match rate:0.14
+INFO:root:Epoch:3, time:1.490 min
+INFO:root:Training -- Avg DS reward:0.863281, avg US reward:0.535156
+INFO:root:Start validation
+INFO:root:Validation dialogs:128,  time:0.24 min
+INFO:root:Avg_US_reward:0.570312, avg_DS_reward:0.554688, avg turns:1.0, success rate:0.000000,             match rate:0.14
+INFO:root:Epoch:4, time:1.523 min
+INFO:root:Training -- Avg DS reward:0.896484, avg US reward:0.574219
+INFO:root:Start validation
+INFO:root:Validation dialogs:128,  time:0.24 min
+INFO:root:Avg_US_reward:0.570312, avg_DS_reward:0.554688, avg turns:1.0, success rate:0.000000,             match rate:0.14
+INFO:root:Epoch:5, time:1.494 min
+INFO:root:Training -- Avg DS reward:0.816406, avg US reward:0.580078
+INFO:root:Start validation
+INFO:root:Validation dialogs:128,  time:0.24 min
+INFO:root:Avg_US_reward:0.609375, avg_DS_reward:0.554688, avg turns:1.0, success rate:0.000000,             match rate:0.14
+INFO:root:Epoch:6, time:1.508 min
+INFO:root:Training -- Avg DS reward:0.863281, avg US reward:0.511719
+INFO:root:Start validation
+INFO:root:Validation dialogs:128,  time:0.24 min
+INFO:root:Avg_US_reward:0.648438, avg_DS_reward:0.554688, avg turns:1.0, success rate:0.000000,             match rate:0.14
+INFO:root:Epoch:7, time:1.509 min
+INFO:root:Training -- Avg DS reward:0.845703, avg US reward:0.564453
+INFO:root:Start validation
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:Start validation
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:DS path:experiments_21/turn-level-DS/best_score_model, US path:experiments_21/all_turn-level-US-10-7_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Start validation
+INFO:root:Validation dialogs:1000,  time:16.38 min
+INFO:root:Avg_US_reward:1.609906, avg_DS_reward:2.730464, avg turns:4.548, success rate:0.373000,             match rate:0.50
+INFO:root:Validation dialogs:1000,  time:16.15 min
+INFO:root:Avg_US_reward:1.721565, avg_DS_reward:2.543840, avg turns:6.598, success rate:0.386000,             match rate:0.51
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:DS path:experiments_21/turn-level-DS/best_score_model, US path:experiments_21/all_turn-level-US-10-7_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Start validation
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:DS path:experiments_21/turn-level-DS/best_score_model, US path:experiments_21/all_turn-level-US-10-7_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Start validation
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:DS path:experiments_21/turn-level-DS/best_score_model, US path:experiments_21/all_turn-level-US-10-7_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Start validation
+INFO:root:Added special tokens to gpt tokenizer.
+INFO:root:Reading encoded data from ./data/multi-woz-2.1-processed/new_db_se_blank_encoded.data_fix.json
+INFO:root:train size:8434, dev size:999, test size:1000
+INFO:root:DS path:experiments_21/turn-level-DS/best_score_model, US path:experiments_21/all_turn-level-US-10-7_sd11_lr0.0001_bs4_ga8/best_score_model
+INFO:root:Start validation
+INFO:root:Validation dialogs:1000,  time:15.68 min
+INFO:root:Avg_US_reward:1.721565, avg_DS_reward:2.543840, avg turns:6.598, success rate:0.386000,             match rate:0.51
+INFO:root:Validation dialogs:1000,  time:16.26 min
+INFO:root:Avg_US_reward:1.721565, avg_DS_reward:2.543840, avg turns:6.598, success rate:0.386000,             match rate:0.51

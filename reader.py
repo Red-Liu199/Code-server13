@@ -1054,7 +1054,7 @@ class MultiWozReader(_ReaderBase):
 
         return all_data,(total_turn,count1,count2,count3)
 
-    def convert_batch_tokens_to_ids(self, dial_batch):
+    def convert_batch_tokens_to_ids(self, dial_batch, tokenizer):
         new_batch=[]
         for dial in dial_batch:
             if isinstance(dial,list):
@@ -1065,21 +1065,21 @@ class MultiWozReader(_ReaderBase):
                         if key in ['user','bspn','aspn','resp','db', 'usr_act', 'bspn_gen', 'aspn_gen', 
                             'resp_gen', 'db_gen', 'user_gen', 'usr_act_gen', 'gpan']:
                             # GPT2Tokenizer of transformers3.5 needs to be modified
-                            new_turn[key]=self.modified_encode(turn[key])
+                            new_turn[key]=self.modified_encode(turn[key], tokenizer)
                         else:
                             new_turn[key]=turn[key]
                     new_dial.append(new_turn)
                 new_batch.append(new_dial)
             elif isinstance(dial,dict):
                 new_dial={}
-                new_dial['goal']=self.modified_encode(dial['goal'])
+                new_dial['goal']=self.modified_encode(dial['goal'], tokenizer)
                 new_dial['log']=[]
                 for turn in dial['log']:
                     new_turn={}
                     for key in turn:
                         if key in ['user','usdx','bspn','aspn','resp','bsdx','dspn','db', 'usr_act','bspn_gen', 'aspn_gen', 'resp_gen']:
                             # GPT2Tokenizer of transformers3.5 needs to be modified
-                            new_turn[key]=self.modified_encode(turn[key])
+                            new_turn[key]=self.modified_encode(turn[key], tokenizer)
                         else:
                             new_turn[key]=turn[key]
                     new_dial['log'].append(new_turn)
@@ -1132,6 +1132,7 @@ class MultiWozReader(_ReaderBase):
                     turn_batch=[]
                     label_batch=[]
                     reward_batch=[]
+                pv_turn=turn
         if turn_batch!=[]:
             turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
             label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
@@ -1141,8 +1142,8 @@ class MultiWozReader(_ReaderBase):
         return turn_batches, label_batches, reward_batches
     
     def transpose_us_turn_batch(self, batch, rewards, tokenizer):
-        sos_g_id=tokenizer.convert_tokens_to_ids('<sos_g>')
-        eos_g_id=tokenizer.convert_tokens_to_ids('<eos_g>')
+        sos_r_id=tokenizer.convert_tokens_to_ids('<sos_r>')
+        eos_r_id=tokenizer.convert_tokens_to_ids('<eos_r>')
         turn_batches=[]
         label_batches=[]
         reward_batches=[]
@@ -1152,7 +1153,7 @@ class MultiWozReader(_ReaderBase):
         for dial, reward in zip(batch, rewards):
             pv_turn=None
             for turn, R in zip(dial, reward):
-                pv_resp=pv_turn['resp'] if pv_turn else [sos_g_id,  eos_g_id]
+                pv_resp=pv_turn['resp'] if pv_turn else [sos_r_id,  eos_r_id]
                 turn_batch.append(turn['gpan']+pv_resp+turn['usr_act']+turn['user'])
                 label_batch.append([cfg.pad_id]*len(turn['gpan']+pv_resp)+\
                     turn['usr_act']+[cfg.pad_id]*len(turn['user']))
@@ -1166,6 +1167,7 @@ class MultiWozReader(_ReaderBase):
                     turn_batch=[]
                     label_batch=[]
                     reward_batch=[]
+                pv_turn=turn
         if turn_batch!=[]:
             turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
             label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
@@ -1174,7 +1176,9 @@ class MultiWozReader(_ReaderBase):
             reward_batches.append(reward_batch)
         return turn_batches, label_batches, reward_batches
 
-    def modified_encode(self, text):
+    def modified_encode(self, text, tokenizer=None):
+        if tokenizer is None:
+            tokenizer=self.tokenizer
         if int(transformers.__version__[0])>=3:
             if isinstance(text, str):
                 word_list=text.split()
@@ -1185,20 +1189,20 @@ class MultiWozReader(_ReaderBase):
             special_token_pos=[]
             results=[]
             for idx, word in enumerate(word_list):
-                if word in self.tokenizer.additional_special_tokens:
+                if word in tokenizer.additional_special_tokens:
                     special_token_pos.append(idx)
             for j, idx in enumerate(special_token_pos):
                 if j<len(special_token_pos)-1:
                     next_idx=special_token_pos[j+1]
-                    results+=self.tokenizer.encode(word_list[idx]) + self.tokenizer.encode(' '+' '.join(word_list[idx+1:next_idx]))
+                    results+=tokenizer.encode(word_list[idx]) + tokenizer.encode(' '+' '.join(word_list[idx+1:next_idx]))
                 else:
-                    results+=self.tokenizer.encode(word_list[idx])
+                    results+=tokenizer.encode(word_list[idx])
                     if idx<len(word_list)-1:# the last word is not a special token
-                        results+=self.tokenizer.encode(' '+' '.join(word_list[idx+1:]))
+                        results+=tokenizer.encode(' '+' '.join(word_list[idx+1:]))
             return results
 
         else:
-            return self.tokenizer.encode(text)
+            return tokenizer.encode(text)
 
     def batch_align(self,contexts,left_len,return_attn=False):
         max_len=max([len(context) for context in contexts])
