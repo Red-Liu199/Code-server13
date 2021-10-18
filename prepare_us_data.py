@@ -99,8 +99,6 @@ def count(data):
     no_act_count=0
     for dial_id in data:
         goal=data[dial_id]['goal']
-        if dial_id=='mul2168.json':
-            t=1
         for domain in goal:
             if domain in ['message','topic']:
                 continue
@@ -117,7 +115,7 @@ def count(data):
                     for slot in goal[domain][intent]:
                         if slot not in goal_pool[domain][intent]:
                             goal_pool[domain][intent].append(slot)
-        '''
+        
         for turn_id,turn in enumerate(data[dial_id]['log']):
             if turn_id%2==0:#user
                 if 'dialog_act' not in turn:
@@ -130,9 +128,11 @@ def count(data):
                     for item in usr_act[key]:
                         if item[0] not in slot_pool:
                             slot_pool.append(item[0])
-        '''
+        
 
     print(goal_pool)
+    print(slot_pool)
+    print(intent_pool)
     #print('user turns without dialog act:', no_act_count)
 
 
@@ -144,7 +144,8 @@ if __name__ == "__main__":
     save_path='data/multi-woz-2.1-processed/data_for_us.json'
     data1=json.load(open(path1,'r', encoding='utf-8'))
     data2=json.load(open(path2,'r', encoding='utf-8'))
-    #count(data1)
+    count(data2)
+    '''
     slot_list_goal=[]
     new_data={}
     for dial_id in data1:
@@ -177,5 +178,5 @@ if __name__ == "__main__":
             new_data[dial_id].append(entry)
 
     json.dump(new_data, open(save_path, 'w'), indent=2)
-    
+    '''
     

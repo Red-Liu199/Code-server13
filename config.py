@@ -103,7 +103,7 @@ class _Config:
         self.epoch_num = 50
         self.early_stop=False
         self.early_stop_count = 5
-        self.weight_decay_count = 4
+        self.weight_decay_count = 3
         
         self.only_target_loss=True # only calculate the loss on target context
 

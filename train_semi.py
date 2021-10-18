@@ -1079,7 +1079,7 @@ class Modal(object):
             if dial_len>max_len:
                 max_len=dial_len
         return max_len
-
+    
     def convert_eval_batch(self,data,contexts, turn_num,bs_gen,prior=False,db_gen=None,resp_gen=None,aspn_gen=None, gen_db=False):
         
         if gen_db:#在使用后验网络生成数据库结果时使用
@@ -1503,7 +1503,9 @@ class Modal(object):
         bleu, success, match = self.evaluator.validation_metric(results)
         score = 0.5 * (success + match) + bleu
         logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
-        self.reader.save_result('w', results, field,result_name='result.csv')
+        
+        #self.reader.save_result('w', results, field,result_name='result.csv')
+        json.dump(results, open(result_path, 'w'), indent=2)
 
         eval_results = {}
         eval_results['bleu'] = bleu
@@ -1648,11 +1650,11 @@ class Modal(object):
                 past_key_values=None
                 end_flag=np.zeros(batch_size)
                 contexts=self.reader.convert_eval_batch_turn(turn_batch,pv_batch, mode='gen_bspn')
-                '''
+                
                 if self.global_output>0 and cfg.mode=='test':
                     logging.info(self.tokenizer.decode(contexts[0]))
                     self.global_output-=1
-                '''
+                
                 inputs,attentions=self.reader.batch_align(contexts,left_len=bs_max_len,return_attn=True)
                 inputs=torch.tensor(inputs).to(device)
                 attentions=torch.tensor(attentions).to(device)
@@ -1913,10 +1915,12 @@ def main():
     elif args.mode =='test_pos':
         m.validate_pos(data='test')
     else:  # test
+        '''
         logging.info("Generate setting: \n\t use true_prev_bspn={} \n\t use true_prev_aspn={} \n\t use true_db_pointer={} \n\t use true_prev_resp={} \n\t use true_curr_bspn={} \n\t use true_curr_aspn={} \n\t use_all_previous_context={}".format(
                             cfg.use_true_prev_bspn, cfg.use_true_prev_aspn, cfg.use_true_db_pointer, cfg.use_true_prev_resp,
                             cfg.use_true_curr_bspn, cfg.use_true_curr_aspn, cfg.use_all_previous_context
                         ))
+        '''
         m.validate_fast('test')
 
 

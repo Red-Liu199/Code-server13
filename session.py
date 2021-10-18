@@ -130,7 +130,7 @@ class turn_level_session(object):
             logging.info('Training -- Avg DS reward:{:3f}, avg US reward:{:3f}'.format(avg_DS_reward, avg_US_reward))
             
             DS_reward, US_reward, avg_turn, success, match =self.validate(dial_id_batches)
-            eval_metric=success
+            eval_metric=success+match
 
             if eval_metric>max_score:
                 max_score=eval_metric
@@ -195,6 +195,7 @@ class turn_level_session(object):
                 self.optimizer.step()
                 if self.scheduler:
                     self.scheduler.step()
+                self.optimizer.zero_grad()
             gen_batch_ids=self.reader.convert_batch_tokens_to_ids(gen_batch, self.US_tok)
             us_turn_batches, us_label_batches, us_reward_batches = self.reader.transpose_us_turn_batch(
                 gen_batch_ids, US_reward_batch, self.US_tok)
@@ -395,7 +396,7 @@ class turn_level_session(object):
         gen_batch=[[] for _ in range(batch_size)]
         end_batch=[0 for _ in range(batch_size)]
         gpan_batch=[]
-        goal_batch=[]
+        goal_batch=[]# current goal batch
         bs_max_len=50
         act_max_len=20
         resp_max_len=60
@@ -418,6 +419,7 @@ class turn_level_session(object):
                     pv_constraint=self.reader.bspan_to_constraint_dict(pv_bspn_batch[batch_id])
                     pv_user_act_dict=self.reader.aspan_to_act_dict(pv_user_act_batch[batch_id], side='user')
                     goal=self.reader.update_goal(goal,pv_user_act_dict,pv_constraint)
+                    goal_batch[batch_id]=goal
                     self.goal_list_batch[batch_id].append(goal)
                     gpan_batch[batch_id]='<sos_g> '+self.reader.goal_to_gpan(goal)+' <eos_g>'
             # generate user act batch
@@ -654,7 +656,10 @@ class turn_level_session(object):
                 repeat_reward-=5
             user_act_list.append(user_act)
             pv_sys_act=self.reader.aspan_to_act_dict(turn['aspn'], side='sys')
-            rewards.append(max(min(reqt_reward + goal_reward + repeat_reward + global_reward, 10),0))
+            if cfg.non_neg_reward:
+                rewards.append(max(min(reqt_reward + goal_reward + repeat_reward + global_reward, 10),0))
+            else:
+                rewards.append(max(min(reqt_reward + goal_reward + repeat_reward + global_reward, 10),-5))
         return rewards
 
     def get_DS_reward(self, dial, dial_id):
@@ -684,7 +689,10 @@ class turn_level_session(object):
             if sys_act in sys_act_list:
                 repeat_reward-=5
             sys_act_list.append(sys_act)
-            rewards.append(max(min(reqt_reward + repeat_reward + global_reward, 10),0)) #[-5, 10]
+            if cfg.non_neg_reward:
+                rewards.append(max(min(reqt_reward + repeat_reward + global_reward, 10),0))
+            else:
+                rewards.append(max(min(reqt_reward + repeat_reward + global_reward, 10),-5)) #[-5, 10]
         return rewards
         
     def goal_complete_rate(self, goal, final_goal):
@@ -771,6 +779,8 @@ if __name__=='__main__':
     cfg.exp_path=os.path.join(cfg.rl_save_path,cfg.exp_no)
     if not os.path.exists(cfg.exp_path):
         os.mkdir(cfg.exp_path)
+    if 'test' in args.mode:
+        cfg.eval_load_path=cfg.DS_path
     cfg._init_logging_handler('train')
     dials1=[]
     dials2=[]
