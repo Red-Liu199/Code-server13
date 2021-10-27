@@ -15,13 +15,10 @@ import re
 import json
 import copy
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
-#from convlab2.e2e.damd.multiwoz.config import global_config as cfg
-#from convlab2.e2e.damd.multiwoz.reader import MultiWozReader
-#from convlab2.e2e.damd.multiwoz.damd_net import DAMD, cuda_, get_one_hot_input
-#from convlab2.e2e.damd.multiwoz.ontology import eos_tokens
 from convlab2.dialog_agent import Agent
 from utils import modify_map_file
 from rl_utils.rl_util import fix_act
+from session import turn_level_session as Session
 
 DEFAULT_MODEL_URL = "experiments_21/DS_base/best_score_model"
 DOMAINS = ["[restaurant]", "[hotel]", "[attraction]", "[train]", "[taxi]", "[police]", "[hospital]", "[general]"]
@@ -39,6 +36,7 @@ path='onto.json'
 onto=json.load(open(path,'r', encoding='utf-8'))
 convlab2_dict=onto['ConvLab2_dict']
 class LsGPT(Agent):
+
     def __init__(self, model_path=DEFAULT_MODEL_URL, name='LS-GPT', return_act=False, return_tuple=False, device=0):
         super().__init__(name=name)
         self.return_act=return_act
@@ -405,6 +403,197 @@ class LsGPT(Agent):
             action_list.append(action)
 
         return action_list
+
+class turn_level_sys(Agent, Session):
+
+    def __init__(self, path, **kwargs):
+        Agent.__init__(self, name='turn-level-sys')
+        Session.__init__(self, path, **kwargs)
+        self.init_session()
+
+    def response(self, user):
+        user='<sos_u> '+user+' <eos_u>'
+        if self.pv_bspn is None: # first turn
+            bspn, db, aspn, resp = self.get_sys_response(user)
+        else:
+            bspn, db, aspn, resp = self.get_sys_response(user, self.pv_bspn, self.pv_resp)
+        self.pv_bspn=bspn
+        self.pv_resp=resp
+        resp1=self.lex_resp(resp, bspn, self.turn_domain)
+        turn={'user':user, 'bspn':bspn, 'db':db, 'aspn':aspn, 'resp':resp, 'lex_resp': resp1}
+        self.dialog.append(turn)
+        return resp1
+
+    def lex_resp(self, resp, bspn, turn_domain):
+        value_map={}
+        restored = resp
+        restored=restored.replace('<sos_r>','')
+        restored=restored.replace('<eos_r>','')
+        restored.strip()
+        restored = restored.capitalize()
+        restored = restored.replace(' -s', 's')
+        restored = restored.replace(' -ly', 'ly')
+        restored = restored.replace(' -er', 'er')
+        constraint_dict=self.reader.bspan_to_constraint_dict(bspn)#{'hotel': {'stay': '3'}, 'restaurant': {'people': '4'}}
+        mat_ents = self.reader.db.get_match_num(constraint_dict, True)
+        #print(mat_ents)
+        #print(constraint_dict)
+        if '[value_car]' in restored:
+            restored = restored.replace('[value_car]', 'BMW')
+            value_map['taxi']={}
+            value_map['taxi']['car']='BMW'
+
+        # restored.replace('[value_phone]', '830-430-6666')
+        domain=[]
+        for d in turn_domain:
+            if d.startswith('['):
+                domain.append(d[1:-1])
+            else:
+                domain.append(d)
+
+        for d in domain:
+            constraint = constraint_dict.get(d,None)
+            if d not in value_map:
+                value_map[d]={}
+            if constraint:
+                if 'stay' in constraint and '[value_stay]' in restored:
+                    restored = restored.replace('[value_stay]', constraint['stay'])
+                    value_map[d]['stay']=constraint['stay']
+                if 'day' in constraint and '[value_day]' in restored:
+                    restored = restored.replace('[value_day]', constraint['day'])
+                    value_map[d]['day']=constraint['day']
+                if 'people' in constraint and '[value_people]' in restored:
+                    restored = restored.replace('[value_people]', constraint['people'])
+                    value_map[d]['people']=constraint['people']
+                if 'time' in constraint and '[value_time]' in restored:
+                    restored = restored.replace('[value_time]', constraint['time'])
+                    value_map[d]['time']=constraint['time']
+                if 'type' in constraint and '[value_type]' in restored:
+                    restored = restored.replace('[value_type]', constraint['type'])
+                    value_map[d]['type']=constraint['type']
+                if d in mat_ents and len(mat_ents[d])==0:
+                    for s in constraint:
+                        if s == 'pricerange' and d in ['hotel', 'restaurant'] and 'price]' in restored:
+                            restored = restored.replace('[value_price]', constraint['pricerange'])
+                            value_map[d]['price']=constraint['pricerange']
+                        if s+']' in restored:
+                            restored = restored.replace('[value_%s]'%s, constraint[s])
+                            value_map[d][s]=constraint[s]
+
+            if '[value_choice' in restored and mat_ents.get(d):
+                restored = restored.replace('[value_choice]', str(len(mat_ents[d])))
+                value_map[d]['choice']=str(len(mat_ents[d]))
+        if '[value_choice' in restored:
+            restored = restored.replace('[value_choice]', str(random.choice([1,2,3,4,5])))
+
+
+        ent = mat_ents.get(domain[-1], [])
+        d=domain[-1]
+        if d not in value_map:
+            value_map[d]={}
+        if ent:
+            # handle multiple [value_xxx] tokens first
+            restored_split = restored.split()
+            token_count = Counter(restored_split)
+            for idx, t in enumerate(restored_split):
+                if '[value' in t and token_count[t]>1 and token_count[t]<=len(ent):
+                    id1=t.index('_')
+                    id2=t.index(']')
+                    slot = t[id1+1:id2]
+                    pattern = r'\['+t[1:-1]+r'\]'
+                    for e in ent:
+                        if e.get(slot):
+                            if domain[-1] == 'hotel' and slot == 'price':
+                                slot = 'pricerange'
+                            if slot in ['name', 'address']:
+                                rep = ' '.join([i.capitalize() if i not in stopwords else i for i in e[slot].split()])
+                            elif slot in ['id','postcode']:
+                                rep = e[slot].upper()
+                            else:
+                                rep = e[slot]
+                            restored = re.sub(pattern, rep, restored, 1)
+                            value_map[d][slot]=rep
+                        elif slot == 'price' and  e.get('pricerange'):
+                            restored = re.sub(pattern, e['pricerange'], restored, 1)
+                            value_map[d][slot]=e['pricerange']
+
+            # handle normal 1 entity case
+            ent = ent[0]
+            if d=='train':
+                if ent['id']=="tr2835":
+                    temp=1
+            ents_list=self.reader.db.dbs[domain[-1]]
+            ref_no=ents_list.index(ent)
+            if ref_no>9:
+                if '[value_reference]' in restored:
+                    restored = restored.replace('[value_reference]', '000000'+str(ref_no))
+                    value_map[d]['reference']='000000'+str(ref_no)
+            else:
+                if '[value_reference]' in restored:
+                    restored = restored.replace('[value_reference]', '0000000'+str(ref_no))
+                    value_map[d]['reference']='0000000'+str(ref_no)
+            for t in restored.split():
+                if '[value' in t:
+                    id1=t.index('_')
+                    id2=t.index(']')
+                    slot = t[id1+1:id2]
+                    if ent.get(slot):
+                        if domain[-1] == 'hotel' and slot == 'price':
+                            slot = 'pricerange'
+                        if slot in ['name', 'address']:
+                            rep = ' '.join([i.capitalize() if i not in stopwords else i for i in ent[slot].split()])
+                        elif slot in ['id','postcode']:
+                            rep = ent[slot].upper()
+                        else:
+                            rep = ent[slot]
+                        # rep = ent[slot]
+                        restored = restored.replace(t, rep)
+                        value_map[d][slot]=rep
+                        # restored = restored.replace(t, ent[slot])
+                    elif slot == 'price' and  ent.get('pricerange'):
+                        restored = restored.replace(t, ent['pricerange'])
+                        value_map[d][slot]=ent['pricerange']
+                        # else:
+                        #     print(restored, domain)       
+        #restored = restored.replace('[value_area]', 'centre')
+        for t in restored.split():
+            if '[value' in t:
+                slot=t[7:-1]
+                value='UNKNOWN'
+                for domain, sv in constraint_dict.items():
+                    if isinstance(sv, dict) and slot in sv:
+                        value=sv[slot]
+                        break
+                if value=='UNKNOWN':
+                    for domain in mat_ents:
+                        ent=mat_ents[domain][0]
+                        if slot in ent:
+                            if slot in ['name', 'address']:
+                                value=' '.join([i.capitalize() if i not in stopwords else i for i in ent[slot].split()])
+                            elif slot in ['id', 'postcode']:
+                                value=ent[slot].upper()
+                            else:
+                                value=ent[slot]
+                            break          
+                restored = restored.replace(t, value)
+        restored = restored.replace('[value_phone]', '01223462354')
+        restored = restored.replace('[value_postcode]', 'CB12DP')
+        restored = restored.replace('[value_address]', 'Parkside, Cambridge')
+        restored = restored.replace('[value_people]', 'several')
+        restored = restored.replace('[value_day]', 'Saturday')
+        restored = restored.replace('[value_time]', '12:00')
+        restored = restored.split()
+        for idx, w in enumerate(restored):
+            if idx>0 and restored[idx-1] in ['.', '?', '!']:
+                restored[idx]= restored[idx].capitalize()
+        restored = ' '.join(restored)
+
+        return restored.strip()
+    
+    def init_session(self):
+        self.pv_bspn=None
+        self.pv_resp=None
+        self.dialog=[]
 
 if __name__ == '__main__':
     s = LsGPT()

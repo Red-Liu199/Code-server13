@@ -1,7 +1,8 @@
 *.zip
+*.json
 /experiments/
 /experiments_21/
-/_pycache_/
+/__pycache__/
 /.vscode/
 /best_model/
 /data/

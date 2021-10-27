@@ -6,6 +6,8 @@ class _Config:
 
     def _multiwoz_damd_init(self):
 
+        self.notes=''
+
         self.vocab_path_train = './data/multi-woz-2.1-processed/vocab'
         self.vocab_path_eval = None
         self.data_path = './data/multi-woz-2.1-processed/'
@@ -56,7 +58,6 @@ class _Config:
         self.gpt_path = '../distilgpt2'
         self.val_set='test'
         self.col_samples=True #collect wrong predictions samples
-        self.test_data_path=''
         #additional data setting
         self.data_aug=False
         self.only_SGD=False
@@ -95,17 +96,19 @@ class _Config:
         self.warmup_steps = -1 
         self.warmup_ratio= 0.2
         self.weight_decay = 0.0 
-        self.gradient_accumulation_steps = 16
-        self.batch_size = 2
+        self.gradient_accumulation_steps = 4
+        self.batch_size = 8
 
         self.lr_decay = 0.5
         self.use_scheduler=True
         self.epoch_num = 50
         self.early_stop=False
         self.early_stop_count = 5
-        self.weight_decay_count = 3
+        self.weight_decay_count = 4
         
         self.only_target_loss=True # only calculate the loss on target context
+
+        self.clip_grad=True
 
         # evaluation settings
         self.eval_load_path = 'to be generated'
@@ -136,7 +139,7 @@ class _Config:
         self.enable_dst = False
         #useless settings
         self.multi_acts_training = False
-        self.same_eval_as_cambridge = True
+        self.same_eval_as_cambridge = False
         self.same_eval_act_f1_as_hdsa = False
 
         #parameters for rl training
@@ -189,9 +192,13 @@ class _Config:
         self.DS_device=2
         self.US_device=3
         self.fix_db=True
+        self.add_end_reward=False
+        self.ctrl_lr=False
 
         self.interaction_batch_size=32
         self.training_batch_size=8
+
+        self.test_unseen_act=False
 
     def __str__(self):
         s = ''

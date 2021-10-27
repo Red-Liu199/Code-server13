@@ -187,11 +187,17 @@ class MultiWozEvaluator(object):
 
         return metric_results
 
-    def validation_metric(self, data):
+    def validation_metric(self, data, return_act_acc=False):
         bleu = self.bleu_metric(data)
         # accu_single_dom, accu_multi_dom, multi_dom_num = self.domain_eval(data)
         success, match, req_offer_counts, dial_num = self.context_to_response_eval(data,
                                                                                         same_eval_as_cambridge=cfg.same_eval_as_cambridge)
+        
+        if return_act_acc:
+            P, R, F1 = self.resp_eval(data)
+            print('resp placeholder P/R/F1:', P, R, F1)
+            act_f1,P,R, turn_acc = self.aspn_eval(data)
+            return bleu, success, match, turn_acc, P, R, act_f1
         return bleu, success, match
 
     def _get_metric_results(self, data, domain='all', file_list=None):
@@ -214,7 +220,7 @@ class MultiWozEvaluator(object):
             info_slots_acc[slot] = correct / slot_cnt[slot] * 100
         info_slots_acc = OrderedDict(sorted(info_slots_acc.items(), key = lambda x: x[1]))
 
-        act_f1 = self.aspn_eval(data, file_list)
+        act_f1,_,_,_ = self.aspn_eval(data, file_list)
         avg_act_num, avg_diverse_score = self.multi_act_eval(data, file_list)
         accu_single_dom, accu_multi_dom, multi_dom_num = self.domain_eval(data, file_list)
 
@@ -457,6 +463,37 @@ class MultiWozEvaluator(object):
 
         return joint_goal, f1, accuracy, slot_appear_num, slot_correct_num
 
+    def resp_eval(self, data):
+        def _extract_plh(text):
+            plh_list=[]
+            for w in text.split():
+                if '[value_' in w and w not in plh_list:
+                    plh_list.append(w)
+            return plh_list
+
+        dials = self.pack_dial(data)
+        tp=0
+        fp=0
+        fn=0
+        for dial_id in dials:
+            dial=dials[dial_id]
+            for turn_num, turn in enumerate(dial):
+                if turn_num==0:
+                    continue
+                plh_list=_extract_plh(turn['resp'])
+                plh_list_gen=_extract_plh(turn['resp_gen'])
+                for plh_gen in plh_list_gen:
+                    if plh_gen in plh_list:
+                        tp+=1
+                    else:
+                        fp+=1
+                for plh in plh_list:
+                    if plh not in plh_list_gen:
+                        fn+=1
+        precision = tp / (tp + fp + 1e-10)
+        recall = tp / (tp + fn + 1e-10)
+        f1 = 2 * precision * recall / (precision + recall + 1e-10)
+        return precision, recall, f1
 
     def aspn_eval(self, data, eval_dial_list = None):
 
@@ -470,6 +507,8 @@ class MultiWozEvaluator(object):
         total_tp, total_fp, total_fn = 0, 0, 0
 
         dial_num = 0
+        total_turn=0
+        right_turn=0
         for dial_id in dials:
             if eval_dial_list and dial_id+'.json' not in eval_dial_list:
                 continue
@@ -479,6 +518,9 @@ class MultiWozEvaluator(object):
             for turn_num, turn in enumerate(dial):
                 if turn_num == 0:
                     continue
+                total_turn+=1
+                if turn['aspn']==turn['aspn_gen']:
+                    right_turn+=1
                 if cfg.same_eval_act_f1_as_hdsa:
                     pred_acts, true_acts = {}, {}
                     for t in turn['aspn_gen']:
@@ -502,8 +544,9 @@ class MultiWozEvaluator(object):
         precision = total_tp / (total_tp + total_fp + 1e-10)
         recall = total_tp / (total_tp + total_fn + 1e-10)
         f1 = 2 * precision * recall / (precision + recall + 1e-10)
+        turn_acc=right_turn/total_turn
 
-        return f1 * 100
+        return f1, precision, recall, turn_acc
 
     def multi_act_eval(self, data, eval_dial_list = None):
 

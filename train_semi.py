@@ -1416,38 +1416,40 @@ class Modal(object):
             encoded_data.append(encoded_dial)
         return encoded_data
 
-    def validate_fast(self,data='dev'):
+    def validate_fast(self, data='dev', dial_id_list=None):
         # predict one dialog/ one turn at a time
         if cfg.mode=='pretrain' or cfg.mode=='train' or cfg.mode=='semi_ST':
             self.PrioriModel=self.model
             self.device1=self.model.device
         
         self.PrioriModel.eval()
-        if cfg.test_data_path=='':
-            eval_data = self.reader.get_eval_data(data)
-        else:
-            eval_data=json.load(open(cfg.test_data_path,'r', encoding='utf-8'))
-            eval_data=eval_data['test']
-            for dial_id, dial in enumerate(eval_data):
-                for turn_id, turn in enumerate(dial):
-                    for key in turn:
-                        if key in ['user','usdx','resp','bspn','bsdx','aspn','dspn','db']:
-                            eval_data[dial_id][turn_id][key]=self.tokenizer.encode(turn[key])
+        eval_data = self.reader.get_eval_data(data)
+        
         if cfg.debugging:
             eval_data=eval_data[:100]
+        if dial_id_list:
+            new_data=[]
+            for dial in eval_data:
+                if dial[0]['dial_id']+'.json' in dial_id_list:
+                    new_data.append(dial)
+            eval_data=new_data
+        
         cfg.batch_size=cfg.eval_batch_size
         batches=self.reader.get_batches('test',data=eval_data)
-        result_path=os.path.join(cfg.eval_load_path,'result.csv') if cfg.test_data_path=='' \
-            else os.path.join(cfg.eval_load_path,'result_test.csv')
+        result_path=os.path.join(cfg.eval_load_path,'result.json')
         
-        if os.path.exists(result_path) and cfg.mode=='test':
-            results,field=self.reader.load_result(result_path)
+        if os.path.exists(result_path) and cfg.mode=='test' and not cfg.test_unseen_act:
+            if result_path[-3:]=='csv':
+                results,field=self.reader.load_result(result_path)
+            else:
+                results=json.load(open(result_path,'r', encoding='utf-8'))
             joint_acc=compute_jacc(results)
             #joint_acc=0
             cfg.use_true_bspn_for_ctr_eval=True
-            bleu, success, match = self.evaluator.validation_metric(results)
+            bleu, success, match, action_acc, P, R, F1 = self.evaluator.validation_metric(results, return_act_acc=True)
             score = 0.5 * (success + match) + bleu
             logging.info('validation [CTR] %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+            logging.info('Sys act P,R, F1: %.2f, %.2f, %.2f, %.2f' % (action_acc, P, R, F1))
             cfg.use_true_bspn_for_ctr_eval=False
             bleu, success, match = self.evaluator.validation_metric(results)
             score = 0.5 * (success + match) + bleu
@@ -1500,9 +1502,10 @@ class Modal(object):
         score = 0.5 * (success + match) + bleu
         logging.info('validation [CTR] %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
         cfg.use_true_bspn_for_ctr_eval=False
-        bleu, success, match = self.evaluator.validation_metric(results)
+        bleu, success, match, action_acc, P, R, F1 = self.evaluator.validation_metric(results, return_act_acc=True)
         score = 0.5 * (success + match) + bleu
-        logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+        logging.info('validation [CTR] %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+        logging.info('Sys act P,R, F1: %.2f, %.2f, %.2f, %.2f' % (action_acc, P, R, F1))
         
         #self.reader.save_result('w', results, field,result_name='result.csv')
         json.dump(results, open(result_path, 'w'), indent=2)
@@ -1915,13 +1918,35 @@ def main():
     elif args.mode =='test_pos':
         m.validate_pos(data='test')
     else:  # test
-        '''
-        logging.info("Generate setting: \n\t use true_prev_bspn={} \n\t use true_prev_aspn={} \n\t use true_db_pointer={} \n\t use true_prev_resp={} \n\t use true_curr_bspn={} \n\t use true_curr_aspn={} \n\t use_all_previous_context={}".format(
-                            cfg.use_true_prev_bspn, cfg.use_true_prev_aspn, cfg.use_true_db_pointer, cfg.use_true_prev_resp,
-                            cfg.use_true_curr_bspn, cfg.use_true_curr_aspn, cfg.use_all_previous_context
-                        ))
-        '''
-        m.validate_fast('test')
+        logging.info('Load model from :{}'.format(cfg.eval_load_path))
+        if cfg.test_unseen_act:
+            dial_id_list=['pmul3647.json', 'mul2320.json', 'pmul4626.json', 'mul1650.json', 
+            'pmul0286.json', 'mul2491.json', 'pmul4356.json', 'mul2637.json', 'mul0690.json', 
+            'pmul1180.json', 'pmul4660.json', 'pmul2942.json', 'pmul3672.json', 'mul0810.json', 
+            'pmul0182.json', 'mul1546.json', 'pmul1521.json', 'pmul1966.json', 'mul1008.json', 
+            'pmul1247.json', 'mul0309.json', 'pmul3737.json', 'mul0818.json', 'pmul4884.json', 
+            'mul0004.json', 'sng0840.json', 'sng1042.json', 'mul1901.json', 'pmul4316.json', 
+            'pmul3145.json', 'pmul0599.json', 'mul0374.json', 'sng0994.json', 'sng0636.json', 
+            'pmul2009.json', 'pmul4542.json', 'mul0772.json', 'sng0691.json', 'mul0822.json', 
+            'sng0690.json', 'pmul4362.json', 'pmul3439.json', 'mul2137.json', 'mul2658.json', 
+            'mul1527.json', 'pmul4050.json', 'mul0397.json', 'pmul4155.json', 'mul1211.json', 
+            'sng0897.json', 'pmul0864.json', 'mul1766.json', 'mul0089.json', 'mul0901.json',
+            'mul0941.json', 'pmul4504.json', 'pmul1470.json', 'mul0738.json', 'mul0080.json', 
+            'mul0739.json', 'mul2525.json', 'pmul0844.json', 'pmul0090.json', 'pmul3933.json', 
+            'pmul3107.json', 'pmul3897.json', 'sng0979.json', 'mul1268.json', 'pmul4911.json', 
+            'mul1678.json', 'pmul4357.json', 'pmul4247.json', 'mul1848.json', 'sng0081.json', 
+            'pmul1537.json', 'pmul3066.json', 'sng01673.json', 'mul1077.json', 'mul0034.json', 
+            'mul2009.json', 'mul2270.json', 'mul2482.json', 'mul1649.json', 'mul0113.json', 
+            'pmul4220.json', 'pmul4224.json', 'pmul4246.json', 'sng0589.json', 'pmul3423.json', 
+            'pmul3778.json', 'pmul4234.json', 'mul2439.json', 'mul1661.json', 'mul2099.json', 
+            'mul0760.json', 'pmul2578.json', 'mul2197.json', 'pmul0998.json', 'mul1071.json', 
+            'mul1285.json', 'mul2423.json', 'pmul3520.json', 'pmul0615.json', 'mul0533.json', 
+            'pmul0441.json', 'mul1254.json', 'pmul3044.json', 'mul1935.json', 'mul0466.json', 
+            'mul2042.json', 'sng1105.json', 'mul0841.json', 'pmul2146.json', 'pmul1194.json', 
+            'pmul4716.json', 'pmul4644.json', 'sng02319.json', 'pmul4547.json']
+            m.validate_fast('test', dial_id_list=dial_id_list)
+        else:
+            m.validate_fast('test')
 
 
 if __name__ == "__main__":

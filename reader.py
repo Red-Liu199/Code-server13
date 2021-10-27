@@ -738,7 +738,7 @@ class MultiWozReader(_ReaderBase):
                 if intent=='inform':
                     for slot, value in sv.items():
                         # In user act, price can express both price and pricerange
-                        if slot=='price' and 'inform' in goal[domain] and slot not in goal[domain]['inform']:
+                        if slot=='price' and intent in goal[domain] and slot not in goal[domain][intent]:
                             slot='pricerange'
                         if  'inform' in goal[domain] and slot in goal[domain]['inform']:
                             if goal[domain]['inform'][slot]==value:
@@ -752,7 +752,7 @@ class MultiWozReader(_ReaderBase):
                                 goal[domain].pop('book')
                 elif intent=='request':
                     for slot in sv:
-                        if slot=='price' and 'inform' in goal[domain] and slot not in goal[domain]['inform']:
+                        if slot=='price' and intent in goal[domain] and slot not in goal[domain][intent]:
                             slot='pricerange'
                         if 'request' in goal[domain] and slot in goal[domain]['request']:
                             goal[domain]['request'].pop(goal[domain]['request'].index(slot))
@@ -774,6 +774,8 @@ class MultiWozReader(_ReaderBase):
                                 goal[domain]['book'].pop(slot)
                             if goal[domain]['book']=={}:
                                 goal[domain].pop('book')
+            if goal[domain]=={}:
+                goal.pop(domain)
         return goal
 
     def goal_to_gpan(self, goal, cur_domain=None):
@@ -1500,8 +1502,7 @@ class MultiWozReader(_ReaderBase):
         eos_syntax = ontology.eos_tokens if not eos_syntax else eos_syntax
         sos_syntax = ontology.sos_tokens
         # ground truth bs, as, ds.. generate response
-        field = ['dial_id', 'turn_num', 'user', 'bspn_gen', 'bsdx', 'resp_gen', 'resp', 'aspn_gen', 'aspn',
-                     'dspn_gen', 'dspn', 'bspn', 'pointer']
+        field = ['dial_id', 'turn_num', 'user', 'bspn', 'bspn_gen', 'db', 'db_gen', 'aspn_gen', 'aspn', 'resp_gen', 'resp']
 
         for dial_id, turns in result_dict.items():
             #修改记录：下方的turn_num在源代码中写的是trun_num
