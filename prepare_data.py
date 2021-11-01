@@ -135,17 +135,13 @@ def count(data):
     print(intent_pool)
     #print('user turns without dialog act:', no_act_count)
 
-
-
-
-if __name__ == "__main__":
+def prepare_us_data():
     path1='data/multi-woz-2.1-processed/data_for_damd_fix.json'
     path2='data/MultiWOZ_2.1/data.json'
     save_path='data/multi-woz-2.1-processed/data_for_us.json'
     data1=json.load(open(path1,'r', encoding='utf-8'))
     data2=json.load(open(path2,'r', encoding='utf-8'))
-    count(data2)
-    '''
+    #count(data2)
     slot_list_goal=[]
     new_data={}
     for dial_id in data1:
@@ -158,9 +154,11 @@ if __name__ == "__main__":
         new_data[dial_id]=[]
         pv_user_act=None
         pv_constraint=None
+        pv_sys_act=None
         for turn_id, turn in enumerate(dial1['log']):
             if pv_user_act is not None:
-                goal=reader.update_goal(goal, pv_user_act, pv_constraint)
+                #goal=reader.update_goal(goal, pv_user_act, pv_constraint)
+                goal=reader.update_goal(goal, pv_user_act, sys_act=pv_sys_act)
             turn_domain=turn['turn_domain'].split()
             cur_domain=turn_domain[0] if len(turn_domain)==1 else turn_domain[1]
             cur_domain=cur_domain[1:-1] if cur_domain.startswith('[') else cur_domain
@@ -175,8 +173,14 @@ if __name__ == "__main__":
                 entry['usr_act']=''
             pv_user_act=reader.aspan_to_act_dict(entry['usr_act'], side='user')
             pv_constraint=reader.bspan_to_constraint_dict(entry['constraint'])
+            pv_sys_act=reader.aspan_to_act_dict(entry['sys_act'], side='sys')
             new_data[dial_id].append(entry)
 
     json.dump(new_data, open(save_path, 'w'), indent=2)
-    '''
+
+
+
+if __name__ == "__main__":
+    prepare_us_data()
+    
     

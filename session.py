@@ -1,3 +1,4 @@
+from typing_extensions import final
 import torch
 import random
 import time
@@ -23,6 +24,12 @@ class turn_level_session(object):
     # turn-level US: Goal + prev_Resp + User_act +User_utter
     def __init__(self, DS_path, US_path=None, device1='cpu', device2='cpu'):
         self.DS=GPT2LMHeadModel.from_pretrained(DS_path)
+        '''
+        with open('temp.txt', 'w') as fo:
+            for i, (name, param) in enumerate(self.DS.named_parameters()):
+                fo.write(f"{name} {param.size()}\n")
+        #exit(1)
+        '''
         self.DS.to(device1)
         self.DS_tok=GPT2Tokenizer.from_pretrained(DS_path)
         if US_path:
@@ -111,8 +118,15 @@ class turn_level_session(object):
         cfg.origin_batch_size=cfg.batch_size
         cfg.batch_size=cfg.batch_size*cfg.gradient_accumulation_steps
         # The total turn samples per epoch: dial_per_epoch*avg_turn_num, we think avg_turn_num=8
-        self.optimizer, self.scheduler=self.get_optimizers(num_dials=cfg.rl_dial_per_epoch*8, model=self.DS)
-        if cfg.joint_train:
+        self.global_step=0
+        if cfg.add_rl_baseline:
+            self.avg_ds_reward=0
+            self.avg_us_reward=0
+            self.total_ds_turn=0
+            self.total_us_turn=0
+        if cfg.joint_train_ds:
+            self.optimizer, self.scheduler=self.get_optimizers(num_dials=cfg.rl_dial_per_epoch*8, model=self.DS)
+        if cfg.joint_train_us:
             self.optimizer_us, self.scheduler_us=self.get_optimizers(num_dials=cfg.rl_dial_per_epoch*8, model=self.US)
         # sample some dialogs for validation
         dial_id_batches=[]
@@ -156,6 +170,7 @@ class turn_level_session(object):
                 if cfg.joint_train:
                     for group in self.optimizer_us.param_groups:
                         group['lr'] = group['lr']*cfg.lr_decay
+                lr=group['lr']
                 print("learning rate decay to {}".format(lr))
                 weight_decay_count = cfg.weight_decay_count
                 if lr<1e-9:
@@ -163,8 +178,8 @@ class turn_level_session(object):
                     break
 
             if self.tb_writer:
-                self.tb_writer.add_scalar('Train_DS_reward', avg_DS_reward, epoch)
-                self.tb_writer.add_scalar('Train_US_reward', avg_US_reward, epoch)        
+                #self.tb_writer.add_scalar('Train_DS_reward', avg_DS_reward, epoch)
+                #self.tb_writer.add_scalar('Train_US_reward', avg_US_reward, epoch)        
                 self.tb_writer.add_scalar('Dev_DS_reward', DS_reward, epoch)
                 self.tb_writer.add_scalar('Dev_US_reward', US_reward, epoch)
                 self.tb_writer.add_scalar('Avg_turns', avg_turn, epoch)
@@ -178,64 +193,96 @@ class turn_level_session(object):
         for _ in range(cfg.rl_dial_per_epoch//cfg.interaction_batch_size):
             self.DS.eval()
             self.US.eval()
-            gen_batch, US_reward_batch, DS_reward_batch, _ , _=\
+            gen_batch, US_reward_batch, DS_reward_batch, _ , _, US_rewards, DS_rewards=\
                     self.interact_by_batch(cfg.interaction_batch_size, return_reward=True)
-            avg_US_reward+=sum([np.mean(reward) for reward in US_reward_batch])
-            avg_DS_reward+=sum([np.mean(reward) for reward in DS_reward_batch])
+            avg_US_reward+=US_rewards[0]
+            avg_DS_reward+=DS_rewards[0]
+            US_rewards/=cfg.interaction_batch_size
+            DS_rewards/=cfg.interaction_batch_size
+            self.tb_writer.add_scalar('us_reward', US_rewards[0], self.global_step)
+            self.tb_writer.add_scalar('us_reqt_reward', US_rewards[1], self.global_step)
+            self.tb_writer.add_scalar('us_goal_reward', US_rewards[2], self.global_step)
+            self.tb_writer.add_scalar('us_repeat_reward', US_rewards[3], self.global_step)
+            self.tb_writer.add_scalar('us_goal_comp_reward', US_rewards[4], self.global_step)
+            self.tb_writer.add_scalar('avg_turn_num', US_rewards[5], self.global_step)
+            self.tb_writer.add_scalar('ds_reward', DS_rewards[0], self.global_step)
+            self.tb_writer.add_scalar('ds_reqt_reward', DS_rewards[1], self.global_step)
+            self.tb_writer.add_scalar('ds_repeat_reward', DS_rewards[2], self.global_step)
+            self.tb_writer.add_scalar('ds_success_reward', DS_rewards[3], self.global_step)
+            self.global_step+=1
             self.DS.train()
             self.US.train()
+            self.DS.zero_grad()
+            self.US.zero_grad()
             # Two different tokenizer
-            gen_batch_ids=self.reader.convert_batch_tokens_to_ids(gen_batch, self.DS_tok)
-            ds_turn_batches, ds_label_batches, ds_reward_batches = self.reader.transpose_ds_turn_batch(
-                gen_batch_ids, DS_reward_batch)
-            for turn_batch, label_batch, reward_batch in zip(ds_turn_batches, ds_label_batches, ds_reward_batches):
-                if self.global_output>0:
-                    pass
-                    #logging.info(self.DS_tok.decode(list(turn_batch[0])))
-                    #self.global_output-=1
-                input_tensor = torch.from_numpy(turn_batch).long().to(self.DS.device)
-                label_tensor = torch.from_numpy(label_batch).long().to(self.DS.device)
-                outputs=self.DS(input_tensor)
-                loss=self.calculate_loss(outputs, label_tensor, reward_batch)
-                loss.backward()
-                if cfg.clip_grad:
-                    torch.nn.utils.clip_grad_norm_(self.DS.parameters(), 5.0)
-                # we optimize after every minibatch
-                self.optimizer.step()
-                if self.scheduler:
-                    self.scheduler.step()
-                    lr=self.optimizer.param_groups[0]["lr"]
-                    if lr>=2.8e-5 and cfg.ctrl_lr:
-                        cfg.use_scheduler=False
-                        self.scheduler=None
-                self.optimizer.zero_grad()
-                self.tb_writer.add_scalar('DS-lr', self.optimizer.param_groups[0]["lr"], self.DS_training_steps)
-                self.DS_training_steps+=1
-            gen_batch_ids=self.reader.convert_batch_tokens_to_ids(gen_batch, self.US_tok)
-            us_turn_batches, us_label_batches, us_reward_batches = self.reader.transpose_us_turn_batch(
-                gen_batch_ids, US_reward_batch, self.US_tok)
-            for turn_batch, label_batch, reward_batch in zip(us_turn_batches, us_label_batches, us_reward_batches):
-                if self.global_output>0:
-                    pass
-                    #logging.info(self.US_tok.decode(list(turn_batch[0])))
-                    #self.global_output-=1
-                input_tensor = torch.from_numpy(turn_batch).long().to(self.US.device)
-                label_tensor = torch.from_numpy(label_batch).long().to(self.US.device)
-                outputs=self.US(input_tensor)
-                loss=self.calculate_loss(outputs, label_tensor, reward_batch)
-                loss.backward()
-                if cfg.clip_grad:
-                    torch.nn.utils.clip_grad_norm_(self.US.parameters(), 5.0)
-                self.optimizer_us.step()
-                if self.scheduler_us:
-                    self.scheduler_us.step()
-                    lr=self.optimizer_us.param_groups[0]["lr"]
-                    if lr>=2.8e-5 and cfg.ctrl_lr:
-                        cfg.use_scheduler=False
-                        self.scheduler_us=None
-                self.optimizer_us.zero_grad()
-                self.tb_writer.add_scalar('US-lr', self.optimizer_us.param_groups[0]["lr"], self.US_training_steps)
-                self.US_training_steps+=1
+            assert cfg.joint_train_ds or cfg.joint_train_us
+            if cfg.joint_train_ds:
+                gen_batch_ids=self.reader.convert_batch_tokens_to_ids(gen_batch, self.DS_tok)
+                ds_turn_batches, ds_label_batches, ds_reward_batches = self.reader.transpose_ds_turn_batch(
+                    gen_batch_ids, DS_reward_batch)
+                for turn_batch, label_batch, reward_batch in zip(ds_turn_batches, ds_label_batches, ds_reward_batches):
+                    if self.global_output>0:
+                        pass
+                        #logging.info(self.DS_tok.decode(list(turn_batch[0])))
+                        #self.global_output-=1
+                    input_tensor = torch.from_numpy(turn_batch).long().to(self.DS.device)
+                    label_tensor = torch.from_numpy(label_batch).long().to(self.DS.device)
+                    outputs=self.DS(input_tensor)
+                    if cfg.add_rl_baseline:
+                        loss=self.calculate_loss(outputs, label_tensor, reward_batch, base=self.avg_ds_reward)
+                        self.avg_ds_reward=self.avg_ds_reward*self.total_ds_turn+sum(reward_batch)
+                        self.total_ds_turn+=len(reward_batch)
+                        self.avg_ds_reward/=self.total_ds_turn
+                        self.tb_writer.add_scalar('total_avg_ds_reward', self.avg_ds_reward, self.DS_training_steps)
+                    else:
+                        loss=self.calculate_loss(outputs, label_tensor, reward_batch)
+                    loss.backward()
+                    if cfg.clip_grad:
+                        torch.nn.utils.clip_grad_norm_(self.DS.parameters(), 5.0)
+                    # we optimize after every minibatch
+                    self.optimizer.step()
+                    if self.scheduler:
+                        self.scheduler.step()
+                        lr=self.optimizer.param_groups[0]["lr"]
+                        if lr>=2.8e-5 and cfg.ctrl_lr:
+                            cfg.use_scheduler=False
+                            self.scheduler=None
+                    self.optimizer.zero_grad()
+                    self.tb_writer.add_scalar('DS-lr', self.optimizer.param_groups[0]["lr"], self.DS_training_steps)
+                    self.DS_training_steps+=1
+            if cfg.joint_train_us:
+                gen_batch_ids=self.reader.convert_batch_tokens_to_ids(gen_batch, self.US_tok)
+                us_turn_batches, us_label_batches, us_reward_batches = self.reader.transpose_us_turn_batch(
+                    gen_batch_ids, US_reward_batch, self.US_tok)
+                for turn_batch, label_batch, reward_batch in zip(us_turn_batches, us_label_batches, us_reward_batches):
+                    if self.global_output>0:
+                        pass
+                        #logging.info(self.US_tok.decode(list(turn_batch[0])))
+                        #self.global_output-=1
+                    input_tensor = torch.from_numpy(turn_batch).long().to(self.US.device)
+                    label_tensor = torch.from_numpy(label_batch).long().to(self.US.device)
+                    outputs=self.US(input_tensor)
+                    if cfg.add_rl_baseline:
+                        loss=self.calculate_loss(outputs, label_tensor, reward_batch, base=self.avg_us_reward)
+                        self.avg_us_reward=self.avg_us_reward*self.total_us_turn+sum(reward_batch)
+                        self.total_us_turn+=len(reward_batch)
+                        self.avg_us_reward/=self.total_us_turn
+                        self.tb_writer.add_scalar('total_avg_us_reward', self.avg_us_reward, self.US_training_steps)
+                    else:
+                        loss=self.calculate_loss(outputs, label_tensor, reward_batch)
+                    loss.backward()
+                    if cfg.clip_grad:
+                        torch.nn.utils.clip_grad_norm_(self.US.parameters(), 5.0)
+                    self.optimizer_us.step()
+                    if self.scheduler_us:
+                        self.scheduler_us.step()
+                        lr=self.optimizer_us.param_groups[0]["lr"]
+                        if lr>=2.8e-5 and cfg.ctrl_lr:
+                            cfg.use_scheduler=False
+                            self.scheduler_us=None
+                    self.optimizer_us.zero_grad()
+                    self.tb_writer.add_scalar('US-lr', self.optimizer_us.param_groups[0]["lr"], self.US_training_steps)
+                    self.US_training_steps+=1
         avg_DS_reward/=cfg.rl_dial_per_epoch
         avg_US_reward/=cfg.rl_dial_per_epoch
         #self.global_output=1
@@ -267,7 +314,7 @@ class turn_level_session(object):
         if init_goal_batches is None:
             for dial_id_batch in dial_id_batches:
                 total+=len(dial_id_batch)
-                gen_batch, US_reward_batch, DS_reward_batch, batch_success, batch_match=\
+                gen_batch, US_reward_batch, DS_reward_batch, batch_success, batch_match, _, _=\
                     self.interact_by_batch(len(dial_id_batch), dial_id_batch, return_reward=True)
                 avg_turn+=sum([len(dial) for dial in gen_batch])
                 avg_US_reward+=sum([np.mean(reward) for reward in US_reward_batch])
@@ -278,7 +325,7 @@ class turn_level_session(object):
         else:
             for init_goal_batch in init_goal_batches:
                 total+=len(init_goal_batch)
-                gen_batch, US_reward_batch, DS_reward_batch, batch_success, batch_match=\
+                gen_batch, US_reward_batch, DS_reward_batch, batch_success, batch_match, _, _=\
                     self.interact_by_batch(len(init_goal_batch), init_goal_batch=init_goal_batch, return_reward=True)
                 avg_turn+=sum([len(dial) for dial in gen_batch])
                 avg_US_reward+=sum([np.mean(reward) for reward in US_reward_batch])
@@ -430,6 +477,7 @@ class turn_level_session(object):
 
         return user_act, user
 
+
     def interact_by_batch(self, batch_size=cfg.interaction_batch_size, dial_id_batch=None, init_goal_batch=None, return_reward=False):
         max_turns=20
         gen_batch=[[] for _ in range(batch_size)]
@@ -445,6 +493,7 @@ class turn_level_session(object):
         if init_goal_batch is None:
             init_goal_batch=[]
             for batch_id, dial_id in enumerate(dial_id_batch):
+                
                 init_goal_batch.append(self.reader.data[dial_id]['goal'])
                 goal=self.reader.goal_norm(self.reader.data[dial_id]['goal'])
                 goal_batch.append(goal)
@@ -532,23 +581,32 @@ class turn_level_session(object):
             DS_reward_batch=[]
             total_success=0
             total_match=0
+            US_rewards=np.zeros(6)
+            DS_rewards=np.zeros(5)
             for init_goal, goal_list, gen_dial in zip(init_goal_batch, self.goal_list_batch, gen_batch):
-                US_reward_batch.append(self.get_US_reward(gen_dial, goal_list))
-                DS_reward_batch.append(self.get_DS_reward(gen_dial, init_goal))
-                success, match=self.get_metrics(init_goal, gen_dial)
+                US_reward_list, US_reward = self.get_US_reward(gen_dial, goal_list, return_avg_reward=True)
+                DS_reward_list, DS_reward = self.get_DS_reward(gen_dial, init_goal, return_avg_reward=True)
+                US_reward_batch.append(US_reward_list)
+                DS_reward_batch.append(DS_reward_list)
+                
+                US_rewards += US_reward
+                DS_rewards += DS_reward
+
+                success=1 if DS_reward[3]==10 else 0
+                match=1 if DS_reward[3]>=7.5 else 0
                 total_success+=success
                 total_match+=match
             
-            return gen_batch, US_reward_batch, DS_reward_batch, total_success, total_match
+            return gen_batch, US_reward_batch, DS_reward_batch, total_success, total_match, US_rewards, DS_rewards
 
         return gen_batch
     
     def generate_batch(self, model, contexts, max_len, eos_id):
         # generate by batch
-        # contexts: a batch of ids
+        # contexts: a list of ids
         # max_len: the max generated length
         # eos_id: the end id
-        # return: a batch of ids
+        # return: a batch of ids with pre pad 
         batch_size=len(contexts)
         end_flag=np.zeros(batch_size)
         past_key_values=None
@@ -562,6 +620,8 @@ class turn_level_session(object):
                 position_ids.masked_fill_(attentions == 0, 1)
                 if past_key_values is not None:
                     position_ids=position_ids[:, -1].unsqueeze(-1)
+                if inputs.size(0)==0:
+                    raise ValueError(contexts, inputs.cpu().list(), attentions)
                 outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
                         return_dict=True,use_cache=True,past_key_values=past_key_values)
 
@@ -659,10 +719,16 @@ class turn_level_session(object):
 
         return db_batch
 
-    def get_US_reward(self, dial, goal_list):
+    def get_US_reward(self, dial, goal_list, return_avg_reward=False):
         turn_num=len(dial)
         rewards=[]
-        global_reward = 10*self.goal_complete_rate(goal_list[0], goal_list[-1])-turn_num
+        avg_reward=0
+        avg_reqt_reward=0
+        avg_goal_reward=0
+        avg_repeat_reward=0
+        goal_comp_reward=10*self.goal_complete_rate(goal_list[0], goal_list[-1])
+
+        global_reward = goal_comp_reward -turn_num
         pv_sys_act=None
         user_act_list=[]
         for turn, goal in zip(dial, goal_list):
@@ -686,29 +752,44 @@ class turn_level_session(object):
                 for domain in pv_sys_act:
                     if 'request' in pv_sys_act[domain]:
                         if domain not in user_act or 'inform' not in user_act[domain]:
-                            reqt_reward-=len(pv_sys_act[domain]['request'])
+                            #reqt_reward-=len(pv_sys_act[domain]['request'])
                             continue
                         for slot in pv_sys_act[domain]['request']:
                             if slot in user_act[domain]['inform']:
                                 reqt_reward+=1
                             else:
-                                reqt_reward-=1
+                                pass # We do not punish this case
             for domain in user_act:
                 for intent, sv in user_act[domain].items():
-                    if domain not in goal or intent not in goal[domain]:
+                    if domain not in goal:
                         goal_reward-=len(sv)
                         continue
-                    if isinstance(sv, list):
+                    if isinstance(sv, list):# intent=='request'
+                        if 'request' not in goal[domain]:
+                            goal_reward-=len(sv)
+                            continue
                         for slot in sv:
+                            if slot=='price' and slot not in goal[domain][intent]:
+                                slot='pricerange'
                             if slot in goal[domain][intent]:
                                 goal_reward+=1
                             else:
                                 goal_reward-=1
-                    elif isinstance(sv, dict):
+                    elif isinstance(sv, dict):# intent=='inform'
+                        if 'inform' not in goal[domain] and 'book' not in goal[domain]:
+                            goal_reward-=len(sv)
+                            continue
+                        goal_dict={}
+                        for intent_g in ['inform', 'book']:
+                            if intent_g in goal[domain]:
+                                for k, v in goal[domain][intent_g].items():
+                                    goal_dict[k]=v
                         for slot, value in sv.items():
-                            if slot not in goal[domain][intent]:
+                            if slot=='price' and slot not in goal_dict:
+                                slot='pricerange'
+                            if slot not in goal_dict:
                                 goal_reward-=1
-                            elif value!=goal[domain][intent][slot]:
+                            elif value!=goal_dict[slot]:
                                 goal_reward-=1
                             else:
                                 goal_reward+=1
@@ -716,21 +797,35 @@ class turn_level_session(object):
                 repeat_reward-=5
             user_act_list.append(user_act)
             pv_sys_act=self.reader.aspan_to_act_dict(turn['aspn'], side='sys')
+            
             if cfg.non_neg_reward:
-                rewards.append(max(min(reqt_reward + goal_reward + repeat_reward + end_reward + global_reward, 10),0))
+                final_reward=max(min(reqt_reward + goal_reward + repeat_reward + end_reward + global_reward, 10),0)
             else:
-                rewards.append(max(min(reqt_reward + goal_reward + repeat_reward + end_reward + global_reward, 10),-5))
+                final_reward=max(min(reqt_reward + goal_reward + repeat_reward + end_reward + global_reward, 10),-5)
+            rewards.append(final_reward)
+            turn['US_reward']=str({'reward':final_reward, 'reqt_reward':reqt_reward, 'goal_reward':goal_reward, 
+                'repeat_reward':repeat_reward, 'goal_comp':goal_comp_reward, 'turn_num':turn_num})
+            avg_goal_reward+=goal_reward/turn_num
+            avg_reqt_reward+=reqt_reward/turn_num
+            avg_repeat_reward+=repeat_reward/turn_num
+            avg_reward+=final_reward/turn_num
+        if return_avg_reward:
+            return rewards, np.array([avg_reward, avg_reqt_reward, avg_goal_reward, avg_repeat_reward, goal_comp_reward, turn_num])
         return rewards
 
-    def get_DS_reward(self, dial, init_goal):
+    def get_DS_reward(self, dial, init_goal, return_avg_reward=False):
         turn_num=len(dial)
         rewards=[]
+        avg_reward=0
+        avg_reqt_reward=0
+        avg_repeat_reward=0
         sys_act_list=[]
         success, match=self.get_metrics(init_goal, dial)
         if success==1:
             global_reward=10-turn_num
         else:
             global_reward=7.5*match-turn_num
+        success_reward=global_reward+turn_num
         for turn in dial:
             reqt_reward=0
             repeat_reward=0
@@ -738,11 +833,13 @@ class turn_level_session(object):
             sys_act=self.reader.aspan_to_act_dict(turn['aspn'], side='sys')
             for domain in user_act:
                 if 'request' in user_act[domain]:
-                    if domain not in sys_act or 'inform'  not in sys_act[domain]:
+                    if domain not in sys_act or ('inform'  not in sys_act[domain] and 'recommend' not in sys_act[domain]):
                         reqt_reward-=len(user_act[domain]['request'])
                         continue
                     for slot in user_act[domain]['request']:
-                        if slot in sys_act[domain]['inform']:
+                        if 'inform' in sys_act[domain] and slot in sys_act[domain]['inform']:
+                            reqt_reward+=1
+                        elif 'recommend' in sys_act[domain] and slot in sys_act[domain]['recommend']:
                             reqt_reward+=1
                         else:
                             reqt_reward-=1
@@ -750,11 +847,33 @@ class turn_level_session(object):
                 repeat_reward-=5
             sys_act_list.append(sys_act)
             if cfg.non_neg_reward:
-                rewards.append(max(min(reqt_reward + repeat_reward + global_reward, 10),0))
+                final_reward=max(min(reqt_reward + repeat_reward + global_reward, 10),0)
             else:
-                rewards.append(max(min(reqt_reward + repeat_reward + global_reward, 10),-5)) #[-5, 10]
+                final_reward=max(min(reqt_reward + repeat_reward + global_reward, 10),-5)
+            rewards.append(final_reward)
+            turn['DS_reward']=str({'reward':final_reward, 'reqt_reward':reqt_reward, 'repeat_reward':repeat_reward, 
+             'success_reward':success_reward, 'turn_num':turn_num})
+            avg_reward+=final_reward/turn_num
+            avg_reqt_reward+=reqt_reward/turn_num
+            avg_repeat_reward+=repeat_reward/turn_num
+        if return_avg_reward:
+            return rewards, np.array([avg_reward, avg_reqt_reward, avg_repeat_reward, success_reward, turn_num])
         return rewards
         
+    def compute_resp_prob(self, data):
+        sys_model=GPT2LMHeadModel.from_pretrained('experiments_21/all_sys-model_sd11_lr0.0001_bs16_ga2/best_loss_model')
+        # the tokenizer of sys_model should be the same as that of self.model
+        all_batches, seq_num = self.reader.get_sys_batch(data, batch_size=16, mode='test')
+        total_log_prob=0
+        with torch.no_grad():
+            for batch in all_batches:
+                input_batch=torch.from_numpy(batch).long().to(sys_model.device)
+                output_batch=sys_model(input_batch)
+                loss = self.calculate_loss_and_accuracy(output_batch, input_batch)
+                avg_log_prob=-loss.item()
+                total_log_prob+=avg_log_prob
+        return total_log_prob/len(all_batches)
+    
     def goal_complete_rate(self, goal, final_goal):
         total_slot_num=0
         incomp_slot_num=0
@@ -803,7 +922,7 @@ class turn_level_session(object):
             outputs.append(modified_encode(tokenizer, context))
         return outputs
 
-    def calculate_loss(self, outputs, labels, rewards):
+    def calculate_loss(self, outputs, labels, rewards, base=None):
         # logits: B, T, V
         # labels: B, T
         # rewards: B
@@ -817,7 +936,10 @@ class turn_level_session(object):
         for i in range(batch_size):
             logit=shift_logits[i,:,:]
             label=shift_labels[i,:]
-            reward=rewards[i]
+            if base:
+                reward=rewards[i]-base
+            else:
+                reward=rewards[i]
             loss += reward*loss_fct(logit.view(-1, logit.size(-1)), label.view(-1))
 
         # avg loss

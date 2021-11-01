@@ -11,7 +11,7 @@ class _Config:
         self.vocab_path_train = './data/multi-woz-2.1-processed/vocab'
         self.vocab_path_eval = None
         self.data_path = './data/multi-woz-2.1-processed/'
-        self.data_file = 'data_for_damd.json'
+        self.data_file = 'data_for_damd_fix.json'
         self.dev_list = 'data/MultiWOZ_2.1/valListFile.txt'
         self.test_list = 'data/MultiWOZ_2.1/testListFile.txt'
         self.dbs = {
@@ -104,7 +104,7 @@ class _Config:
         self.epoch_num = 50
         self.early_stop=False
         self.early_stop_count = 5
-        self.weight_decay_count = 4
+        self.weight_decay_count = 10
         
         self.only_target_loss=True # only calculate the loss on target context
 
@@ -179,7 +179,11 @@ class _Config:
         #user simulator setting
         self.rl_with_us=True # whether or not interact with user simulator 
         self.train_us=False # setting when pre-training user simulator 
+        self.train_sys=False
+        
         self.joint_train=True # train DS and US together in RL exp
+        self.joint_train_us=True
+        self.joint_train_ds=True
         self.goal_from_data=True # whether or not use goals in original data
         self.traverse_data=True # traverse all data in training set for one RL epoch
         self.save_by_reward=True # save the model with max average reward
@@ -199,6 +203,12 @@ class _Config:
         self.training_batch_size=8
 
         self.test_unseen_act=False
+        
+        self.eval_resp_prob=False
+        self.add_rl_baseline=False
+        self.add_resp_reward=False
+        
+        self.eval_as_simpletod=True
 
     def __str__(self):
         s = ''

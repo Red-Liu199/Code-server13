@@ -809,12 +809,15 @@ class MultiWozEvaluator(object):
             if domain in ['restaurant', 'hotel', 'attraction', 'train']:
                 
                 goal_venues = self.reader.db.queryJsons(domain, goal[domain]['informable'], return_name=True)
-                
+                if cfg.eval_as_simpletod:
+                    condition=len(venue_offered[domain]) > 0 and venue_offered[domain][0] in goal_venues
+                else:
+                    condition=len(venue_offered[domain]) > 0 and len(set(venue_offered[domain])& set(goal_venues))>0
                 if type(venue_offered[domain]) is str and '_name' in venue_offered[domain]:
                     match += 1
                     match_stat = 1
                     match_domain.append(domain)
-                elif len(venue_offered[domain]) > 0 and len(set(venue_offered[domain])& set(goal_venues))>0:
+                elif condition:
                     match += 1
                     match_stat = 1
                     match_domain.append(domain)

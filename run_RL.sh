@@ -1,11 +1,12 @@
 path1=experiments_21/turn-level-DS/best_score_model
-path2=experiments_21/all_turn-level-US-10-7_sd11_lr0.0001_bs4_ga8/best_score_model
+path2=experiments_21/turn-level-US/best_score_model
 python session.py -mode train\
  -cfg use_scheduler=False\
  warmup_steps=2000\
  lr=2e-5\
- epoch_num=40\
- exp_no=rl-10-26\
+ weight_decay_count=50\
+ seed=1010\
+ epoch_num=50\
  init_eval=False\
  training_batch_size=16\
  interaction_batch_size=32\
@@ -15,4 +16,9 @@ python session.py -mode train\
  non_neg_reward=False\
  clip_grad=False\
  ctrl_lr=True\
- notes='No scheduler with lr=2e-5 and weight_decay_count=4, to prove the scheduler is the cause of deterioration'
+ rl_dial_per_epoch=128\
+ joint_train_ds=True\
+ joint_train_us=False\
+ exp_no=rl-11-1-only-ds\
+ add_rl_baseline=False\
+ notes='lr 2e-5 rl_dial_per_epoch 128'

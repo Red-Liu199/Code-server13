@@ -38,32 +38,16 @@ class Modal(object):
         else:
             self.device1 = device[0]
             self.device2=device[0]
-        if cfg.mode=='semi_VL':
-            logging.info('PrioriModel sets on GPU{}, PosteriorModel sets on GPU{}'.format(self.device1,self.device2))
-            tokenizer_path=cfg.PrioriModel_path
-        else:
-            tokenizer_path=cfg.gpt_path
+        tokenizer_path=cfg.gpt_path
         self.tokenizer = GPT2Tokenizer.from_pretrained(tokenizer_path)
         # cfg.tokenizer = tokenizer
-
-        # initialize multiwoz reader
-        if cfg.data_aug and cfg.mode=='semi_ST':#self training cannot generate accurate database result 
-            cfg.dbs={
-            'attraction': '../data/schema-guided/attraction_db.json',
-            'hospital': 'db/hospital_db_processed.json',
-            'hotel': '../data/schema-guided/hotel_db.json',
-            'police': 'db/police_db_processed.json',
-            'restaurant': '../data/schema-guided/restaurant_db.json',
-            'taxi': '../data/schema-guided/taxi_db.json',
-            'train': '../data/schema-guided/train_db.json',
-            }
         logging.info('hotel database path:{}'.format(cfg.dbs['hotel']))
         self.reader = MultiWozReader(self.tokenizer)
         self.get_special_ids()
         logging.info([self.sos_b_id, self.sos_a_id, self.sos_r_id, self.eos_b_id, self.eos_a_id,self.eos_r_id])
 
         # create model: gpt2
-        single_mode=['pretrain','train','semi_ST','test_pos']
+        single_mode=['pretrain','train','test_pos']
         if cfg.mode in single_mode:
             self.model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path)
             self.model.resize_token_embeddings(len(self.tokenizer))
@@ -85,17 +69,6 @@ class Modal(object):
             self.PosteriorModel=None
             self.PrioriModel.to(self.device1)
         
-        elif cfg.mode=='semi_VL':#semi-VL
-            self.PrioriModel=GPT2LMHeadModel.from_pretrained(cfg.PrioriModel_path)
-            self.PosteriorModel=GPT2LMHeadModel.from_pretrained(cfg.PosteriorModel_path)
-            logging.info("model loaded from {} and {}".format(cfg.PrioriModel_path,cfg.PosteriorModel_path))
-            self.PrioriModel.resize_token_embeddings(len(self.tokenizer))
-            self.PosteriorModel.resize_token_embeddings(len(self.tokenizer))
-            if cfg.gradient_checkpoint:
-                self.PrioriModel.config.gradient_checkpointing=True
-                self.PosteriorModel.config.gradient_checkpointing=True
-            self.PrioriModel.to(self.device1)
-            self.PosteriorModel.to(self.device2)
 
         self.vocab_size=len(self.tokenizer)
         #
@@ -404,10 +377,6 @@ class Modal(object):
                             # global_step: actual step the optimizer took
                             global_step += 1
 
-                            logs = {}  # for tb writer
-                            # logging: loss, lr... after certain amount of steps
-                            
-
                     except RuntimeError as exception:
                         if "out of memory" in str(exception):
                             max_length = max(inputs['lengths'])
@@ -477,477 +446,51 @@ class Modal(object):
                     min_loss=total_loss/epoch_step
                     self.save_model(posterior=posterior,model=self.model)
     
-    def semi_ST(self):
-        logging.info('------Running self training------')
-        if cfg.data_aug:
-            if cfg.delex_as_damd:
-                data_path='./data/multi-woz-processed/new_db_se_blank_encoded.data.json' if cfg.dataset==0 \
-                    else './data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json'
-            else:
-                data_path='./data/multi-woz-processed/new_db_se_blank_encoded.data2.json' if cfg.dataset==0 \
-                    else './data/multi-woz-2.1-processed/new_db_se_blank_encoded.data2.json'
-            data_lab=json.loads(open(data_path,'r', encoding='utf-8').read())
-            data_lab=data_lab['train']
-            #data1=[] if cfg.only_SGD else self.load_data('../data/taskmaster/TM2MultiWOZ.json')
-            #data2=[] if cfg.only_TM else self.load_data('../data/schema-guided/SGD2MultiWOZ.json')
-            data1=[] if cfg.only_SGD else self.load_data('extra_data/TM2MultiWOZ.json')
-            data2=[] if cfg.only_TM else self.load_data('extra_data/SGD2MultiWOZ.json')
-            data_unl=data1+data2
-        else:
-            data=json.loads(open(cfg.divided_path, 'r', encoding='utf-8').read())
-            data_lab=data['pre_data']
-            data_unl=data['post_data']
-            
-        logging.info('Labeled dials:{}, unlabeled dials:{}'.format(len(data_lab),len(data_unl)))
-        num_dials=len(data_lab)+len(data_unl)
-        
-        cfg.batch_size=cfg.batch_size*cfg.gradient_accumulation_steps
-        batches_lab=self.reader.get_batches('train',data=data_lab)
-        batches_unl=self.reader.get_batches('train',data=data_unl)
-        all_batches=[]
-        data_repeate=3 if cfg.spv_proportion==10 else 1
-        for _ in range(data_repeate-1):
-            num_dials+=len(data_lab)
-
-        for _ in range(data_repeate):
-            for batch in batches_lab:
-                all_batches.append({'batch':batch,'supervised':True})
-        
-        for batch in batches_unl:
-            all_batches.append({'batch':batch,'supervised':False})
-
-        optimizer, scheduler = self.get_sep_optimizers(num_dials,self.model)
-
-        # log info
-        logging.info("  Num Dialogs = %d", num_dials)
-        logging.info("  Num Epochs = %d", cfg.epoch_num)
-        logging.info("  Batch size  = %d", cfg.batch_size)
-        logging.info('  Num Batches = %d', len(all_batches))
-
-
-        log_inputs = 0
-        global_step = 0
-        min_loss = 1000
+    def pretrain_sys_model(self):
+        data=self.reader.train
+        all_batches, seq_num = self.reader.get_sys_batch(data, batch_size=cfg.batch_size)
+        num_batch=len(all_batches)
+        logging.info('Total batches:{}'.format(num_batch))
+        optimizer, scheduler = self.get_sep_optimizers(seq_num,self.model)
+        training_steps=0
         min_eval_loss=1000
-        max_score=0
         early_stop_count=cfg.early_stop_count
-        if cfg.use_scheduler:
-            warmup_epochs=cfg.warmup_steps*cfg.batch_size//num_dials if cfg.warmup_steps>=0 else int(cfg.epoch_num*cfg.warmup_ratio)
-            logging.info('Warmup epochs:{}'.format(warmup_epochs))
-        #logging.info('the initial evaluation result:')
-        #eval_result=self.validate_fast(data='dev')
-        weight_decay_count=cfg.weight_decay_count
-        lr=cfg.lr
-        for epoch in tqdm(range(cfg.epoch_num)):
-            epoch_step = 0
-            total_loss=0
-            logging_loss=0
-            btm = time.time()
-            oom_time = 0
-            #shuffle batch instead of data
+        for epoch in range(cfg.epoch_num):
             random.shuffle(all_batches)
-            for batch_idx, dial_batch_dict in enumerate(all_batches):
-                self.model.zero_grad()
-                turn_nums=[len(dial) for dial in dial_batch_dict['batch']]
-                consists=[turn_num==turn_nums[0] for turn_num in turn_nums]
-                assert all(consists)
-                if dial_batch_dict['supervised']==False:
-                    dial_batch_large=self.gen_batch_bspn(dial_batch_dict['batch'])
-                else:
-                    dial_batch_large=dial_batch_dict['batch']
-                dial_batch=[]
-                for i, dial in enumerate(dial_batch_large):
-                    dial_batch.append(dial)
-                    if len(dial_batch)==cfg.origin_batch_size or i==len(dial_batch_large)-1:
-                        if dial_batch_dict['supervised']:
-                            resp_only=False
-                        else:
-                            resp_only=cfg.ST_resp_only
-                        inputs, labels,bspn_labels = self.reader.convert_batch_session(dial_batch,\
-                            posterior_train=False,only_resp_label=resp_only,bspn_label=True)
-                        try:
-                            self.model.train()
-                            if log_inputs > 0 and cfg.example_log:  # log inputs for the very first two turns
-                                logging.info('examples')
-                                logging.info(self.tokenizer.decode(inputs['contexts'][0]))
-                                log_inputs-=1
-                            inputs = self.add_torch_input(inputs)#B,T
-                            labels=self.add_torch_input(labels)#B,T
-                            bspn_labels=self.add_torch_input(bspn_labels)
-                            bspn_labels=bspn_labels['contexts_tensor']
-                            outputs = self.model(inputs['contexts_tensor'])
-                            if cfg.fix_ST and not dial_batch_dict['supervised']:
-                                ST_inputs=self.get_ST_input(inputs['contexts_tensor'],outputs[0],bspn_labels,bspn_labels)
-                                embeds=ST_inputs.matmul(self.model.get_input_embeddings().weight)
-                                outputs=self.model(inputs_embeds=embeds)
-                            loss=self.calculate_loss_and_accuracy(outputs,labels['contexts_tensor'])
-                            if cfg.loss_reg:
-                                loss=loss/cfg.gradient_accumulation_steps
-                            loss.backward()
-                            total_loss+=loss.item()
-                            torch.nn.utils.clip_grad_norm_(self.model.parameters(), 5.0)
-                            epoch_step += 1
-                        except RuntimeError as exception:
-                            if "out of memory" in str(exception):
-                                max_length = max(inputs['lengths'])
-                                oom_time += 1
-                                logging.info("WARNING: ran out of memory,times: {}, batch size: {}, max_len: {}".format(
-                                    oom_time, len(dial_batch), max_length))
-                            if hasattr(torch.cuda, 'empty_cache'):
-                                with torch.cuda.device(self.model.device):
-                                    torch.cuda.empty_cache()
-                            else:
-                                logging.info(str(exception))
-                                raise exception
-                        dial_batch=[]
-                optimizer.step()
-                if cfg.use_scheduler:
+            self.model.train()
+            st=time.time()
+            for batch_idx, batch in enumerate(all_batches):
+                if self.global_output>0:
+                    logging.info('Training examples:')
+                    logging.info(self.tokenizer.decode(list(batch)[0]))
+                    self.global_output-=1
+                input_batch=torch.from_numpy(batch).long().to(self.model.device)
+                output_batch=self.model(input_batch)
+                loss = self.calculate_loss_and_accuracy(output_batch, input_batch)
+                loss.backward()
+                self.tb_writer.add_scalar('training_loss', loss.item(), training_steps)
+                training_steps+=1
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 5.0)
+                if (batch_idx+1) % cfg.gradient_accumulation_steps == 0 or((batch_idx + 1) == num_batch):
+                    optimizer.step()
                     scheduler.step()
-                optimizer.zero_grad()
-                global_step += 1
-
-                loss_scalar = (total_loss - logging_loss) / cfg.gradient_accumulation_steps    
-                logging_loss = total_loss
-                if self.tb_writer:
-                    self.tb_writer.add_scalar('lr', optimizer.param_groups[0]["lr"],global_step)
-                    self.tb_writer.add_scalar('loss', loss_scalar, global_step)
-
-            logging.info('Epoch:{}, Train epoch time: {:.2f} min, loss: {}'.format( 
-                epoch, (time.time()-btm)/60, total_loss/epoch_step))
-            # save model after every epoch
-            if cfg.evaluate_during_training:
-                eval_loss=self.eval(model=self.model)
-                logging.info('Model evaluation loss:{}'.format(eval_loss))
-                eval_result=self.validate_fast(data='dev')
-                if self.tb_writer:
-                    self.tb_writer.add_scalar('loss_eval',eval_loss,epoch)
-                    self.tb_writer.add_scalar('joint_goal',eval_result['joint_acc'],epoch)
-                    self.tb_writer.add_scalar('match',eval_result['match'],epoch)
-                    self.tb_writer.add_scalar('success',eval_result['success'],epoch)
-                    self.tb_writer.add_scalar('bleu',eval_result['bleu'],epoch)
-                    self.tb_writer.add_scalar('combined_score',eval_result['score'],epoch)
-                if eval_result['score']>max_score:
-                    early_stop_count=cfg.early_stop_count
-                    max_score=eval_result['score']
-                    self.save_model(path='best_score_model',model=self.model)
-                else:
-                    weight_decay_count-=1
-                    if weight_decay_count==0 and not cfg.use_scheduler:
-                        lr=lr*cfg.lr_decay
-                        for group in optimizer.param_groups:
-                            group['lr'] = lr
-                        logging.info("learning rate decay to {}".format(lr))
-                        weight_decay_count = cfg.weight_decay_count
-                    if epoch>=warmup_epochs:
-                        early_stop_count-=1
-                        logging.info('early stop count:%d'%early_stop_count)
-                if lr<1e-9 and not cfg.use_scheduler:
-                    logging.info('learning rate too small, break')
-                    break
+                    optimizer.zero_grad()
+            logging.info('Epoch:{}, Train epoch time: {:.2f} min'.format(epoch, (time.time()-st)/60))
+            eval_loss=self.eval_sys()
+            self.tb_writer.add_scalar('eval_loss',eval_loss,epoch)
+            if eval_loss<min_eval_loss:
+                min_eval_loss=eval_loss
+                self.save_model(path='best_loss_model',model=self.model)
+                early_stop_count=cfg.early_stop_count
+            else:
+                early_stop_count-=1
+                logging.info('early stop count:%d'%early_stop_count)
                 if early_stop_count==0 and cfg.early_stop:
                     logging.info('early stopped')
                     break
-            
-            else:
-                if total_loss/epoch_step<min_loss:
-                    min_loss=total_loss/epoch_step
-                    self.save_model(posterior=False,model=self.model)
-
-    def semi_VL(self):
-        if cfg.data_aug:
-            if cfg.delex_as_damd:
-                data_path='./data/multi-woz-processed/new_db_se_blank_encoded.data.json' if cfg.dataset==0 \
-                    else './data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json'
-            else:
-                data_path='./data/multi-woz-processed/new_db_se_blank_encoded.data2.json' if cfg.dataset==0 \
-                    else './data/multi-woz-2.1-processed/new_db_se_blank_encoded.data2.json'
-            data_lab=json.loads(open(data_path,'r', encoding='utf-8').read())
-            data_lab=data_lab['train']
-            #data1=[] if cfg.only_SGD else self.load_data('../data/taskmaster/TM2MultiWOZ.json')
-            #data2=[] if cfg.only_TM else self.load_data('../data/schema-guided/SGD2MultiWOZ.json')
-            data1=[] if cfg.only_SGD else self.load_data('extra_data/TM2MultiWOZ.json')
-            data2=[] if cfg.only_TM else self.load_data('extra_data/SGD2MultiWOZ.json')
-            data_unl=data1+data2
-        else:
-            logging.info('Reading encoded data from %s'%cfg.divided_path)
-            data = json.loads(open(cfg.divided_path,'r', encoding='utf-8').read())
-            data_lab=data['pre_data']
-            data_unl=data['post_data']
-        logging.info('Labeled dials:{}, unlabeled dials:{}'.format(len(data_lab),len(data_unl)))
-        num_dials=len(data_lab)+len(data_unl)
-
-        cfg.batch_size=cfg.batch_size*cfg.gradient_accumulation_steps
-        batches_lab=self.reader.get_batches('train',data=data_lab)
-        all_batches=[]
-        data_repeate=3 if cfg.spv_proportion==10 else 1
-        for _ in range(data_repeate-1):
-            num_dials+=len(data_lab)
-
-        for _ in range(data_repeate):
-            for batch in batches_lab:
-                all_batches.append({'batch':batch,'supervised':True})
-        if cfg.delex_as_damd:
-            batches_unl=self.reader.get_batches('train',data=data_unl)
-            for batch in batches_unl:
-                all_batches.append({'batch':batch,'supervised':False,'dataset':'all'})
-        else:
-            batches_unl1=self.reader.get_batches('train',data=data1)
-            batches_unl2=self.reader.get_batches('train',data=data2)
-            for batch in batches_unl1:
-                all_batches.append({'batch':batch,'supervised':False, 'dataset':'TM'})
-            for batch in batches_unl2:
-                all_batches.append({'batch':batch,'supervised':False, 'dataset':'SGD'})
-        optimizer1, scheduler1 = self.get_sep_optimizers(num_dials,self.PrioriModel)
-        optimizer2, scheduler2 = self.get_sep_optimizers(num_dials,self.PosteriorModel)
-
-
-        # log info
-        logging.info("***** Running training *****")
-        logging.info("  Num Dialogs = %d", num_dials)
-        logging.info("  Num Epochs = %d", cfg.epoch_num)
-        logging.info("  Batch size  = %d", cfg.batch_size)
-        logging.info("  Gradient Accumulation steps = %d",
-                     cfg.gradient_accumulation_steps)
-        logging.info("  Total optimization steps = %d",
-                     num_dials*cfg.epoch_num // (cfg.gradient_accumulation_steps*cfg.batch_size))
-
-
-        log_inputs = 2
-        global_step = 0
-        max_bleu=0
-        max_score=0
-        min_loss=1000
-        epoch_num=cfg.epoch_num
-        early_stop_count=cfg.early_stop_count
-        warmup_epochs=cfg.warmup_steps*cfg.batch_size//num_dials if cfg.warmup_steps>=0 else int(cfg.epoch_num*cfg.warmup_ratio)
-        if cfg.use_scheduler:
-            logging.info('warmup epochs:{}'.format(warmup_epochs))
-        #eval_loss=self.eval(model=self.PrioriModel)
-        #logging.info('the initial evaluation result:')
-        #eval_result=self.validate_fast(data='dev')
-        weight_decay_count=cfg.weight_decay_count
-        lr=cfg.lr
-        for epoch in tqdm(range(epoch_num)):
-            epoch_step = 0
-            epoch_step_uns=0
-            epoch_step_sup=0
-            tr_loss = 0.0
-            loss1=0
-            loss2=0
-            loss_uns=0
-            loss_sup=0
-            logging_loss = 0.0
-            btm = time.time()
-
-            random.shuffle(all_batches)
-            for batch_idx, dial_batch_dict in enumerate(all_batches):
-                self.PrioriModel.zero_grad()
-                self.PosteriorModel.zero_grad()
-                turn_nums=[len(dial) for dial in dial_batch_dict['batch']]
-                assert all([turn_num==turn_nums[0] for turn_num in turn_nums])
-                if dial_batch_dict['supervised']==False:
-                    #cfg.gen_db=True if dial_batch_dict['dataset']=='TM' else False
-                    cfg.gen_db=True
-                    dial_batch_large=self.gen_batch_bspn(dial_batch_dict['batch'],model_name='PosteriorModel')
-                    cfg.gen_db=False
-                    dial_batch=[]
-                    for i, dial in enumerate(dial_batch_large):
-                        dial_batch.append(dial)
-                        if len(dial_batch)==cfg.origin_batch_size or i==len(dial_batch_large)-1:
-                            try:
-                                only_resp=True if cfg.VL_with_kl else False
-                                inputs_prior, labels_prior, bspn_labels_pri = \
-                                    self.reader.convert_batch_session(dial_batch,only_resp_label=only_resp,bspn_label=True)
-                                inputs_posterior, labels_posterior = \
-                                    self.reader.convert_batch_session(dial_batch,posterior_train=True)
-
-                                self.PrioriModel.train()
-                                self.PosteriorModel.train()
-                                if log_inputs > 0 and cfg.example_log:  # log inputs for the very first two turns
-                                    logging.info('Prior examples')
-                                    logging.info(self.tokenizer.decode(inputs_prior['contexts'][0]))
-                                    logging.info("Posterior examples")
-                                    logging.info(self.tokenizer.decode(inputs_posterior['contexts'][0]))
-                                    log_inputs -= 1
-
-                                # to tensor
-                                inputs_prior = self.add_torch_input(inputs_prior)#B,T
-                                inputs_posterior = self.add_torch_input(inputs_posterior,posterior=True)
-                                labels_prior=self.add_torch_input(labels_prior)#B,T
-                                labels_posterior=self.add_torch_input(labels_posterior,posterior=True)
-                                bspn_labels_pri=self.add_torch_input(bspn_labels_pri)
-                                # loss
-                                outputs_prior=self.PrioriModel(inputs_prior['contexts_tensor'])
-                                outputs_posterior=self.PosteriorModel(inputs_posterior['contexts_tensor'])#B,T,V
-                                logits_pri=outputs_prior[0]
-                                logits_post=outputs_posterior[0]
-                                #straight through trick
-                                ST_inputs_prior=self.get_ST_input(inputs_prior['contexts_tensor'],\
-                                        logits_post,bspn_labels_pri['contexts_tensor'],labels_posterior['contexts_tensor'])
-                                if cfg.VL_with_kl:
-                                    loss_kl=self.get_kl_loss(logits_pri,logits_post,\
-                                        bspn_labels_pri['contexts_tensor'],labels_posterior['contexts_tensor'])
-                                else:
-                                    loss_kl=0
-                                embed_prior=ST_inputs_prior.matmul(self.PrioriModel.get_input_embeddings().weight)#multiple the input embedding
-                                outputs1=self.PrioriModel(inputs_embeds=embed_prior)
-                                loss_ce=self.calculate_loss_and_accuracy(outputs1,labels_prior['contexts_tensor'])
-                            
-                                loss=loss_ce+cfg.kl_loss_weight*loss_kl
-                                if cfg.loss_reg:
-                                    loss=loss/cfg.gradient_accumulation_steps
-                                loss.backward()
-                                tr_loss += loss.item()
-                                loss_uns+=loss.item()
-                                loss1+=loss_ce.item()
-                                if loss_kl!=0:
-                                    loss2+=loss_kl.item()
-                                torch.nn.utils.clip_grad_norm_(self.PrioriModel.parameters(), 5.0)
-                                torch.nn.utils.clip_grad_norm_(self.PosteriorModel.parameters(), 5.0)
-                                epoch_step += 1
-                                dial_batch=[]
-                                epoch_step_uns+=1
-                            except RuntimeError as exception:
-                                if "out of memory" in str(exception):
-                                    logging.info("WARNING: ran out of memory during unsupervised train, batch idx:{}, batch size:{}, turn num:{}"\
-                                        .format(batch_idx,len(dial_batch),len(dial_batch[0])))
-                                    if hasattr(torch.cuda, 'empty_cache'):
-                                        with torch.cuda.device(self.device1):
-                                            torch.cuda.empty_cache(self.device1)
-                                        with torch.cuda.device(self.device2):
-                                            torch.cuda.empty_cache(self.device2)
-                                else:
-                                    logging.info(str(exception))
-                                    raise exception
-                    
-                    optimizer1.step()
-                    optimizer1.zero_grad()
-                    optimizer2.step()
-                    optimizer2.zero_grad()
-                    if cfg.use_scheduler:
-                        scheduler1.step()
-                        scheduler2.step()
-                    global_step+=1
-                    loss_scalar = (tr_loss - logging_loss) / cfg.gradient_accumulation_steps
-                    logging_loss = tr_loss
-                    if self.tb_writer:
-                        self.tb_writer.add_scalar('lr1', optimizer1.param_groups[0]["lr"],global_step)
-                        self.tb_writer.add_scalar('lr2', optimizer2.param_groups[0]["lr"],global_step)
-                        self.tb_writer.add_scalar('loss', loss_scalar, global_step)
-                else:
-                    dial_batch_large=dial_batch_dict['batch']
-                    dial_batch=[]
-                    for i, dial in enumerate(dial_batch_large):
-                        dial_batch.append(dial)
-                        if len(dial_batch)==cfg.origin_batch_size or i==len(dial_batch_large)-1:
-                            try:
-                                self.PrioriModel.train()
-                                self.PosteriorModel.train()
-                                inputs_prior, labels_prior = self.reader.convert_batch_session(dial_batch,posterior_train=False)
-                                inputs_posterior, labels_posterior = self.reader.convert_batch_session(dial_batch,posterior_train=True)
-                                inputs_prior = self.add_torch_input(inputs_prior)#B,T
-                                labels_prior=self.add_torch_input(labels_prior)#B,T
-                                inputs_posterior=self.add_torch_input(inputs_posterior,posterior=True)
-                                labels_posterior=self.add_torch_input(labels_posterior,posterior=True)
-
-                                outputs1 = self.PrioriModel(inputs_prior['contexts_tensor'])
-                                loss_pri=self.calculate_loss_and_accuracy(outputs1,labels_prior['contexts_tensor'])
-                                outputs2=self.PosteriorModel(inputs_posterior['contexts_tensor'])
-                                loss_pos=self.calculate_loss_and_accuracy(outputs2,labels_posterior['contexts_tensor'])
-
-                                if cfg.loss_reg:
-                                    loss_pri=loss_pri/cfg.gradient_accumulation_steps
-                                    loss_pos=loss_pos/cfg.gradient_accumulation_steps
-                                loss_pri.backward()
-                                loss_pos.backward()
-                                tr_loss+=loss_pri.item()+loss_pos.item()
-                                loss_sup+=loss_pri.item()+loss_pos.item()
-                                
-                                torch.nn.utils.clip_grad_norm_(self.PrioriModel.parameters(), 5.0)
-                                torch.nn.utils.clip_grad_norm_(self.PosteriorModel.parameters(), 5.0)
-                                dial_batch=[]
-                                epoch_step+=1
-                                epoch_step_sup += 1
-                            except RuntimeError as exception:
-                                if "out of memory" in str(exception):
-                                    logging.info("WARNING: ran out of memory during supervised train, batch idx:{}, batch size:{}, turn num:{}"\
-                                        .format(batch_idx,len(dial_batch),len(dial_batch[0])))
-                                    if hasattr(torch.cuda, 'empty_cache'):
-                                        with torch.cuda.device(self.device1):
-                                            torch.cuda.empty_cache(self.device1)
-                                        with torch.cuda.device(self.device2):
-                                            torch.cuda.empty_cache(self.device2)
-                                else:
-                                    logging.info(str(exception))
-                                    raise exception
-                            
-                    optimizer1.step()
-                    optimizer1.zero_grad()
-                    optimizer2.step()
-                    optimizer2.zero_grad()
-                    if cfg.use_scheduler:
-                        scheduler1.step()
-                        scheduler2.step()
-                    global_step+=1
-                    loss_scalar = (tr_loss - logging_loss) / cfg.gradient_accumulation_steps
-                    logging_loss = tr_loss
-                    if self.tb_writer:
-                        self.tb_writer.add_scalar('loss', loss_scalar, global_step)
- 
-            if epoch==0:
-                logging.info('sup steps:{}, uns steps:{}'.format(epoch_step_sup,epoch_step_uns))
-
-            logging.info('Epoch: {}, Train epoch time: {} min, loss:{}, loss_sup:{}, loss_uns:{}'.format(
-                epoch, (time.time()-btm)/60, tr_loss/epoch_step, loss_sup/epoch_step_sup,loss_uns/epoch_step_uns))
-            if self.tb_writer:
-                self.tb_writer.add_scalar('loss_sup',loss_sup/epoch_step_sup,epoch)
-                self.tb_writer.add_scalar('loss_uns',loss_uns/epoch_step_uns,epoch)
-                self.tb_writer.add_scalar('loss_ce',loss1/epoch_step_uns,epoch)
-                self.tb_writer.add_scalar('loss_kl',loss2/epoch_step_uns,epoch)
-            
-            if cfg.evaluate_during_training:
-                eval_loss=self.eval(model=self.PrioriModel)
-                logging.info('Prior model evaluation loss:{}'.format(eval_loss))
-                eval_result=self.validate_fast(data='dev')
-                if self.tb_writer:
-                    self.tb_writer.add_scalar('loss_eval',eval_loss,epoch)
-                    self.tb_writer.add_scalar('joint_goal',eval_result['joint_acc'],epoch)
-                    self.tb_writer.add_scalar('match',eval_result['match'],epoch)
-                    self.tb_writer.add_scalar('success',eval_result['success'],epoch)
-                    self.tb_writer.add_scalar('bleu',eval_result['bleu'],epoch)
-                    self.tb_writer.add_scalar('combined_score',eval_result['score'],epoch)
                 
-                if eval_result['score']>max_score:
-                    max_score=eval_result['score']
-                    self.save_model(path='best_score_model')
-                    early_stop_count=cfg.early_stop_count
-                else:
-                    weight_decay_count-=1
-                    if weight_decay_count==0 and not cfg.use_scheduler:
-                        lr=lr*cfg.lr_decay
-                        for group in optimizer1.param_groups:
-                            group['lr'] = lr
-                        for group in optimizer2.param_groups:
-                            group['lr'] = lr
-                        logging.info("learning rate decay to {}".format(lr))
-                        weight_decay_count = cfg.weight_decay_count
-                    if epoch>=warmup_epochs:
-                        early_stop_count-=1
-                        logging.info('early stop count:%d'%early_stop_count)
-                if lr<1e-9 and not cfg.use_scheduler:
-                    logging.info('learning rate too small, break')
-                    break
-                if early_stop_count==0 and cfg.early_stop:
-                    logging.info('early stopped')
-                    break
-            else:
-                if loss1/epoch_step<min_loss1:
-                    min_loss1=loss1/epoch_step
-                    self.save_model()
-                if loss2/epoch_step<min_loss2:
-                    min_loss2=loss2/epoch_step
-                    self.save_model(posterior=True)
-    
+
+
 
     def get_ST_input(self,inputs,logits,labels1,labels2):
         #inputs:B,T1
@@ -1406,7 +949,22 @@ class Modal(object):
         self.tokenizer.save_pretrained(save_path)
         # save cfg
     
-    def eval(self,data='dev',posterior=False,model=None):
+    def eval_sys(self, data='dev'):
+        data=self.reader.dev if data=='dev' else self.reader.test
+        all_batches, seq_num = self.reader.get_sys_batch(data, batch_size=cfg.batch_size)
+        self.model.eval()
+        total_loss=0
+        with torch.no_grad():
+            for batch in all_batches:
+                input_batch=torch.from_numpy(batch).long().to(self.model.device)
+                output_batch=self.model(input_batch)
+                loss = self.calculate_loss_and_accuracy(output_batch, input_batch)
+                total_loss+=loss.item()
+        return total_loss/len(all_batches)
+            
+
+
+    def eval(self,data='dev', posterior=False, model=None):
         model.eval()
         temp=cfg.batch_size
         cfg.batch_size=cfg.origin_batch_size
@@ -1985,16 +1543,12 @@ def main():
     m = Modal(device)
 
     if args.mode =='pretrain' or args.mode=='train':
-        if cfg.turn_level:
+        if cfg.train_sys:
+            m.pretrain_sys_model()
+        elif cfg.turn_level:
             m.pretrain_turn_level()
         else:
             m.pretrain(posterior=cfg.posterior_train)
-    elif args.mode =='semi_VL':
-        m.semi_VL()
-    elif args.mode == 'semi_ST':
-        m.semi_ST()
-    elif args.mode =='test_all':
-        pass
 
     elif args.mode =='test_pos':
         m.validate_pos(data='test')

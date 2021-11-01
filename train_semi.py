@@ -1469,6 +1469,7 @@ class Modal(object):
         # valid_losses = []
         result_collection = {}
         st=time.time()
+        generated_data=[]
         for batch in batches:
             try:
                 if batch==[]:
@@ -1478,6 +1479,7 @@ class Modal(object):
                 else:
                     batch=self.generate_batch(batch)
                 for dialog in batch:
+                    generated_data.append(dialog)
                     result_collection.update(self.reader.inverse_transpose_turn(dialog))
             except RuntimeError as exception:
                 if "out of memory" in str(exception):
@@ -1494,7 +1496,9 @@ class Modal(object):
                     raise exception
         results, field = self.reader.wrap_result_lm(result_collection)
         logging.info('Inference time:{:.3f} min'.format((time.time()-st)/60))
-
+        if cfg.eval_resp_prob:
+            avg_log_prob=self.compute_resp_prob(generated_data)
+            logging.info('Avg log probability:{:.3f}'.format(avg_log_prob))
         cfg.use_true_bspn_for_ctr_eval=True
         bleu, success, match = self.evaluator.validation_metric(results)
         joint_acc=compute_jacc(results)
@@ -1504,7 +1508,7 @@ class Modal(object):
         cfg.use_true_bspn_for_ctr_eval=False
         bleu, success, match, action_acc, P, R, F1 = self.evaluator.validation_metric(results, return_act_acc=True)
         score = 0.5 * (success + match) + bleu
-        logging.info('validation [CTR] %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+        logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
         logging.info('Sys act P,R, F1: %.2f, %.2f, %.2f, %.2f' % (action_acc, P, R, F1))
         
         #self.reader.save_result('w', results, field,result_name='result.csv')
@@ -1520,6 +1524,21 @@ class Modal(object):
             score: %.2f  joint goal:%.2f' % (match, success, bleu, score,joint_acc)
         cfg.batch_size=cfg.origin_batch_size
         return eval_results
+
+    def compute_resp_prob(self, data):
+        sys_model=GPT2LMHeadModel.from_pretrained('experiments_21/all_sys-model_sd11_lr0.0001_bs16_ga2/best_loss_model')
+        # the tokenizer of sys_model should be the same as that of self.model
+        all_batches, seq_num = self.reader.get_sys_batch(data, batch_size=16, mode='test')
+        total_log_prob=0
+        with torch.no_grad():
+            for batch in all_batches:
+                input_batch=torch.from_numpy(batch).long().to(sys_model.device)
+                output_batch=sys_model(input_batch)
+                loss = self.calculate_loss_and_accuracy(output_batch, input_batch)
+                avg_log_prob=-loss.item()
+                total_log_prob+=avg_log_prob
+        return total_log_prob/len(all_batches)
+            
 
     def generate_batch(self, batch):
         bs_max_len=75

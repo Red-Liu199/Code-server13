@@ -2,14 +2,14 @@ from config import global_config as cfg
 from eval import MultiWozEvaluator
 from reader import MultiWozReader
 from transformers import GPT2Tokenizer
-import json
+import json, random
 import ontology
 
 tokenizer=GPT2Tokenizer.from_pretrained('experiments_21/turn-level-DS/best_score_model')
 reader = MultiWozReader(tokenizer)
 evaluator = MultiWozEvaluator(reader)
 
-def compare_offline_result(path1, path2):
+def compare_offline_result(path1, path2, show_num=10):
     succ1_unsuc2=[]
     succ2_unsuc1=[]
     data1=json.load(open(path1, 'r', encoding='utf-8'))
@@ -20,9 +20,13 @@ def compare_offline_result(path1, path2):
     for req in evaluator.requestables:
         counts[req+'_total'] = 0
         counts[req+'_offer'] = 0
+    dial_id_list=random.sample(reader.test_list, show_num)
+    dial_samples=[]
     for dial_id in dials1:
         dial1=dials1[dial_id]
         dial2=dials2[dial_id]
+        if dial_id+'.json' in dial_id_list:
+            dial_samples.append({'dial1':dial1, 'dial2':dial2})
         reqs = {}
         goal = {}
         if '.json' not in dial_id and '.json' in list(evaluator.all_data.keys())[0]:
@@ -42,8 +46,19 @@ def compare_offline_result(path1, path2):
             succ1_unsuc2.append(dial_id)
         elif success2 and not success1:
             succ2_unsuc1.append(dial_id)
-    print('Success in data1 and unsuccess in data2:', len(succ1_unsuc2), succ1_unsuc2)
-    print('Success in data2 and unsuccess in data1:', len(succ2_unsuc1), succ2_unsuc1)
+    print('Success in data1 and unsuccess in data2:', len(succ1_unsuc2))#, succ1_unsuc2)
+    print('Success in data2 and unsuccess in data1:', len(succ2_unsuc1))#, succ2_unsuc1)
+    examples=[]
+    for item in dial_samples:
+        dialog=[]
+        for turn1, turn2 in zip(item['dial1'], item['dial2']):
+            if turn1['user']=='':
+                continue
+            entry={'user': turn1['user'], 'Oracle':turn1['resp'], 'Sup':turn1['resp_gen'], 'RL':turn2['resp_gen']}
+            dialog.append(entry)
+        examples.append(dialog)
+    json.dump(examples, open('analysis/examples.json', 'w'), indent=2)
+            
 
 
 def compare_online_result(path1, path2):
@@ -100,7 +115,7 @@ def group_act(act):
             act[domain][intent]=set(sv)
     return act
 
-def find_unseen_act(path1=None, path2=None):
+def find_unseen_usr_act(path1=None, path2=None):
     data=json.load(open('data/multi-woz-2.1-processed/data_for_us.json', 'r', encoding='utf-8'))
     train_act_pool=[]
     unseen_act_pool=[]
@@ -147,6 +162,86 @@ def find_unseen_act(path1=None, path2=None):
         print('Unseen acts in path2:', len(unseen_act_pool2))
     return unseen_dials
 
+def find_unseen_sys_act():
+    data=json.load(open('data/multi-woz-2.1-processed/data_for_us.json', 'r', encoding='utf-8'))
+    train_act_pool=[]
+    unseen_act_pool=[]
+    unseen_dials={}
+    for dial_id, dial in data.items():
+        if dial_id in reader.train_list:
+            for turn in dial:
+                sys_act=reader.aspan_to_act_dict(turn['sys_act'], 'sys')
+                sys_act=group_act(sys_act)
+                if sys_act not in train_act_pool:
+                    train_act_pool.append(sys_act)
+    for dial_id, dial in data.items():
+        if dial_id in reader.test_list:# or dial_id in reader.dev_list:
+            unseen_turns=[]
+            for turn_id, turn in enumerate(dial):
+                sys_act=reader.aspan_to_act_dict(turn['sys_act'], 'sys')
+                sys_act=group_act(sys_act)
+                if sys_act not in train_act_pool:
+                    unseen_act_pool.append(sys_act)
+                    unseen_turns.append(turn_id)
+            if len(unseen_turns)>0:
+                unseen_dials[dial_id]=unseen_turns
+    print('Total training acts:', len(train_act_pool), 'Unseen acts:', len(unseen_act_pool))
+    print('Unseen dials:',len(unseen_dials))
+    json.dump(unseen_dials, open('analysis/unseen_turns.json', 'w'), indent=2)
+
+    return unseen_dials
+
+def calculate_unseen_acc(unseen_turns, path1=None, path2=None):
+    data1=json.load(open(path1, 'r', encoding='utf-8'))
+    data2=json.load(open(path2, 'r', encoding='utf-8'))
+    total_unseen_act=0
+    sup_acc=0
+    rl_acc=0
+    tp1=0
+    fp1=0
+    tp2=0
+    fp2=0
+    count=0
+    for dial_id in unseen_turns:
+        for t in unseen_turns[dial_id]:
+            count+=1
+    print('Total unseen act:', count)
+    for turn1, turn2 in zip(data1, data2):
+        dial_id=turn1['dial_id']+'.json'
+        if dial_id in unseen_turns and turn1['user']!='' and turn1['turn_num'] in unseen_turns[dial_id]:
+            total_unseen_act+=1
+            #unseen_turns[dial_id]=unseen_turns[dial_id][1:]
+            oracle_act=group_act(reader.aspan_to_act_dict(turn1['aspn'], side='sys'))
+            sup_act=group_act(reader.aspan_to_act_dict(turn1['aspn_gen'], side='sys'))
+            rl_act=group_act(reader.aspan_to_act_dict(turn2['aspn_gen'], side='sys'))
+            if sup_act==oracle_act:
+                sup_acc+=1
+            if rl_act==oracle_act:
+                rl_acc+=1
+            for domain in sup_act:
+                for intent, slots in sup_act[domain].items():
+                    if domain not in oracle_act or intent not in oracle_act[domain]:
+                        fp1+=len(slots)
+                        continue
+                    for slot in slots:
+                        if slot in oracle_act[domain][intent]:
+                            tp1+=1
+                        else:
+                            fp1+=1
+            for domain in rl_act:
+                for intent, slots in rl_act[domain].items():
+                    if domain not in oracle_act or intent not in oracle_act[domain]:
+                        fp2+=len(slots)
+                        continue
+                    for slot in slots:
+                        if slot in oracle_act[domain][intent]:
+                            tp2+=1
+                        else:
+                            fp2+=1
+    print('Total unseen acts:{}, Sup acc:{}, RL acc:{}'.format(total_unseen_act, sup_acc, rl_acc))
+    print(tp1, fp1, tp1/(tp1+fp1))
+    print(tp2, fp2, tp2/(tp2+fp2))
+
 def extract_goal():
     data=json.load(open('data/multi-woz-2.1-processed/data_for_damd_fix.json', 'r', encoding='utf-8'))
     goal_list=[]
@@ -160,15 +255,17 @@ def extract_goal():
 if __name__=='__main__':
     path1='experiments_21/turn-level-DS/best_score_model/result.json'
     path2='RL_exp/rl-10-19-use-scheduler/best_DS/result.json'
-    #compare_offline_result(path1, path2)
-    path1='experiments_21/turn-level-DS/best_score_model/validate_result.json'
-    path2='RL_exp/rl-10-19-use-scheduler/best_DS/validate_result.json'
+    unseen_turns=find_unseen_sys_act()
+    calculate_unseen_acc(unseen_turns, path1, path2)
+    #compare_offline_result(path1, path2, show_num=30)
+    #path1='experiments_21/turn-level-DS/best_score_model/validate_result.json'
+    #path2='RL_exp/rl-10-19-use-scheduler/best_DS/validate_result.json'
     #compare_online_result(path1, path2)
     #bspn='[restaurant] pricerange expensive area west'
     #print(reader.bspan_to_DBpointer(bspn, ['restaurant']))
-    #unseen_dials=find_unseen_act(path1, path2)
+    #unseen_dials=find_unseen_usr_act(path1, path2)
     #print(unseen_dials)
     #act='[taxi] [inform] destination cambridge train station [taxi] [request] car'
     #print(reader.aspan_to_act_dict(act, 'user'))
     #print(set(reader.aspan_to_act_dict(act, 'user')))
-    extract_goal()
+    #extract_goal()

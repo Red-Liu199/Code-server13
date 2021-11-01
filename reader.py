@@ -358,6 +358,7 @@ class MultiWozReader(_ReaderBase):
 
         self.multi_acts_record = None
         self.get_special_ids()
+        self.clean_dial_id()
 
     def get_exp_domains(self, exp_domains, all_domains_list):
         if 'hotel' in exp_domains:
@@ -396,6 +397,13 @@ class MultiWozReader(_ReaderBase):
                 # ['taxi']
                 domains = ['taxi_single', 'taxi_multi']
         return domains
+
+    def clean_dial_id(self):
+        new_list=[]
+        for dial_id in self.dev_list:
+            if dial_id in self.data:
+                new_list.append(dial_id)
+        self.dev_list=new_list
 
     def add_sepcial_tokens(self):
         """
@@ -729,7 +737,8 @@ class MultiWozReader(_ReaderBase):
         
         return encoded_dial
 
-    def update_goal(self, init_goal, user_act, constraint=None):
+    def update_goal(self, init_goal, user_act, constraint=None, sys_act=None):
+        # constraint and sys_act are from last turn
         goal=deepcopy(init_goal)
         for domain in user_act:
             if domain not in goal:
@@ -774,8 +783,23 @@ class MultiWozReader(_ReaderBase):
                                 goal[domain]['book'].pop(slot)
                             if goal[domain]['book']=={}:
                                 goal[domain].pop('book')
-            if goal[domain]=={}:
-                goal.pop(domain)
+                    if goal[domain]=={}:
+                        goal.pop(domain)
+        if sys_act:
+            for domain in sys_act:
+                if domain not in goal:
+                    continue
+                for intent, slots in goal[domain].items():
+                    # if system has inform the slot in last turn then user simulator needn't request
+                    if (intent=='inform' or intent=='recommend') and 'request' in goal[domain]:
+                        for slot in slots:
+                            if slot in goal[domain]['request']:
+                                goal[domain]['request'].pop(goal[domain]['request'].index(slot))
+                        if goal[domain]['request']==[]:
+                            goal[domain].pop('request')
+                if goal[domain]=={}:
+                    goal.pop(domain)
+                
         return goal
 
     def goal_to_gpan(self, goal, cur_domain=None):
@@ -1011,7 +1035,31 @@ class MultiWozReader(_ReaderBase):
                 break
         return domains
 
-    #修改记录：新增如下函数
+    def get_sys_batch(self, data, batch_size=16, mode='train'):
+        assert mode in ['train', 'test']
+        batches=[]
+        batch=[]
+        seq_num=0
+        for dial in data:
+            for turn in dial:
+                if mode=='train':
+                    batch.append(turn['resp'])
+                elif mode=='test':
+                    batch.append(turn['resp_gen'])
+                if len(batch)>=batch_size:
+                    seq_num+=len(batch)
+                    batch_np, _ = utils.padSeqs_gpt(batch, cfg.pad_id)
+                    batches.append(batch_np)
+                    batch=[]
+        if batch!=[]:
+            seq_num+=len(batch)
+            batch_np, _ = utils.padSeqs_gpt(batch, cfg.pad_id)
+            batches.append(batch_np)
+            batch=[]
+        logging.info('Total responses:{}'.format(seq_num))
+        return batches, seq_num
+
+
     def bs_filter(self,data,is_batch=True):
         #将生成的 bs 进行过滤
         special_tokens=['<eos_r>','<eos_a>','<eos_u>','<sos_r>','<sos_a>','<sos_u>','<sos_db>','<eos_db>']
@@ -1502,7 +1550,7 @@ class MultiWozReader(_ReaderBase):
         eos_syntax = ontology.eos_tokens if not eos_syntax else eos_syntax
         sos_syntax = ontology.sos_tokens
         # ground truth bs, as, ds.. generate response
-        field = ['dial_id', 'turn_num', 'user', 'bspn', 'bspn_gen', 'db', 'db_gen', 'aspn_gen', 'aspn', 'resp_gen', 'resp']
+        field = ['dial_id', 'turn_num', 'user', 'bspn', 'bspn_gen', 'db', 'db_gen', 'aspn_gen', 'aspn', 'resp_gen', 'resp', 'dspn']
 
         for dial_id, turns in result_dict.items():
             #修改记录：下方的turn_num在源代码中写的是trun_num
