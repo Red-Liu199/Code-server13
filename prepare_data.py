@@ -178,9 +178,29 @@ def prepare_us_data():
 
     json.dump(new_data, open(save_path, 'w'), indent=2)
 
-
+def temp():
+    path='data/multi-woz-2.1-processed/data_for_us.json'
+    path1='data/multi-woz-2.1-processed/data_for_damd_fix.json'
+    data=json.load(open(path,'r', encoding='utf-8'))
+    data1=json.load(open(path1,'r', encoding='utf-8'))
+    new_data={}
+    for dial_id in data:
+        new_data[dial_id]={}
+        new_data[dial_id]['goal']=data1[dial_id]['goal']
+        new_data[dial_id]['log']=[]
+        for turn in data[dial_id]:
+            turn['gpan']= '<sos_g> '+ turn.pop('goal')+' <eos_g>'
+            turn['user']='<sos_u> ' +turn['user']+' <eos_u>'
+            turn['usr_act']='<sos_ua> ' +turn['usr_act']+' <eos_ua>'
+            turn['bspn']='<sos_b> '+turn.pop('constraint')+' <eos_b>'
+            turn['aspn']='<sos_a> '+turn.pop('sys_act')+' <eos_a>'
+            turn['db']='<sos_db> '+reader.bspan_to_DBpointer(turn['bspn'], turn['turn_domain'].split())+' <eos_db>'
+            turn['resp']='<sos_r> ' +turn['resp']+' <eos_r>'
+            new_data[dial_id]['log'].append(turn)
+    json.dump(new_data, open('data/multi-woz-2.1-processed/data_for_rl.json', 'w'), indent=2)
 
 if __name__ == "__main__":
-    prepare_us_data()
+    #prepare_us_data()
+    temp()
     
     

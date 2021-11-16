@@ -338,11 +338,11 @@ class Modal(object):
                     side='user' if cfg.train_us else 'sys'
                     inputs, labels = self.reader.convert_batch_turn(turn_batch, pv_batch, first_turn, side=side)
                     if cfg.train_us:
-                        pv_batch = self.reader.get_pv_batch(pv_batch, turn_batch['user'],
-                            turn_batch['resp'], side=side)
+                        pv_batch = self.reader.get_pv_batch(pv_batch, resp=turn_batch['resp'], 
+                            aspn=turn_batch['sys_act'], side=side)
                     else:
-                        pv_batch = self.reader.get_pv_batch(pv_batch, turn_batch['user'],
-                            turn_batch['resp'], turn_batch['bspn'], side=side)
+                        pv_batch = self.reader.get_pv_batch(pv_batch, user=turn_batch['user'],
+                            resp=turn_batch['resp'], bspn=turn_batch['bspn'], side=side)
                     try:  # avoid OOM
                         self.model.train()
                         if log_inputs > 0:  # log inputs for the very first two turns
@@ -359,6 +359,8 @@ class Modal(object):
                             loss = self.calculate_loss_and_accuracy(outputs, labels=labels['contexts_tensor'])
                         else:
                             loss = self.calculate_loss_and_accuracy(outputs, labels=inputs['contexts_tensor'])
+                        if cfg.loss_reg:
+                            loss=loss/cfg.gradient_accumulation_steps
                         loss.backward()
                         tr_loss += loss.item()
                         torch.nn.utils.clip_grad_norm_(
@@ -1021,22 +1023,12 @@ class Modal(object):
             self.device1=self.model.device
         
         self.PrioriModel.eval()
-        if cfg.test_data_path=='':
-            eval_data = self.reader.get_eval_data(data)
-        else:
-            eval_data=json.load(open(cfg.test_data_path,'r', encoding='utf-8'))
-            eval_data=eval_data['test']
-            for dial_id, dial in enumerate(eval_data):
-                for turn_id, turn in enumerate(dial):
-                    for key in turn:
-                        if key in ['user','usdx','resp','bspn','bsdx','aspn','dspn','db']:
-                            eval_data[dial_id][turn_id][key]=self.tokenizer.encode(turn[key])
+        eval_data = self.reader.get_eval_data(data)
         if cfg.debugging:
             eval_data=eval_data[:100]
         cfg.batch_size=cfg.eval_batch_size
         batches=self.reader.get_batches('test',data=eval_data)
-        result_path=os.path.join(cfg.eval_load_path,'result.csv') if cfg.test_data_path=='' \
-            else os.path.join(cfg.eval_load_path,'result_test.csv')
+        result_path=os.path.join(cfg.eval_load_path,'result.csv')
         
         if os.path.exists(result_path) and cfg.mode=='test':
             results,field=self.reader.load_result(result_path)
@@ -1317,7 +1309,7 @@ class Modal(object):
                         resp=[sos_r_id]+temp[1:]
                     resp_gen[i]=resp
                     aspn_gen.append(aspn)
-                pv_batch=self.reader.get_pv_batch(pv_batch, turn_batch['user'], resp_gen, bs_gen)
+                pv_batch=self.reader.get_pv_batch(pv_batch, user=turn_batch['user'], resp=resp_gen, bspn=bs_gen)
                 turn_batch['bspn_gen']=bs_gen
                 turn_batch['aspn_gen']=aspn_gen
                 turn_batch['resp_gen']=resp_gen
@@ -1333,15 +1325,17 @@ class Modal(object):
         bs_gen=[]
         db_gen=[]
         resp_gen=[]
-        pv_resp=None
+        pv_batch=None
         device=self.model.device
         self.model.eval()
         with torch.no_grad():
             for turn_num, turn_batch in enumerate(batch):
+                # we first generate aspn
+
                 # we generate user act and user utterance together
                 past_key_values=None
                 end_flag=np.zeros(batch_size)
-                contexts=self.reader.convert_eval_batch_turn_us(turn_batch,pv_resp)
+                contexts=self.reader.convert_eval_batch_turn_us(turn_batch, pv_batch)
                 
                 if self.global_output>0 and cfg.mode=='test':
                     logging.info(self.tokenizer.decode(contexts[0]))
@@ -1383,7 +1377,7 @@ class Modal(object):
                         user=[self.sos_u_id]+temp[1:]
                     user_gen.append(user)
                     usr_act_gen.append(usr_act)
-                pv_resp=turn_batch['resp']
+                pv_batch=self.reader.get_pv_batch(pv_batch, resp=turn_batch['resp'], aspn=turn_batch['sys_act'], side='user')
                 turn_batch['usr_act_gen']=usr_act_gen
                 turn_batch['user_gen']=user_gen
         return self.reader.inverse_transpose_batch(batch)
@@ -1466,7 +1460,7 @@ def fix_cfg():
     if cfg.train_us:
         cfg.data_file='data_for_us.json'
     else:
-        cfg.data_file='data_for_damd.json'
+        cfg.data_file='data_for_damd_fix.json'
 
 
 def main():

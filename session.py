@@ -1,4 +1,3 @@
-from typing_extensions import final
 import torch
 import random
 import time
@@ -10,10 +9,12 @@ import ontology
 import json
 import shutil
 import torch.nn as nn
+import torch.nn.functional as F
 from config import global_config as cfg
 from reader import MultiWozReader
 from eval import MultiWozEvaluator
-from utils import modified_encode
+from utils import modified_encode, py2np
+from rl_utils.rl_util import *
 from torch.utils.tensorboard import SummaryWriter
 from train_semi import parse_arg_cfg
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
@@ -292,7 +293,8 @@ class turn_level_session(object):
         logging.info('DS path:{}, US path:{}'.format(cfg.DS_path, cfg.US_path))
         pointer=0
         dial_id_batches=[]
-        while(pointer<=len(self.reader.test_list)):
+        dial_num=32 if cfg.debugging else len(self.reader.test_list)
+        while(pointer<=dial_num):
             if pointer+cfg.interaction_batch_size<=len(self.reader.test_list):
                 dial_id_batches.append(self.reader.test_list[pointer:pointer+cfg.interaction_batch_size])
             else:
@@ -477,6 +479,95 @@ class turn_level_session(object):
 
         return user_act, user
 
+    def find_best_usr_act(self, act_list, goal, pv_aspn=None):
+        pv_sys_act=self.reader.aspan_to_act_dict(pv_aspn, side='sys') if pv_aspn else None
+        max_reward=0
+        best_act=None
+        for usr_act in act_list:
+            reqt_reward=0
+            goal_reward=0
+            token_reward=repeat_token_reward(usr_act)
+            user_act=self.reader.aspan_to_act_dict(usr_act, side='user')
+            if pv_sys_act:
+                for domain in pv_sys_act:
+                    if 'request' in pv_sys_act[domain]:
+                        if domain not in user_act or 'inform' not in user_act[domain]:
+                            reqt_reward-=len(pv_sys_act[domain]['request'])
+                            continue
+                        for slot in pv_sys_act[domain]['request']:
+                            if slot in user_act[domain]['inform']:
+                                reqt_reward+=1
+                            else:
+                                reqt_reward-=1
+            for domain in user_act:
+                for intent, sv in user_act[domain].items():
+                    if domain not in goal:
+                        goal_reward-=len(sv)
+                        continue
+                    if isinstance(sv, list):# intent=='request'
+                        if 'request' not in goal[domain]:
+                            goal_reward-=len(sv)
+                            continue
+                        for slot in sv:
+                            if slot=='price' and slot not in goal[domain][intent]:
+                                slot='pricerange'
+                            if slot in goal[domain][intent]:
+                                goal_reward+=1
+                            else:
+                                goal_reward-=1
+                    elif isinstance(sv, dict):# intent=='inform'
+                        if 'inform' not in goal[domain] and 'book' not in goal[domain]:
+                            goal_reward-=len(sv)
+                            continue
+                        goal_dict={}
+                        for intent_g in ['inform', 'book']:
+                            if intent_g in goal[domain]:
+                                for k, v in goal[domain][intent_g].items():
+                                    goal_dict[k]=v
+                        for slot, value in sv.items():
+                            if slot=='price' and slot not in goal_dict:
+                                slot='pricerange'
+                            if slot not in goal_dict:
+                                goal_reward-=1
+                            elif value!=goal_dict[slot]:
+                                goal_reward-=1
+                            else:
+                                goal_reward+=1
+            reward=reqt_reward+goal_reward+token_reward
+            if reward>max_reward:
+                max_reward=reward
+                best_act=usr_act
+        best_act=act_list[0] if best_act is None else best_act
+        return best_act
+    
+    def find_best_sys_act(self, act_list, usr_act):
+        user_act=self.reader.aspan_to_act_dict(usr_act, side='user')
+        max_reward=0
+        best_act=None
+        for aspn in act_list:
+            reqt_reward=0
+            token_reward=repeat_token_reward(aspn)
+            sys_act=self.reader.aspan_to_act_dict(aspn, side='sys')
+            for domain in user_act:
+                if 'request' in user_act[domain]:
+                    if domain not in sys_act or ('inform'  not in sys_act[domain] and 'recommend' not in sys_act[domain]):
+                        reqt_reward-=len(user_act[domain]['request'])
+                        continue
+                    for slot in user_act[domain]['request']:
+                        if 'inform' in sys_act[domain] and slot in sys_act[domain]['inform']:
+                            reqt_reward+=1
+                        elif 'recommend' in sys_act[domain] and slot in sys_act[domain]['recommend']:
+                            reqt_reward+=1
+                        else:
+                            reqt_reward-=1
+            reward=reqt_reward+token_reward
+            if reward>max_reward:
+                max_reward=reward
+                best_act=aspn
+        if best_act is None:
+            best_act=act_list[0]
+        return best_act
+        
 
     def interact_by_batch(self, batch_size=cfg.interaction_batch_size, dial_id_batch=None, init_goal_batch=None, return_reward=False):
         max_turns=20
@@ -510,24 +601,41 @@ class turn_level_session(object):
         self.turn_domain_batch=['' for _ in range(batch_size)]
         pv_resp_batch=None
         pv_bspn_batch=None
+        pv_aspn_batch=None
         for i in range(max_turns):
 
             if i>0: # update goals
+                #generate pv_aspn batch
+                contexts=self.get_us_contexts(pv_resp_batch)
+                contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
+                pv_aspn_batch_ids=self.generate_batch(self.US, contexts_ids, act_max_len, self.US_tok.convert_tokens_to_ids('<eos_a>'))
+                pv_aspn_batch=self.convert_batch_ids_to_tokens(self.US_tok, pv_aspn_batch_ids, self.US_tok.convert_tokens_to_ids('<sos_a>'), 
+                    self.US_tok.convert_tokens_to_ids('<eos_a>'))
                 for batch_id, goal in enumerate(goal_batch):
-                    pv_constraint=self.reader.bspan_to_constraint_dict(pv_bspn_batch[batch_id])
                     pv_user_act_dict=self.reader.aspan_to_act_dict(pv_user_act_batch[batch_id], side='user')
-                    goal=self.reader.update_goal(goal,pv_user_act_dict,pv_constraint)
+                    pv_sys_act=self.reader.aspan_to_act_dict(pv_aspn_batch[batch_id], side='sys')
+                    goal=self.reader.update_goal(goal,pv_user_act_dict,sys_act=pv_sys_act)
                     goal_batch[batch_id]=goal
                     self.goal_list_batch[batch_id].append(goal)
                     gpan_batch[batch_id]='<sos_g> '+self.reader.goal_to_gpan(goal)+' <eos_g>'
             # generate user act batch
-            contexts=self.get_us_contexts(gpan_batch, pv_resp_batch)
+            contexts=self.get_us_contexts(pv_resp_batch, pv_aspn_batch, gpan_batch)
             contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
-            user_act_batch_ids=self.generate_batch(self.US, contexts_ids, act_max_len, self.eos_ua_id)
-            user_act_batch=self.convert_batch_ids_to_tokens(self.US_tok, user_act_batch_ids, 
-                self.sos_ua_id, self.eos_ua_id)
+            if cfg.beam_search:
+                beam_ids=self.generate_batch(self.US, contexts_ids, act_max_len, self.eos_ua_id, beam=cfg.beam_size)
+                user_act_batch=[]
+                user_act_beam_batch=[]
+                for b, temp_ids in enumerate(beam_ids):
+                    beam_batch=self.convert_batch_ids_to_tokens(self.US_tok, temp_ids, self.sos_ua_id, self.eos_ua_id)
+                    pv_aspn=pv_aspn_batch[b] if pv_aspn_batch else None
+                    user_act_batch.append(self.find_best_usr_act(beam_batch, goal_batch[b], pv_aspn))
+                    user_act_beam_batch.append(beam_batch)
+            else:
+                user_act_batch_ids=self.generate_batch(self.US, contexts_ids, act_max_len, self.eos_ua_id)
+                user_act_batch=self.convert_batch_ids_to_tokens(self.US_tok, user_act_batch_ids, 
+                    self.sos_ua_id, self.eos_ua_id)
             # generate user batch
-            contexts=self.get_us_contexts(gpan_batch, pv_resp_batch, user_act_batch)
+            contexts=self.get_us_contexts(pv_resp_batch, pv_aspn_batch, gpan_batch, user_act_batch)
             contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
             user_batch_ids=self.generate_batch(self.US, contexts_ids, resp_max_len, self.eos_u_id)
             user_batch=self.convert_batch_ids_to_tokens(self.US_tok, user_batch_ids, 
@@ -542,9 +650,18 @@ class turn_level_session(object):
             # generate act batch
             contexts=self.get_ds_contexts(user_batch, pv_bspn_batch, pv_resp_batch, bspn_batch, db_batch)
             contexts_ids=self.convert_batch_tokens_to_ids(self.DS_tok, contexts)
-            aspn_batch_ids=self.generate_batch(self.DS, contexts_ids, act_max_len, self.eos_a_id)
-            aspn_batch=self.convert_batch_ids_to_tokens(self.DS_tok, aspn_batch_ids, 
-                self.sos_a_id, self.eos_a_id)
+            if cfg.beam_search:
+                beam_ids=self.generate_batch(self.DS, contexts_ids, act_max_len, self.eos_a_id, beam=cfg.beam_size)
+                aspn_batch=[]
+                aspn_beam_batch=[]
+                for b, temp_ids in enumerate(beam_ids):
+                    beam_batch=self.convert_batch_ids_to_tokens(self.DS_tok, temp_ids, self.sos_a_id, self.eos_a_id)
+                    aspn_batch.append(self.find_best_sys_act(beam_batch, user_act_batch[b]))
+                    aspn_beam_batch.append(beam_batch)
+            else:
+                aspn_batch_ids=self.generate_batch(self.DS, contexts_ids, act_max_len, self.eos_a_id)
+                aspn_batch=self.convert_batch_ids_to_tokens(self.DS_tok, aspn_batch_ids, 
+                    self.sos_a_id, self.eos_a_id)
             # generate resp batch
             contexts=self.get_ds_contexts(user_batch, pv_bspn_batch, pv_resp_batch, bspn_batch, db_batch,aspn_batch)
             contexts_ids=self.convert_batch_tokens_to_ids(self.DS_tok, contexts)
@@ -564,6 +681,8 @@ class turn_level_session(object):
                 goal=goal_batch[batch_id]
                 if not end_batch[batch_id]:
                     turn={}
+                    if i>0:
+                        turn['pv_aspn']=pv_aspn_batch[batch_id]
                     turn['gpan']=gpan_batch[batch_id]
                     turn['usr_act']=user_act_batch[batch_id]
                     turn['user']=user_batch[batch_id]
@@ -571,8 +690,13 @@ class turn_level_session(object):
                     turn['db']=db_batch[batch_id]
                     turn['aspn']=aspn_batch[batch_id]
                     turn['resp']=resp_batch[batch_id]
+                    if cfg.beam_search:
+                        turn['usr_act_beam']=user_act_beam_batch[batch_id]
+                        turn['aspn_beam']=aspn_beam_batch[batch_id]
                     gen_batch[batch_id].append(turn)
                 if (set(user_act.split()).issubset(self.end_tokens) and set(aspn.split()).issubset(self.end_tokens)) or goal=={}:
+                    end_batch[batch_id]=1
+                if i>0 and gen_batch[batch_id][-1]==gen_batch[batch_id][-2]:
                     end_batch[batch_id]=1
             if all(end_batch):
                 break
@@ -601,7 +725,7 @@ class turn_level_session(object):
 
         return gen_batch
     
-    def generate_batch(self, model, contexts, max_len, eos_id):
+    def generate_batch(self, model, contexts, max_len, eos_id, beam=1):
         # generate by batch
         # contexts: a list of ids
         # max_len: the max generated length
@@ -609,6 +733,10 @@ class turn_level_session(object):
         # return: a batch of ids with pre pad 
         batch_size=len(contexts)
         end_flag=np.zeros(batch_size)
+        if beam>1:
+            beam_box=[beam]*batch_size
+            beam_result=[[] for _ in range(batch_size)]
+            max_prob=[-float('inf')]*batch_size
         past_key_values=None
         inputs,attentions=self.reader.batch_align(contexts,left_len=max_len,return_attn=True)
         inputs=torch.tensor(inputs).to(model.device)
@@ -616,49 +744,110 @@ class turn_level_session(object):
         model.eval()
         with torch.no_grad():
             for i in range(max_len):
-                position_ids = attentions.long().cumsum(-1) - 1
-                position_ids.masked_fill_(attentions == 0, 1)
-                if past_key_values is not None:
-                    position_ids=position_ids[:, -1].unsqueeze(-1)
-                if inputs.size(0)==0:
-                    raise ValueError(contexts, inputs.cpu().list(), attentions)
-                outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
-                        return_dict=True,use_cache=True,past_key_values=past_key_values)
+                if beam==1:
+                    position_ids = attentions.long().cumsum(-1) - 1
+                    position_ids.masked_fill_(attentions == 0, 1)
+                    if past_key_values is not None:
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                    if inputs.size(0)==0:
+                        raise ValueError(contexts, inputs.cpu().list(), attentions)
+                    outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                            return_dict=True,use_cache=True,past_key_values=past_key_values)
 
-                past_key_values=outputs.past_key_values
+                    past_key_values=outputs.past_key_values
 
-                preds=outputs.logits[:,-1,:].argmax(-1)#B
-                if i==0:
-                    gen_tensor=preds.unsqueeze(1)
+                    preds=outputs.logits[:,-1,:].argmax(-1)#B
+                    if i==0:
+                        gen_tensor=preds.unsqueeze(1)
+                    else:
+                        gen_tensor=torch.cat([gen_tensor,preds.unsqueeze(1)],dim=1)
+                    attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
+                    inputs=preds.unsqueeze(1)
+                    end_flag+=(preds.cpu().numpy()==eos_id).astype(float)
+                    if sum(end_flag==0)==0:
+                        break
                 else:
-                    gen_tensor=torch.cat([gen_tensor,preds.unsqueeze(1)],dim=1)
-                attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
-                inputs=preds.unsqueeze(1)
-                end_flag+=(preds.cpu().numpy()==eos_id).astype(float)
-                if sum(end_flag==0)==0:
-                    break
-               
-        return gen_tensor.cpu().tolist()
+                    if i==0:
+                        position_ids = attentions.long().cumsum(-1) - 1
+                        position_ids.masked_fill_(attentions == 0, 1)
+                        outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                                return_dict=True,use_cache=True,past_key_values=past_key_values)
+                        past_key_values=[outputs.past_key_values]*beam
+                        log_prob=F.log_softmax(outputs.logits[:, -1, :], -1) # B, V
+                        beam_prob, beam_idx=torch.topk(log_prob, beam, -1) # B, beam
+                        gen_tensor=beam_idx.unsqueeze(-1)# B, beam, 1
+                        attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
+                        position_ids = attentions.long().cumsum(-1) - 1
+                        position_ids.masked_fill_(attentions == 0, 1)
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                        pv_beam_prob=beam_prob #B, beam
+                        pv_beam_idx=beam_idx#B, beam
+                    else:
+                        for j in range(beam):
+                            inputs=pv_beam_idx[:,j].unsqueeze(-1) # B, 1
+                            outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                                return_dict=True,use_cache=True,past_key_values=past_key_values[j])
+                            past_key_values[j]=outputs.past_key_values
+                            log_prob=F.log_softmax(outputs.logits[:, -1, :], -1) # B, V
+                            beam_prob, beam_idx=torch.topk(log_prob, beam, -1) # B, beam
+                            if j==0:
+                                prob_pool= beam_prob+pv_beam_prob[:, j].unsqueeze(-1).expand(-1, beam) # B, beam
+                                id_pool=beam_idx
+                            else:
+                                prob_pool=torch.cat([prob_pool, beam_prob+pv_beam_prob[:, j].unsqueeze(-1).expand(-1, beam)],-1) # B, beam*beam
+                                id_pool=torch.cat([id_pool, beam_idx], -1)# B, beam*beam
+                        beam_prob, temp_id=torch.topk(prob_pool, beam, -1) #B, beam
+                        beam_idx=torch.gather(id_pool, -1, temp_id)
+                        temp_id=temp_id//beam
+                        for b in range(batch_size):
+                            gen_tensor[b, :, :]=gen_tensor[b, :, :].index_select(0, temp_id[b, :])
+                        gen_tensor=torch.cat([gen_tensor, beam_idx.unsqueeze(-1)],-1) #B, beam, T
+                        attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
+                        position_ids = attentions.long().cumsum(-1) - 1
+                        position_ids.masked_fill_(attentions == 0, 1)
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                        pv_beam_prob=beam_prob #B, beam
+                        pv_beam_idx=beam_idx
+                    for m in range(batch_size):
+                        for n, gen in enumerate(gen_tensor.cpu().tolist()[m]):
+                            if eos_id in gen and beam_box[m]>0:
+                                beam_box[m]-=1
+                                avg_prob=pv_beam_prob[m][n]/len(gen)
+                                if avg_prob>max_prob[m]:
+                                    beam_result[m].insert(0, gen)
+                                else:
+                                    beam_result[m].append(gen)
+                                pv_beam_prob[m][n]=-float('inf')
+                    if not any(beam_box):
+                        break
+        if beam==1:
+            return gen_tensor.cpu().tolist()
+        else:
+            return beam_result
     
-    def get_us_contexts(self, gpan_batch, pv_resp_batch=None, user_act_batch=None):
+    def get_us_contexts(self, pv_resp_batch=None, pv_aspn_batch=None, gpan_batch=None, user_act_batch=None):
         contexts=[]
         if pv_resp_batch==None:# first turn
             if user_act_batch is None:
                 for gpan in gpan_batch:
-                    context = gpan + '<sos_r> <eos_r>' + '<sos_ua>'
+                    context = gpan + '<sos_ua>'
                     contexts.append(context)
             else:
                 for gpan, ua in zip(gpan_batch, user_act_batch):
-                    context = gpan + '<sos_r> <eos_r>' + ua + '<sos_u>'
+                    context = gpan + ua + '<sos_u>'
                     contexts.append(context)
         else:
-            if user_act_batch is None:
-                for gpan, pv_r in zip(gpan_batch, pv_resp_batch):
-                    context = gpan + pv_r + '<sos_ua>'
+            if pv_aspn_batch is None:
+                for pv_r in pv_resp_batch:
+                    context=pv_r+'<sos_a>'
+                    contexts.append(context)
+            elif user_act_batch is None:
+                for gpan, pv_r, pv_a in zip(gpan_batch, pv_resp_batch, pv_aspn_batch):
+                    context = pv_r + pv_a + gpan + '<sos_ua>'
                     contexts.append(context)
             else:
-                for gpan, pv_r, ua in zip(gpan_batch, pv_resp_batch, user_act_batch):
-                    context = gpan + pv_r + ua + '<sos_u>'
+                for gpan, pv_r, pv_a, ua in zip(gpan_batch, pv_resp_batch, pv_aspn_batch, user_act_batch):
+                    context = pv_r + pv_a + gpan + ua + '<sos_u>'
                     contexts.append(context)
         return contexts
     
@@ -972,6 +1161,7 @@ if __name__=='__main__':
     if 'test' in args.mode:
         cfg.eval_load_path=cfg.DS_path
     cfg._init_logging_handler(args.mode)
+    cfg.rl_train=True
     fix_seed()
     session=turn_level_session(cfg.DS_path, cfg.US_path, cfg.DS_device, cfg.US_device)
     if 'train' in args.mode:

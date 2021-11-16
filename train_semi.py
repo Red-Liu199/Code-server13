@@ -1438,7 +1438,7 @@ class Modal(object):
         batches=self.reader.get_batches('test',data=eval_data)
         result_path=os.path.join(cfg.eval_load_path,'result.json')
         
-        if os.path.exists(result_path) and cfg.mode=='test' and not cfg.test_unseen_act:
+        if os.path.exists(result_path) and cfg.mode=='test' and not cfg.test_unseen_act and cfg.use_existing_result:
             if result_path[-3:]=='csv':
                 results,field=self.reader.load_result(result_path)
             else:
@@ -1846,7 +1846,7 @@ def fix_cfg():
     if cfg.train_us:
         cfg.data_file='data_for_us.json'
     else:
-        cfg.data_file='data_for_damd.json'
+        cfg.data_file='data_for_damd_fix.json'
 
 
 def main():

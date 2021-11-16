@@ -56,6 +56,14 @@ class BLEUScorer1(object):
                         bestmatch[1] = len(ref)
                 r += bestmatch[1]
                 c += len(hyp)
+                
+                p0 = 1e-10
+                bp = 1 if c > r else math.exp(1 - float(r) / (float(c) + p0))
+                p_ns = [float(clip_count[i]) / float(count[i] + p0) + p0 \
+                        for i in range(4)]
+                s = math.fsum(w * math.log(p_n) \
+                            for w, p_n in zip(weights, p_ns) if p_n)
+                bleu = bp * math.exp(s)
 
         # computing bleu score
         p0 = 1e-10
@@ -81,7 +89,9 @@ class BLEUScorer(object):
         clip_count = [0, 0, 0, 0]
         r = 0
         c = 0
+        
         weights = [0.25, 0.25, 0.25, 0.25]
+        p0 = 1e-7
 
         # accumulate ngram statistics
         for hyps, refs in parallel_corpus:
@@ -116,8 +126,10 @@ class BLEUScorer(object):
                 r += bestmatch[1]
                 c += len(hyp)
 
+            
+
+
         # computing bleu score
-        p0 = 1e-7
         bp = 1 if c > r else math.exp(1 - float(r) / float(c))
         p_ns = [float(clip_count[i]) / float(count[i] + p0) + p0 \
                 for i in range(4)]
@@ -189,6 +201,8 @@ class MultiWozEvaluator(object):
 
     def validation_metric(self, data, return_act_acc=False):
         bleu = self.bleu_metric(data)
+        if 'test' in cfg.mode:
+            self.get_bleu_list(data)
         # accu_single_dom, accu_multi_dom, multi_dom_num = self.domain_eval(data)
         success, match, req_offer_counts, dial_num = self.context_to_response_eval(data,
                                                                                         same_eval_as_cambridge=cfg.same_eval_as_cambridge)
@@ -272,6 +286,20 @@ class MultiWozEvaluator(object):
         else:
             sc = 0.0
         return sc
+    
+    def get_bleu_list(self, data):
+        bleu_list=[]
+        dials = self.pack_dial(data)
+        for dial in dials.values():
+            gen, truth=[], []
+            for turn in dial:
+                gen.append(turn['resp_gen'])
+                truth.append(turn['resp'])
+            wrap_generated = [[_] for _ in gen]
+            wrap_truth = [[_] for _ in truth]
+            sc = self.bleu_scorer.score(zip(wrap_generated, wrap_truth))
+            bleu_list.append(sc)
+        json.dump(bleu_list, open(os.path.join(cfg.eval_load_path, 'bleu_list.json'), 'w'))
 
     def bleu_metric_us(self, data):
         gen, truth = [],[]
@@ -601,12 +629,14 @@ class MultiWozEvaluator(object):
             counts[req+'_offer'] = 0
 
         dial_num, successes, matches = 0, 0, 0
+        success_list=[]
+        match_list=[]
         if cfg.col_samples:
             match_sample={}
             mismatch_sample={}
             success_sample={}
             unsuccess_sample={}
-
+        
         for dial_id in dials:
             if eval_dial_list and dial_id +'.json' not in eval_dial_list:
                 continue
@@ -641,6 +671,8 @@ class MultiWozEvaluator(object):
             successes += success
             matches += match
             dial_num += 1
+            success_list.append(success)
+            match_list.append(match)
 
             # for domain in gen_stats.keys():
             #     gen_stats[domain][0] += stats[domain][0]
@@ -652,7 +684,9 @@ class MultiWozEvaluator(object):
             #         sng_gen_stats[domain][0] += stats[domain][0]
             #         sng_gen_stats[domain][1] += stats[domain][1]
             #         sng_gen_stats[domain][2] += stats[domain][2]
-
+        
+        json.dump(success_list, open(os.path.join(cfg.eval_load_path, 'success_list.json'), 'w'))
+        json.dump(match_list, open(os.path.join(cfg.eval_load_path, 'match_list.json'), 'w'))
         # self.logger.info(report)
         succ_rate = successes/( float(dial_num) + 1e-10) * 100
         match_rate = matches/(float(dial_num) + 1e-10) * 100

@@ -58,6 +58,7 @@ class _Config:
         self.gpt_path = '../distilgpt2'
         self.val_set='test'
         self.col_samples=True #collect wrong predictions samples
+        self.use_existing_result=True
         #additional data setting
         self.data_aug=False
         self.only_SGD=False
@@ -158,7 +159,7 @@ class _Config:
         self.no_miss_answer_reward=1
         self.miss_answer_reward=-1
         
-        self.non_neg_reward=True # non-negative reward value
+        self.non_neg_reward=False # non-negative reward value
 
         self.rl_dial_per_epoch=512
         self.rl_save_path='RL_exp'
@@ -188,7 +189,10 @@ class _Config:
         self.traverse_data=True # traverse all data in training set for one RL epoch
         self.save_by_reward=True # save the model with max average reward
 
-        self.sys_act_ctrl=True
+        self.sys_act_ctrl=False
+        self.simple_reward=False
+        self.simple_training=False
+        self.transpose_batch=False
         
 
         self.DS_path="experiments_21/DS_base/best_score_model"
@@ -201,14 +205,19 @@ class _Config:
 
         self.interaction_batch_size=32
         self.training_batch_size=8
+        self.rl_accumulation_steps=4
 
         self.test_unseen_act=False
         
         self.eval_resp_prob=False
         self.add_rl_baseline=False
         self.add_resp_reward=False
+        self.RL_ablation=False
+        self.reward_ablation=False
         
         self.eval_as_simpletod=True
+        self.beam_search=False
+        self.beam_size=5
 
     def __str__(self):
         s = ''

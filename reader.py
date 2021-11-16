@@ -596,43 +596,48 @@ class MultiWozReader(_ReaderBase):
                     os.makedirs(xdomain_dir)
                 encoded_file = os.path.join(xdomain_dir, '{}-encoded.data.json'.format('-'.join(cfg.exp_domains))) 
             
-            self.data = json.loads(open(cfg.data_path+cfg.data_file, 'r', encoding='utf-8').read().lower())
+            self.data = json.loads(open(cfg.data_path + cfg.data_file, 'r', encoding='utf-8').read().lower())
             self.train_list=[]
             for key in self.data:
                 if key not in self.dev_list and key not in self.test_list:
                     self.train_list.append(key)
 
-            if os.path.exists(encoded_file):
-                logging.info('Reading encoded data from {}'.format(encoded_file))
-                encoded_data = json.loads(open(encoded_file, 'r', encoding='utf-8').read())
-                self.train = encoded_data['train']
-                self.dev = encoded_data['dev']
-                self.test = encoded_data['test']
-            else:
-                logging.info('Encoding data now and save the encoded data in {}'.format(encoded_file))
-                # not exists, encode data and save
-                data_path=cfg.data_path+cfg.data_file
-                self.data = json.loads(open(data_path, 'r', encoding='utf-8').read().lower())
-                if cfg.fix_data and not cfg.train_us:
-                    self.data=self.fix_dialog_state(self.data)
-                    data_path=data_path[:-5]+'_fix.json'
-                    json.dump(self.data, open(data_path, 'w'), indent=2)
-                self.train, self.dev, self.test = [], [], []
-                for fn, dial in self.data.items():
-                    if '.json' in fn:
-                        fn = fn.replace('.json', '')
-                    if 'all' in cfg.exp_domains or self.exp_files.get(fn):
-                        if self.dev_files.get(fn):
-                            self.dev.append(self._get_encoded_data(fn, dial))
-                        elif self.test_files.get(fn):
-                            self.test.append(self._get_encoded_data(fn, dial))
-                        else:
-                            self.train.append(self._get_encoded_data(fn, dial))
-                
-                # save encoded data
-                encoded_data = {'train': self.train, 'dev': self.dev, 'test': self.test}
-                json.dump(encoded_data, open(encoded_file, 'w'), indent=2)
-                logging.info('encoded file saved in %s'%encoded_file)
+            if cfg.rl_train and cfg.RL_ablation:
+                data_path='data/multi-woz-2.1-processed/data_for_rl.json'
+                self.data=json.loads(open(data_path, 'r', encoding='utf-8').read().lower())
+                logging.info('Reading data from {}'.format(data_path))
+            if not cfg.rl_train:
+                if os.path.exists(encoded_file):
+                    logging.info('Reading encoded data from {}'.format(encoded_file))
+                    encoded_data = json.loads(open(encoded_file, 'r', encoding='utf-8').read())
+                    self.train = encoded_data['train']
+                    self.dev = encoded_data['dev']
+                    self.test = encoded_data['test']
+                else:
+                    logging.info('Encoding data now and save the encoded data in {}'.format(encoded_file))
+                    # not exists, encode data and save
+                    data_path=cfg.data_path+cfg.data_file
+                    self.data = json.loads(open(data_path, 'r', encoding='utf-8').read().lower())
+                    if cfg.fix_data and not cfg.train_us:
+                        self.data=self.fix_dialog_state(self.data)
+                        data_path=data_path[:-5]+'_fix.json'
+                        json.dump(self.data, open(data_path, 'w'), indent=2)
+                    self.train, self.dev, self.test = [], [], []
+                    for fn, dial in self.data.items():
+                        if '.json' in fn:
+                            fn = fn.replace('.json', '')
+                        if 'all' in cfg.exp_domains or self.exp_files.get(fn):
+                            if self.dev_files.get(fn):
+                                self.dev.append(self._get_encoded_data(fn, dial))
+                            elif self.test_files.get(fn):
+                                self.test.append(self._get_encoded_data(fn, dial))
+                            else:
+                                self.train.append(self._get_encoded_data(fn, dial))
+                    
+                    # save encoded data
+                    encoded_data = {'train': self.train, 'dev': self.dev, 'test': self.test}
+                    json.dump(encoded_data, open(encoded_file, 'w'), indent=2)
+                    logging.info('encoded file saved in %s'%encoded_file)
 
         else: # directly read processed data and encode
             self.train, self.dev, self.test = [], [], []
@@ -1115,7 +1120,7 @@ class MultiWozReader(_ReaderBase):
                     new_turn={}
                     for key in turn:
                         if key in ['user','bspn','aspn','resp','db', 'usr_act', 'bspn_gen', 'aspn_gen', 
-                            'resp_gen', 'db_gen', 'user_gen', 'usr_act_gen', 'gpan']:
+                            'resp_gen', 'db_gen', 'user_gen', 'usr_act_gen', 'gpan', 'pv_aspn']:
                             # GPT2Tokenizer of transformers3.5 needs to be modified
                             new_turn[key]=self.modified_encode(turn[key], tokenizer)
                         else:
@@ -1162,81 +1167,184 @@ class MultiWozReader(_ReaderBase):
         turn_batch=[]
         label_batch=[]
         reward_batch=[]
-        for dial, reward in zip(batch, rewards):
-            pv_turn=None
-            for turn, R in zip(dial, reward):
-                if pv_turn:
-                    turn_batch.append(pv_turn['bspn']+pv_turn['resp']+\
-                        turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
-                    if cfg.rl_for_bspn:
-                        label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
-                            turn['user'])+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+        if cfg.transpose_batch:
+            p=0
+            while(p*cfg.training_batch_size<len(batch)-1):
+                batch_part=batch[p*cfg.training_batch_size:(p+1)*cfg.training_batch_size]
+                reward_part=rewards[p*cfg.training_batch_size:(p+1)*cfg.training_batch_size]
+                p+=1
+                turn_id=0
+                max_turn_num=max([len(dial) for dial in batch_part])
+                for turn_id in range(max_turn_num):
+                    if turn_id==0:
+                        for dial, reward in zip(batch_part, reward_part):
+                            if turn_id>len(dial)-1:
+                                continue
+                            turn=dial[turn_id]
+                            R=reward[turn_id]
+                            turn_batch.append(turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+                            if cfg.rl_for_bspn:
+                                label_batch.append([cfg.pad_id]*len(turn['user'])+turn['bspn']+turn['db']+\
+                                    turn['aspn']+turn['resp'])
+                            else:
+                                label_batch.append([cfg.pad_id]*len(turn['user']+turn['bspn']+turn['db'])+\
+                                    turn['aspn']+[cfg.pad_id]*len(turn['resp']))
+                            reward_batch.append(R)
                     else:
-                        label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
-                            turn['user']+turn['bspn']+turn['db'])+turn['aspn']+[cfg.pad_id]*len(turn['resp']))
-                else:
-                    turn_batch.append(turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
-                    if cfg.rl_for_bspn:
-                        label_batch.append([cfg.pad_id]*len(turn['user'])+turn['bspn']+turn['db']+\
-                            turn['aspn']+turn['resp'])
+                        for dial, reward in zip(batch_part, reward_part):
+                            if turn_id>len(dial)-1:
+                                continue
+                            turn=dial[turn_id]
+                            pv_turn=dial[turn_id-1]
+                            R=reward[turn_id]
+                            turn_batch.append(pv_turn['bspn']+pv_turn['resp']+turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+                            if cfg.rl_for_bspn:
+                                label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
+                                    turn['user'])+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+                            else:
+                                label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
+                                    turn['user']+turn['bspn']+turn['db'])+turn['aspn']+[cfg.pad_id]*len(turn['resp']))
+                            reward_batch.append(R)
+                    
+                    if len(turn_batch)>cfg.training_batch_size/2:
+                        turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+                        label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+                        turn_batches.append(turn_batch_np)
+                        label_batches.append(label_batch_np)
+                        reward_batches.append(reward_batch)
+                        turn_batch=[]
+                        label_batch=[]
+                        reward_batch=[]
+    
+        else:
+            for dial, reward in zip(batch, rewards):
+                pv_turn=None
+                for turn, R in zip(dial, reward):
+                    if pv_turn:
+                        turn_batch.append(pv_turn['bspn']+pv_turn['resp']+\
+                            turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+                        if cfg.rl_for_bspn:
+                            label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
+                                turn['user'])+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+                        else:
+                            label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
+                                turn['user']+turn['bspn']+turn['db'])+turn['aspn']+[cfg.pad_id]*len(turn['resp']))
                     else:
-                        label_batch.append([cfg.pad_id]*len(turn['user']+turn['bspn']+turn['db'])+\
-                            turn['aspn']+[cfg.pad_id]*len(turn['resp']))
-                reward_batch.append(R)
-                if len(turn_batch)==cfg.training_batch_size:
-                    turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-                    label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-                    turn_batches.append(turn_batch_np)
-                    label_batches.append(label_batch_np)
-                    reward_batches.append(reward_batch)
-                    turn_batch=[]
-                    label_batch=[]
-                    reward_batch=[]
-                pv_turn=turn
-        if turn_batch!=[]:
-            turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-            label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-            turn_batches.append(turn_batch_np)
-            label_batches.append(label_batch_np)
-            reward_batches.append(reward_batch)
+                        turn_batch.append(turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+                        if cfg.rl_for_bspn:
+                            label_batch.append([cfg.pad_id]*len(turn['user'])+turn['bspn']+turn['db']+\
+                                turn['aspn']+turn['resp'])
+                        else:
+                            label_batch.append([cfg.pad_id]*len(turn['user']+turn['bspn']+turn['db'])+\
+                                turn['aspn']+[cfg.pad_id]*len(turn['resp']))
+                    reward_batch.append(R)
+                    if len(turn_batch)==cfg.training_batch_size:
+                        turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+                        label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+                        turn_batches.append(turn_batch_np)
+                        label_batches.append(label_batch_np)
+                        reward_batches.append(reward_batch)
+                        turn_batch=[]
+                        label_batch=[]
+                        reward_batch=[]
+                    pv_turn=turn
+            if turn_batch!=[]:
+                turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+                label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+                turn_batches.append(turn_batch_np)
+                label_batches.append(label_batch_np)
+                reward_batches.append(reward_batch)
         return turn_batches, label_batches, reward_batches
     
     def transpose_us_turn_batch(self, batch, rewards, tokenizer):
-        sos_r_id=tokenizer.convert_tokens_to_ids('<sos_r>')
-        eos_r_id=tokenizer.convert_tokens_to_ids('<eos_r>')
         turn_batches=[]
         label_batches=[]
         reward_batches=[]
         turn_batch=[]
         label_batch=[]
         reward_batch=[]
-        for dial, reward in zip(batch, rewards):
-            pv_turn=None
-            for turn, R in zip(dial, reward):
-                pv_resp=pv_turn['resp'] if pv_turn else [sos_r_id,  eos_r_id]
-                turn_batch.append(turn['gpan']+pv_resp+turn['usr_act']+turn['user'])
-                if cfg.rl_for_bspn:
-                    label_batch.append([cfg.pad_id]*len(turn['gpan']+pv_resp)+turn['usr_act']+turn['user'])
-                else:
-                    label_batch.append([cfg.pad_id]*len(turn['gpan']+pv_resp)+\
-                        turn['usr_act']+[cfg.pad_id]*len(turn['user']))
-                reward_batch.append(R)
-                if len(turn_batch)==cfg.training_batch_size:
-                    turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-                    label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-                    turn_batches.append(turn_batch_np)
-                    label_batches.append(label_batch_np)
-                    reward_batches.append(reward_batch)
-                    turn_batch=[]
-                    label_batch=[]
-                    reward_batch=[]
-                pv_turn=turn
-        if turn_batch!=[]:
-            turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-            label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-            turn_batches.append(turn_batch_np)
-            label_batches.append(label_batch_np)
-            reward_batches.append(reward_batch)
+        if cfg.transpose_batch:
+            p=0
+            while(p*cfg.training_batch_size<len(batch)-1):
+                batch_part=batch[p*cfg.training_batch_size:(p+1)*cfg.training_batch_size]
+                reward_part=rewards[p*cfg.training_batch_size:(p+1)*cfg.training_batch_size]
+                p+=1
+                turn_id=0
+                max_turn_num=max([len(dial) for dial in batch_part])
+                for turn_id in range(max_turn_num):
+                    if turn_id==0:
+                        for dial, reward in zip(batch_part, reward_part):
+                            if turn_id>len(dial)-1:
+                                continue
+                            turn=dial[turn_id]
+                            R=reward[turn_id]
+                            turn_batch.append(turn['gpan']+turn['usr_act']+turn['user'])
+                            if cfg.rl_for_bspn:
+                                label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+turn['user'])
+                            else:
+                                label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+[cfg.pad_id]*len(turn['user']))
+                            reward_batch.append(R)
+                    else:
+                        for dial, reward in zip(batch_part, reward_part):
+                            if turn_id>len(dial)-1:
+                                continue
+                            turn=dial[turn_id]
+                            pv_turn=dial[turn_id-1]
+                            R=reward[turn_id]
+                            pv_aspn=turn['pv_aspn'] if 'pv_aspn' in turn else pv_turn['aspn']
+                            turn_batch.append(pv_turn['resp']+pv_aspn+turn['gpan']+turn['usr_act']+turn['user'])
+                            if cfg.rl_for_bspn:
+                                label_batch.append([cfg.pad_id]*len(pv_turn['resp']+pv_aspn+turn['gpan'])+\
+                                    turn['usr_act']+turn['user'])
+                            else:
+                                label_batch.append([cfg.pad_id]*len(pv_turn['resp']+pv_aspn+turn['gpan'])+\
+                                    turn['usr_act']+[cfg.pad_id]*len(turn['user']))
+                            reward_batch.append(R)
+                    if len(turn_batch)>cfg.training_batch_size/2:
+                        turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+                        label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+                        turn_batches.append(turn_batch_np)
+                        label_batches.append(label_batch_np)
+                        reward_batches.append(reward_batch)
+                        turn_batch=[]
+                        label_batch=[]
+                        reward_batch=[]
+        else:
+            for dial, reward in zip(batch, rewards):
+                pv_turn=None
+                for turn, R in zip(dial, reward):
+                    if pv_turn is None:
+                        turn_batch.append(turn['gpan']+turn['usr_act']+turn['user'])
+                        if cfg.rl_for_bspn:
+                            label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+turn['user'])
+                        else:
+                            label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+[cfg.pad_id]*len(turn['user']))
+                    else:
+                        pv_aspn=turn['pv_aspn'] if 'pv_aspn' in turn else pv_turn['aspn']
+                        turn_batch.append(pv_turn['resp']+pv_aspn+turn['gpan']+turn['usr_act']+turn['user'])
+                        if cfg.rl_for_bspn:
+                            label_batch.append([cfg.pad_id]*len(pv_turn['resp']+pv_aspn+turn['gpan'])+\
+                                turn['usr_act']+turn['user'])
+                        else:
+                            label_batch.append([cfg.pad_id]*len(pv_turn['resp']+pv_aspn+turn['gpan'])+\
+                                turn['usr_act']+[cfg.pad_id]*len(turn['user']))
+                    reward_batch.append(R)
+                    if len(turn_batch)==cfg.training_batch_size:
+                        turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+                        label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+                        turn_batches.append(turn_batch_np)
+                        label_batches.append(label_batch_np)
+                        reward_batches.append(reward_batch)
+                        turn_batch=[]
+                        label_batch=[]
+                        reward_batch=[]
+                    pv_turn=turn
+            if turn_batch!=[]:
+                turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
+                label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
+                turn_batches.append(turn_batch_np)
+                label_batches.append(label_batch_np)
+                reward_batches.append(reward_batch)
         return turn_batches, label_batches, reward_batches
 
     def modified_encode(self, text, tokenizer=None):
@@ -1370,7 +1478,7 @@ class MultiWozReader(_ReaderBase):
             bspn_labels['contexts_np'],bspn_labels['lengths']=utils.padSeqs_gpt(bspn_labels['contexts'], cfg.pad_id)
             return inputs,labels,bspn_labels
 
-    def get_pv_batch(self, pv_batch, user, resp, bspn=None, side='sys'):
+    def get_pv_batch(self, pv_batch, user=None, resp=None, bspn=None, aspn=None, side='sys'):
         assert side in ['sys', 'user']
         new_pv_batch=[] # pv_batch for next turn
         if side=='sys':
@@ -1391,7 +1499,8 @@ class MultiWozReader(_ReaderBase):
                     else:
                         new_pv_batch.append(b)
         else:# user's pv batch
-            new_pv_batch=resp
+            for r, a in zip(resp, aspn):
+                new_pv_batch.append(r+a)
         return new_pv_batch
 
     def convert_batch_turn(self, turn_batch, pv_batch, first_turn=False, rl_train=False, mode='oracle', side='sys'):
@@ -1446,18 +1555,20 @@ class MultiWozReader(_ReaderBase):
                 else:
                     batch_zipped=zip(turn_batch['goal'], turn_batch['usr_act_gen'], turn_batch['user_gen'])                   
                 for g, ua, u in batch_zipped:
-                    context = g + [self.sos_r_id, self.eos_r_id] + ua + u
-                    label_context=(len(g)+2)*[cfg.pad_id]+ua+u
+                    context = g + ua + u
+                    label_context = len(g)*[cfg.pad_id]+ua+u
+                    #context = g + [self.sos_r_id, self.eos_r_id] + ua + u
+                    #label_context=(len(g)+2)*[cfg.pad_id]+ua+u
                     contexts.append(context)
                     label_contexts.append(label_context)
             else:
                 if mode=='oracle':
-                    batch_zipped = zip(turn_batch['goal'], pv_batch, turn_batch['usr_act'], turn_batch['user'])
+                    batch_zipped = zip(pv_batch, turn_batch['goal'], turn_batch['usr_act'], turn_batch['user'])
                 else:
-                    batch_zipped=zip(turn_batch['goal'], pv_batch, turn_batch['usr_act_gen'], turn_batch['user_gen'])                   
-                for g, pv, ua, u in batch_zipped:
-                    context = g + pv + ua + u
-                    label_context=len(g+pv)*[cfg.pad_id]+ua+u
+                    batch_zipped=zip(pv_batch, turn_batch['goal'], turn_batch['usr_act_gen'], turn_batch['user_gen'])                   
+                for pv, g, ua, u in batch_zipped:
+                    context = pv + g + ua + u
+                    label_context=len(pv+g)*[cfg.pad_id]+ua+u
                     contexts.append(context)
                     label_contexts.append(label_context)
 
@@ -1492,22 +1603,22 @@ class MultiWozReader(_ReaderBase):
                     eval_batch.append(hist+u+b+d+[self.sos_a_id])
         return eval_batch
     
-    def convert_eval_batch_turn_us(self, turn_batch, pv_resp, user_act=None):
+    def convert_eval_batch_turn_us(self, turn_batch, pv_batch, user_act=None):
         eval_batch=[]
         if user_act is None:# generate user act (and utterance)
-            if pv_resp==None: # first turn
+            if pv_batch==None: # first turn
                 for g in turn_batch['goal']:
-                    eval_batch.append(g+[self.sos_r_id, self.eos_r_id, self.sos_ua_id])
+                    eval_batch.append(g + [self.sos_ua_id])
             else:
-                for g, r in zip(turn_batch['goal'], pv_resp):
-                    eval_batch.append(g + r + [self.sos_ua_id])
+                for g, pv in zip(turn_batch['goal'], pv_batch):
+                    eval_batch.append(pv + g + [self.sos_ua_id])
         else:# generate user utterance
-            if pv_resp==None:
+            if pv_batch==None:
                 for g, ua in zip(turn_batch['goal'], user_act):
-                    eval_batch.append(g + [self.sos_r_id, self.eos_r_id] + ua + [self.sos_u_id])
+                    eval_batch.append(g + ua + [self.sos_u_id])
             else:
-                for g, r, ua in zip(turn_batch['goal'], pv_resp, user_act):
-                    eval_batch.append(g + r + ua + [self.sos_u_id])
+                for g, pv, ua in zip(turn_batch['goal'], pv_batch, user_act):
+                    eval_batch.append(pv + g + ua + [self.sos_u_id])
         return eval_batch
 
 
