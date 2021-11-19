@@ -3,12 +3,13 @@ from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from eval import MultiWozEvaluator
 #from damd_net import DAMD, cuda_, get_one_hot_input
-from reader import MultiWozReader
+from reader import MultiWozReader, tod_dataset, train_collate_fn, test_collate_fn
 import utils
 from torch.optim import Adam
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.data import DataLoader
 
 import os
 import shutil
@@ -38,40 +39,42 @@ class Modal(object):
         else:
             self.device1 = device[0]
             self.device2=device[0]
-        tokenizer_path=cfg.gpt_path
-        self.tokenizer = GPT2Tokenizer.from_pretrained(tokenizer_path)
-        # cfg.tokenizer = tokenizer
-        logging.info('hotel database path:{}'.format(cfg.dbs['hotel']))
-        self.reader = MultiWozReader(self.tokenizer)
-        self.get_special_ids()
-        logging.info([self.sos_b_id, self.sos_a_id, self.sos_r_id, self.eos_b_id, self.eos_a_id,self.eos_r_id])
+        if not cfg.combine_eval:
+            tokenizer_path=cfg.gpt_path
+            self.tokenizer = GPT2Tokenizer.from_pretrained(tokenizer_path)
+            self.reader = MultiWozReader(self.tokenizer)
+            self.get_special_ids()
+            # logging.info([self.sos_b_id, self.sos_a_id, self.sos_r_id, self.eos_b_id, self.eos_a_id,self.eos_r_id])
 
-        # create model: gpt2
-        single_mode=['pretrain','train','test_pos']
-        if cfg.mode in single_mode:
-            self.model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path)
-            self.model.resize_token_embeddings(len(self.tokenizer))
-            if cfg.gradient_checkpoint:
-                self.model.config.gradient_checkpointing=True
+            # create model: gpt2
+            single_mode=['pretrain','train','test_pos']
+            if cfg.mode in single_mode:
+                self.model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path)
+                self.model.resize_token_embeddings(len(self.tokenizer))
+                if cfg.gradient_checkpoint:
+                    self.model.config.gradient_checkpointing=True
+                
+                self.model.to(self.device1)
+                self.PrioriModel=self.model
             
-            self.model.to(self.device1)
-            self.PrioriModel=self.model
-            if cfg.posterior_train:
-                logging.info("Posterior model loaded from {}".format(cfg.gpt_path))
-            else:
-                logging.info("Prior model loaded from {}".format(cfg.gpt_path))
-        
-        elif cfg.mode=='test' or cfg.mode=='test_all':
-            self.PrioriModel=GPT2LMHeadModel.from_pretrained(cfg.gpt_path)
-            self.model=self.PrioriModel
-            if cfg.gradient_checkpoint:
-                self.PrioriModel.config.gradient_checkpointing=True
-            self.PosteriorModel=None
-            self.PrioriModel.to(self.device1)
-        
-
-        self.vocab_size=len(self.tokenizer)
-        #
+            elif cfg.mode=='test' or cfg.mode=='test_all':
+                self.PrioriModel=GPT2LMHeadModel.from_pretrained(cfg.gpt_path)
+                self.model=self.PrioriModel
+                if cfg.gradient_checkpoint:
+                    self.PrioriModel.config.gradient_checkpointing=True
+                self.PosteriorModel=None
+                self.PrioriModel.to(self.device1)
+            
+        else:
+            self.tokenizer = GPT2Tokenizer.from_pretrained(cfg.gpt_path1)
+            self.reader = MultiWozReader(self.tokenizer)
+            self.get_special_ids()
+            self.dst_model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path1)
+            self.dm_model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path2)
+            self.nlg_model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path3)
+            self.dst_model.to(self.device1)
+            self.dm_model.to(self.device1)
+            self.nlg_model.to(self.device1)
         self.evaluator = MultiWozEvaluator(self.reader)
         if cfg.save_log:
             log_path='./log21/log_{}'.format(cfg.exp_no) if cfg.dataset==1 else './log/log_{}'.format(cfg.exp_no)
@@ -84,12 +87,11 @@ class Modal(object):
         else:
             self.tb_writer = None
         cfg.origin_batch_size=cfg.batch_size
-
-        self.nll_loss=nn.NLLLoss(ignore_index=cfg.pad_id)
         self.eps=1e-45
         if 'test' not in cfg.mode:
             json.dump(cfg.__dict__,open(os.path.join(cfg.exp_path,'cfg_all.json'),'w'),indent=2)
         self.global_output=4
+
     def get_special_ids(self):
         self.sos_b_id=self.tokenizer.convert_tokens_to_ids('<sos_b>')
         self.sos_a_id=self.tokenizer.convert_tokens_to_ids('<sos_a>')
@@ -268,7 +270,7 @@ class Modal(object):
                     min_loss=total_loss/epoch_step
                     self.save_model(posterior=posterior,model=self.model)
 
-    def pretrain_turn_level(self, posterior=False):
+    def pretrain_turn_level(self):
         if cfg.mode=='train':
             num_dials=len(self.reader.train)
             all_batches = self.reader.get_batches('train')
@@ -490,106 +492,302 @@ class Modal(object):
                 if early_stop_count==0 and cfg.early_stop:
                     logging.info('early stopped')
                     break
-                
 
-
-
-    def get_ST_input(self,inputs,logits,labels1,labels2):
-        #inputs:B,T1
-        #logits:B,T1,V or B,T2,V
-        #labels1:B,T1
-        #labels2:B,T1 or B,T2
-        onehot=F.one_hot(inputs,self.vocab_size).float()
-        for dial_idx in range(logits.size(0)):
-            label_pri=labels1[dial_idx,:].ne(cfg.pad_id).long().cpu().tolist()#0 for pad token and 1 for hidden states tokens
-            label_post=labels2[dial_idx,:].ne(cfg.pad_id).long().cpu().tolist()
-            label_pri.reverse()#Traverse from back to front
-            label_post.reverse()
-            loc1=0
-            loc2=0
-            loc3=0
-            loc4=0
-            while(1):
-                if 1 not in label_pri:
-                    break
-                loc1=label_pri.index(1)+loc2
-                label_pri=label_pri[loc1-loc2:]
-                if 0 not in label_pri:
-                    break
-                loc2=label_pri.index(0)+loc1
-                if 1 not in label_post:
-                    break
-                loc3=label_post.index(1)+loc4
-                label_post=label_post[loc3-loc4:]
-                if 0 not in label_post:
-                    break
-                loc4=label_post.index(0)+loc3
-                if (loc4-loc3)!=(loc2-loc1):
-                    print('location:',loc1,loc2,loc3,loc4)
-                assert loc4-loc3==loc2-loc1
-                probs=F.softmax(logits[dial_idx,-loc4:-loc3-1,:])
-                if loc1==0:
-                    onehot[dial_idx,-loc2+1:,:]+=(probs-probs.detach()).to(onehot.device)
-                else:
-                    onehot[dial_idx,-loc2+1:-loc1,:]+=(probs-probs.detach()).to(onehot.device)
-                label_pri=label_pri[loc2-loc1:]
-                label_post=label_post[loc4-loc3:]
-        return onehot
-
-    def kl_loss(self, p_proba, q_proba): # [B, T, V] or [T,V]
-        dim=p_proba.dim()
-        loss = q_proba * (torch.log(q_proba+self.eps) - torch.log(p_proba+self.eps))
-        loss = torch.sum(loss, dim=-1)   # sum over vocabulary
-        loss = torch.sum(loss, dim=-1)   # sum over sequence
-        if dim==2:
-            return loss
+    def train_modular(self, modular='dst'):
+        data_path='data/multi-woz-2.1-processed/data_for_{}.json'.format(modular)
+        encoded_path='data/multi-woz-2.1-processed/encoded_data_for_{}.json'.format(modular)
+        if os.path.exists(encoded_path):
+            encoded_data=json.loads(open(encoded_path, 'r', encoding='utf-8').read())
+            logging.info('Reading encoded data from {}'.format(encoded_path))
         else:
-            return loss.mean()
-
-    def get_kl_loss(self,logits_pri,logits_post,labels_pri,labels_post):
-        # logits_pri:B,T1,V
-        # logits_post:B,T2,V
-        # labels_pri:B,T1. bspn's label in prior sequence
-        # labels_post:B,T2. bspn's label in posterior sequence
-        # what labels do is to find the logits corresponding to bspn
-        loss=0
-        count=0
-        for dial_idx in range(logits_pri.size(0)):
-            label_pri=labels_pri[dial_idx,:].ne(cfg.pad_id).long().cpu().tolist()#pad_id处为0，bspn为1
-            label_post=labels_post[dial_idx,:].ne(cfg.pad_id).long().cpu().tolist()
-            label_pri.reverse()#从后往前遍历
-            label_post.reverse()
-            turn_count=0
-            loc1=0
-            loc2=0
-            loc3=0
-            loc4=0
-            while(1):
-                if 1 not in label_pri:
-                    break
-                loc1=label_pri.index(1)+loc2
-                label_pri=label_pri[loc1-loc2:]
-                if 0 not in label_pri:
-                    break
-                loc2=label_pri.index(0)+loc1
-                if 1 not in label_post:
-                    break
-                loc3=label_post.index(1)+loc4
-                label_post=label_post[loc3-loc4:]
-                if 0 not in label_post:
-                    break
-                loc4=label_post.index(0)+loc3
-                bspn_len=min(loc2-loc1,loc4-loc3)
-                probs_pri=F.softmax(logits_pri[dial_idx,-(loc1+bspn_len):-loc1-1,:],dim=-1)
-                probs_post=F.softmax(logits_post[dial_idx,-(loc3+bspn_len):-loc3-1,:],dim=-1)
-                loss+=self.kl_loss(probs_pri,probs_post.to(probs_pri.device))
-                count+=bspn_len
-                turn_count+=1
-                label_pri=label_pri[loc2-loc1:]
-                label_post=label_post[loc4-loc3:]
+            data=json.loads(open(data_path, 'r', encoding='utf-8').read())
+            logging.info('Starting encoding data')
+            st=time.time()
+            encoded_data=self.reader.encode_data(data, self.tokenizer, modular=modular)
+            logging.info('Encoding time:{:.3f} min. Encoded data saved in {}'.format((time.time()-st)/60, encoded_path))
+            json.dump(encoded_data, open(encoded_path, 'w'))
         
-        return loss/count
+        train_dataloader=DataLoader(encoded_data['train'], batch_size=cfg.batch_size, shuffle=True, collate_fn=train_collate_fn)
+        dev_dataloader=DataLoader(encoded_data['dev'], batch_size=cfg.eval_batch_size, collate_fn=test_collate_fn)
+        num_turns=len(encoded_data['train'])
+        logging.info('Num turns = {}'.format(num_turns))
+        optimizer, scheduler = self.get_sep_optimizers(num_turns,self.model)
 
+        log_inputs = 4
+        global_step = 0
+        max_score=0
+        early_stop_count=cfg.early_stop_count
+        #epoch_th=0.05*cfg.epoch_num if 'distilgpt2' in cfg.gpt_path else -1
+        epoch_th=-1
+        warmup_epochs=cfg.warmup_steps*cfg.gradient_accumulation_steps*cfg.batch_size//num_turns \
+            if cfg.warmup_steps>=0 else int(cfg.epoch_num*cfg.warmup_ratio)
+        logging.info('Warmup epochs:{}'.format(warmup_epochs))
+
+        for epoch in range(cfg.epoch_num):
+            tr_loss = 0.0
+            step_loss=0
+            btm = time.time()
+            oom_time = 0
+            self.model.zero_grad()
+
+            for batch_idx, batch in enumerate(train_dataloader):
+                try:  # avoid OOM
+                    self.model.train()
+                    inputs=batch[0].to(self.model.device)#B, T
+                    if log_inputs > 0:  # log inputs for the very first two turns
+                        logging.info('Input examples:')
+                        logging.info(self.tokenizer.decode(inputs[0,:]))
+                        log_inputs-=1
+                    labels=batch[1].to(self.model.device) if cfg.only_target_loss else inputs
+                    outputs = self.model(inputs)
+                    loss = self.calculate_loss_and_accuracy(outputs, labels=labels)
+                    if cfg.loss_reg:
+                        loss=loss/cfg.gradient_accumulation_steps
+                    loss.backward()
+                    tr_loss += loss.item()
+                    step_loss+=loss.item()
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), 5.0)
+                    if (batch_idx+1) % cfg.gradient_accumulation_steps == 0 or batch_idx+1==len(train_dataloader):
+                        optimizer.step()
+                        scheduler.step()
+                        optimizer.zero_grad()
+                        global_step += 1
+                        self.tb_writer.add_scalar('lr', optimizer.param_groups[0]["lr"], global_step)
+                        self.tb_writer.add_scalar('loss', step_loss, global_step)
+                        step_loss=0
+
+                except RuntimeError as exception:
+                    if "out of memory" in str(exception):
+                        oom_time += 1
+                        logging.info("WARNING: ran out of memory,times: {}, batch size: {}".format(oom_time, cfg.batch_size))
+                        if hasattr(torch.cuda, 'empty_cache'):
+                            torch.cuda.empty_cache()
+                    else:
+                        logging.info(str(exception))
+                        raise exception
+            logging.info('Epoch:{}, Train epoch time: {:.2f} min, epoch loss: {:.4f}'.format(
+                epoch, (time.time()-btm)/60, tr_loss))
+            
+            if epoch>epoch_th:
+                gen=[]
+                oracle=[]
+                if modular=='dst':
+                    max_len=60
+                    sos_id=self.sos_b_id
+                    eos_id=self.eos_b_id
+                elif modular=='nlg':
+                    max_len=60
+                    sos_id=self.sos_r_id
+                    eos_id=self.eos_r_id
+                elif modular=='dm':
+                    max_len=25
+                    sos_id=self.sos_a_id
+                    eos_id=self.eos_a_id
+                st=time.time()
+                for batch in dev_dataloader:
+                    gen_batch=self.generate_batch(self.model, batch[0], max_len, eos_id)
+                    gen+=self.convert_batch_ids_to_tokens(self.tokenizer, gen_batch, sos_id, eos_id)
+                    oracle+=self.convert_batch_ids_to_tokens(self.tokenizer, batch[1], sos_id, eos_id)
+                logging.info('Validation time:{:.2f} min'.format((time.time()-st)/60))
+                metrics=self.evaluator.calculate_metrics(gen, oracle, modular=modular)
+                if modular in ['dst', 'dm']:
+                    logging.info('Dev joint accuracy:{:.3f}, P/R/F1:{}'.format(metrics[0], metrics[1]))
+                    score=metrics[1][2] # F1 score
+                    self.tb_writer.add_scalar('joint_acc', metrics[0], epoch)
+                    self.tb_writer.add_scalar('precious', metrics[1][0], epoch)
+                    self.tb_writer.add_scalar('recall', metrics[1][1], epoch)
+                    self.tb_writer.add_scalar('F1', metrics[1][2], epoch)
+                else:
+                    logging.info('Dev BLEU:{:.3f}'.format(metrics))
+                    score=metrics #BLEU
+                    self.tb_writer.add_scalar('BLEU', metrics, epoch)
+
+                if score>max_score:
+                    early_stop_count=cfg.early_stop_count
+                    max_score=score
+                    self.save_model(path='best_score_model',model=self.model)
+                else:
+                    if epoch>=warmup_epochs:
+                        early_stop_count-=1
+                        logging.info('early stop count:%d'%early_stop_count)
+                        if early_stop_count==0 and cfg.early_stop:
+                            logging.info('early stopped')
+                            break
+
+    def eval_modular(self, modular='dst'):
+        if modular=='dst':
+            self.eval_dst()
+        data_path='data/multi-woz-2.1-processed/data_for_{}.json'.format(modular)
+        data=json.loads(open(data_path, 'r', encoding='utf-8').read())
+        encoded_path='data/multi-woz-2.1-processed/encoded_data_for_{}.json'.format(modular)
+        encoded_data=json.loads(open(encoded_path, 'r', encoding='utf-8').read())
+        logging.info('Total evaluation turns:{}'.format(len(encoded_data['test'])))
+        test_dataloader=DataLoader(encoded_data['test'], batch_size=cfg.eval_batch_size, collate_fn=test_collate_fn)
+        gen=[]
+        oracle=[]
+        if modular=='dst':
+            max_len=60
+            sos_id=self.sos_b_id
+            eos_id=self.eos_b_id
+        elif modular=='nlg':
+            max_len=60
+            sos_id=self.sos_r_id
+            eos_id=self.eos_r_id
+        elif modular=='dm':
+            max_len=25
+            sos_id=self.sos_a_id
+            eos_id=self.eos_a_id
+        st=time.time()
+        for batch in test_dataloader:
+            gen_batch=self.generate_batch(self.model, batch[0], max_len, eos_id)
+            gen+=self.convert_batch_ids_to_tokens(self.tokenizer, gen_batch, sos_id, eos_id)
+            oracle+=self.convert_batch_ids_to_tokens(self.tokenizer, batch[1], sos_id, eos_id)
+        results=[{'context':a[0], 'oracle':b, 'gen':c} for (a, b, c) in zip(data['test'], oracle, gen)]
+        json.dump(results, open(os.path.join(cfg.eval_load_path, 'result.json'), 'w'), indent=2)
+        logging.info('Validation time:{:.2f} min'.format((time.time()-st)/60))
+        metrics=self.evaluator.calculate_metrics(gen, oracle, modular=modular)
+        if modular in ['dst', 'dm']:
+            logging.info('Dev joint accuracy:{:.3f}, P/R/F1:{}'.format(metrics[0], metrics[1]))
+        else:
+            logging.info('Dev BLEU:{:.3f}'.format(metrics))
+
+    def eval_dst(self):
+        cfg.batch_size=cfg.eval_batch_size
+        batches=self.reader.get_batches('test')
+        self.model.eval()
+        gen=[]
+        oracle=[]
+        results=[]
+        turn_results=[]
+        log_output=3
+        with torch.no_grad():
+            for batch in batches:
+                batch=self.reader.transpose_batch(batch)
+                pv_bspn=None
+                for turn_num, turn_batch in enumerate(batch):
+                    contexts=self.reader.convert_dst_eval_batch(turn_batch, pv_bspn=pv_bspn)
+                    gen_batch_ids=self.generate_batch(self.model, contexts, max_len=60, eos_id=self.eos_b_id)
+                    gen_bspn_batch, pv_bspn=self.convert_batch_ids_to_tokens(self.tokenizer, gen_batch_ids, self.sos_b_id, self.eos_b_id, return_ids=True)
+                    oracle_bspn_batch=self.convert_batch_ids_to_tokens(self.tokenizer, turn_batch['bspn'], self.sos_b_id, self.eos_b_id)
+                    gen+=gen_bspn_batch
+                    oracle+=oracle_bspn_batch
+                    turn_results+=[{'bspn':a, 'bspn_gen':b} for a, b in zip(oracle_bspn_batch, gen_bspn_batch)]
+                    results+=[{'context':self.tokenizer.decode(a), 'oracle':b, 'gen':c} for (a, b, c) in zip(contexts, oracle_bspn_batch, gen_bspn_batch)]
+                    if log_output>0:
+                        log_output-=1
+                        logging.info('Context:{}\nGen:{}\nOracle:{}'.format(self.tokenizer.decode(contexts[3]), gen_bspn_batch[3], oracle_bspn_batch[3]))
+        metrics=self.evaluator.calculate_metrics(gen, oracle, modular='dst')
+        logging.info('(Standard) Dev joint accuracy:{:.3f}, P/R/F1:{}'.format(metrics[0], metrics[1]))
+        json.dump(results, open(os.path.join(cfg.eval_load_path, 'std_result.json'), 'w'), indent=2)
+        joint_acc=compute_jacc(turn_results)
+        logging.info('Previous joint acc:{:.3f}'.format(joint_acc))
+
+    def combine_modules(self):
+        cfg.batch_size=cfg.eval_batch_size
+        batches=self.reader.get_batches('test')
+        self.dst_model.eval()
+        self.dm_model.eval()
+        self.nlg_model.eval()
+        result_collection={}
+        st=time.time()
+        with torch.no_grad():
+            for batch in batches:
+                new_batch=[]
+                batch_size=len(batch)
+                batch=self.reader.transpose_batch(batch)
+                pv_bspn_ids=None
+                pv_aspn_ids=None
+                pv_bspn=None
+                self.turn_domain_batch=['' for _ in range(batch_size)]
+                for turn_num, turn_batch in enumerate(batch):
+                    contexts=self.reader.convert_dst_eval_batch(turn_batch, pv_bspn=pv_bspn_ids)
+                    gen_batch_ids=self.generate_batch(self.dst_model, contexts, max_len=60, eos_id=self.eos_b_id)
+                    gen_bspn, gen_bspn_ids=self.convert_batch_ids_to_tokens(self.tokenizer, gen_batch_ids, self.sos_b_id, self.eos_b_id, return_ids=True)
+                    db_batch, db_batch_ids=self.get_db_batch(gen_bspn, pv_bspn, return_ids=True)
+
+                    contexts=self.reader.convert_dm_eval_batch(turn_batch, db_batch_ids, pv_aspn_ids)
+                    gen_batch_ids=self.generate_batch(self.dm_model, contexts, max_len=20, eos_id=self.eos_a_id)
+                    gen_aspn, gen_aspn_ids=self.convert_batch_ids_to_tokens(self.tokenizer, gen_batch_ids, self.sos_a_id, self.eos_a_id, return_ids=True)
+                    
+                    contexts=self.reader.convert_nlg_eval_batch(gen_aspn_ids)
+                    gen_batch_ids=self.generate_batch(self.nlg_model, contexts, max_len=60, eos_id=self.eos_r_id)
+                    gen_resp, gen_resp_ids=self.convert_batch_ids_to_tokens(self.tokenizer, gen_batch_ids, self.sos_r_id, self.eos_r_id, return_ids=True)
+
+                    pv_bspn_ids=gen_bspn_ids
+                    pv_aspn_ids=gen_aspn_ids
+                    pv_bspn=gen_bspn
+                    turn_batch['bspn_gen']=gen_bspn_ids
+                    turn_batch['aspn_gen']=gen_aspn_ids
+                    turn_batch['resp_gen']=gen_resp_ids
+                    turn_batch['db_gen']=db_batch_ids
+                    new_batch.append(turn_batch)
+                batch=self.reader.inverse_transpose_batch(new_batch)
+                for dialog in batch:
+                    result_collection.update(self.reader.inverse_transpose_turn(dialog))
+        results, field = self.reader.wrap_result_lm(result_collection)
+        logging.info('Inference time:{:.3f} min'.format((time.time()-st)/60))
+        
+        joint_acc=compute_jacc(results)
+        cfg.use_true_bspn_for_ctr_eval=False
+        bleu, success, match = self.evaluator.validation_metric(results)
+        score = 0.5 * (success + match) + bleu
+        logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+        json.dump(results, open(os.path.join(cfg.gpt_path1, 'result.json'), 'w'), indent=2)
+
+
+    def get_db_batch(self, bs_batch, pv_bs_batch=None, return_ids=False):
+        batch_size=len(bs_batch)
+        db_batch=[]
+        db_batch_ids=[]
+        for i, bspn in enumerate(bs_batch):
+            cons=self.reader.bspan_to_constraint_dict(bspn)
+            cur_domain=list(cons.keys())
+            if cur_domain==[]:
+                db_result='<sos_db> '+ '[db_0]' + ' <eos_db>'
+            else:
+                if len(cur_domain)==1:
+                    self.turn_domain_batch[i]=cur_domain
+                else:
+                    if pv_bs_batch is None:
+                        max_slot_num=0 # We choose the domain with most slots as the current domain
+                        for domain in cur_domain:
+                            if len(cons[domain])>max_slot_num:
+                                self.turn_domain_batch[i]=[domain]
+                                max_slot_num=len(cons[domain])
+                    else:
+                        pv_domain=list(self.reader.bspan_to_constraint_dict(pv_bs_batch[i]).keys())
+                        for domain in cur_domain:
+                            if domain not in pv_domain: # new domain
+                                # if domains are all the same, self.domain will not change
+                                self.turn_domain_batch[i]=[domain]
+
+                #bspn=bspn.replace('portugese', 'portuguese')
+                db_result = self.reader.bspan_to_DBpointer(bspn, self.turn_domain_batch[i]) #[db_x]
+                db_result = '<sos_db> '+ db_result + ' <eos_db>'
+            db_batch.append(db_result)
+            if return_ids:
+                db_batch_ids.append(self.tokenizer.encode(db_result))
+        if return_ids:
+            return db_batch, db_batch_ids
+        return db_batch
+
+    def convert_batch_ids_to_tokens(self, tokenizer, input_ids, sos_id, eos_id, return_ids=False):
+        # input_ids: B*T
+        # output: B*string
+        outputs=[]
+        outputs_ids=[]
+        for sent_ids in input_ids:
+            if eos_id in sent_ids:
+                sent_ids=sent_ids[:sent_ids.index(eos_id)+1]
+            else:
+                sent_ids[-1]=eos_id
+            if sos_id not in sent_ids:
+                sent_ids=[sos_id]+sent_ids
+            outputs_ids.append(sent_ids)
+            outputs.append(tokenizer.decode(sent_ids))
+        if return_ids:
+            return outputs, outputs_ids
+        return outputs
 
     def get_sep_optimizers(self,num_dials,model):
         no_decay = ["bias", "LayerNorm.weight"]
@@ -640,15 +838,6 @@ class Modal(object):
         loss /= num_targets
         return loss
 
-    def get_max_len(self,batch):
-        max_len=0
-        for dial in batch:
-            dial_len=0
-            for turn in dial:
-                dial_len+=len(turn['user'])+len(turn['resp'])
-            if dial_len>max_len:
-                max_len=dial_len
-        return max_len
 
     def convert_eval_batch(self,data,contexts, turn_num,bs_gen,prior=False,db_gen=None,resp_gen=None,aspn_gen=None, gen_db=False):
         
@@ -774,162 +963,6 @@ class Modal(object):
             resp_gen.append(resp)
         return resp_gen
 
-    def gen_batch_bspn(self,original_batch,model_name=None,validate=False):
-        if model_name=='PosteriorModel':
-            self.model=self.PosteriorModel
-        elif model_name=='PrioriModel':
-            self.model=self.PrioriModel
-
-        if cfg.mode=='test_pos' or validate or model_name=='PosteriorModel':
-            prior=False
-        else:
-            prior=True
-        self.model.eval()
-        device=self.model.device
-        max_len=35 if cfg.data_aug else 60#for additional dataset, we don't generate too long
-        max_len_a=15 if cfg.data_aug else 20
-        sos_b_id=self.sos_b_id
-        eos_b_id=self.eos_b_id
-        eos_a_id=self.eos_a_id
-        with torch.no_grad():
-            context_len=self.get_max_len(original_batch)
-            if context_len>900:
-                logging.info('The max length of current batch is:{}, we divide it by half'.format(context_len))
-                batch_size=len(original_batch)
-                batches=[ original_batch[:batch_size//2], original_batch[batch_size//2:] ]
-            else:
-                batches=[ original_batch ]
-            new_batch=[]
-            for batch in batches:
-                try:
-                    batch_size=len(batch)
-                    #print('batch size:{}, turn_num:{}'.format(batch_size,len(batch[0])))
-                    contexts=[[] for i in range(len(batch))]
-                    resp=[[] for i in range(len(batch))]
-                    aspn_gen=[[] for i in range(len(batch))]
-                    bs_gen=[]
-                    for turn_num in range(len(batch[0])):
-                        past_key_values=None
-                        end_flag=np.zeros(len(batch))
-                        contexts=self.convert_eval_batch(batch,contexts,turn_num,bs_gen,\
-                            prior=prior,resp_gen=resp,aspn_gen=aspn_gen)
-                        inputs,attentions=self.reader.batch_align(contexts,left_len=max_len,return_attn=True)
-                        inputs=torch.tensor(inputs).to(device)
-                        attentions=torch.tensor(attentions).to(device)
-                        if self.global_output>0 and cfg.example_log:
-                            logging.info('generation examples:')
-                            logging.info(self.tokenizer.decode(contexts[0]))
-                            self.global_output-=1
-                        for i in range(max_len):
-                            position_ids = attentions.long().cumsum(-1) - 1
-                            position_ids.masked_fill_(attentions == 0, 1)
-                            if past_key_values is not None:
-                                position_ids=position_ids[:, -1].unsqueeze(-1)
-                            outputs=self.model(inputs,attention_mask=attentions,position_ids=position_ids,
-                                return_dict=True,use_cache=True,past_key_values=past_key_values)#B,T,V
-                            past_key_values=outputs.past_key_values
-                            if cfg.sample_type=='top1':
-                                preds=outputs.logits[:,-1,:].argmax(-1)#B
-                            elif cfg.sample_type=='topk':
-                                prob=F.softmax(outputs.logits[:,-1,:],dim=-1)#B,V
-                                topk_probs, topk_words = torch.topk(prob, cfg.topk_num)#B,topk_num
-                                widx = torch.multinomial(topk_probs, 1, replacement=True)#B,1
-                                preds = torch.gather(topk_words, 1, widx).squeeze()#B
-                            if i==0:
-                                bs_tensor=preds.unsqueeze(1)
-                            else:
-                                bs_tensor=torch.cat([bs_tensor,preds.unsqueeze(1)],dim=1)
-                            inputs=preds.unsqueeze(1)
-                            attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(device)),dim=1)
-                            end_flag+=(preds.cpu().numpy()==eos_b_id).astype(float)
-                            if sum(end_flag==0)==0:
-                                break
-                        if cfg.gen_db:
-                            bs_gen=self.get_bspn(bs_tensor,return_db=False,data=batch,turn_num=turn_num)
-                            temp_contexts=self.convert_eval_batch(batch,contexts,turn_num,bs_gen,\
-                                prior=prior,resp_gen=resp,aspn_gen=aspn_gen, gen_db=True)
-                            inputs,attentions=self.reader.batch_align(temp_contexts,left_len=1,return_attn=True)
-                            inputs=torch.tensor(inputs).to(device)
-                            attentions=torch.tensor(attentions).to(device)
-                            position_ids = attentions.long().cumsum(-1) - 1
-                            position_ids.masked_fill_(attentions == 0, 1)
-
-                            outputs=self.model(inputs,attention_mask=attentions,position_ids=position_ids,return_dict=True)
-                            preds=outputs.logits[:,-1,:].argmax(-1)
-                            db_gen=[]
-                            for j in range(batch_size):
-                                db_gen.append([self.sos_db_id, preds[j].item(),self.eos_db_id])
-                        else:
-                            bs_gen,db_gen=self.get_bspn(bs_tensor,return_db=True,data=batch,turn_num=turn_num)
-
-                        contexts=self.convert_eval_batch(batch,contexts,turn_num,bs_gen,prior=prior,db_gen=db_gen)
-                        if cfg.model_act:
-                            past_key_values=None
-                            end_flag=np.zeros(len(batch))
-                            #note that the left_len should be max_len_a, but i set it to max_len to reduce the case of out of memory
-                            inputs,attentions=self.reader.batch_align(contexts,left_len=max_len,return_attn=True)
-                            inputs=torch.tensor(inputs).to(device)
-                            attentions=torch.tensor(attentions).to(device)
-                            if self.global_output>0 and cfg.example_log:
-                                logging.info('generation examples:')
-                                logging.info(self.tokenizer.decode(contexts[0]))
-                            for i in range(max_len_a):
-                                position_ids = attentions.long().cumsum(-1) - 1
-                                position_ids.masked_fill_(attentions == 0, 1)
-                                if past_key_values is not None:
-                                    position_ids=position_ids[:, -1].unsqueeze(-1)
-                                outputs=self.model(inputs,attention_mask=attentions,position_ids=position_ids,
-                                    return_dict=True,use_cache=True,past_key_values=past_key_values)#B,T,V
-                                past_key_values=outputs.past_key_values
-                                if cfg.sample_type=='top1':
-                                    preds=outputs.logits[:,-1,:].argmax(-1)#B
-                                elif cfg.sample_type=='topk':
-                                    prob=F.softmax(outputs.logits[:,-1,:],dim=-1)#B,V
-                                    topk_probs, topk_words = torch.topk(prob, cfg.topk_num)#B,topk_num
-                                    widx = torch.multinomial(topk_probs, 1, replacement=True)#B,1
-                                    preds = torch.gather(topk_words, 1, widx).squeeze()#B
-                                if i==0:
-                                    bs_tensor=preds.unsqueeze(1)
-                                else:
-                                    bs_tensor=torch.cat([bs_tensor,preds.unsqueeze(1)],dim=1)
-                                inputs=preds.unsqueeze(1)
-                                attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(device)),dim=1)
-                                end_flag+=(preds.cpu().numpy()==eos_a_id).astype(float)
-                                if sum(end_flag==0)==0:
-                                    break
-                            aspn_gen=self.get_aspn(bs_tensor)
-
-                        for i in range(len(batch)):
-                            if validate:
-                                batch[i][turn_num]['bspn_gen']=bs_gen[i]
-                                batch[i][turn_num]['db_gen']=db_gen[i]
-                                if cfg.model_act:
-                                    batch[i][turn_num]['aspn_gen']=aspn_gen[i]
-                            else:
-                                batch[i][turn_num]['bspn']=bs_gen[i]
-                                batch[i][turn_num]['db']=db_gen[i]
-                                if cfg.model_act:
-                                    batch[i][turn_num]['aspn']=aspn_gen[i]
-                            if cfg.model_act:
-                                resp[i]=batch[i][turn_num]['aspn']+batch[i][turn_num]['resp']#take aspn and resp as one resp
-                            else:
-                                resp[i]=batch[i][turn_num]['resp']
-                    new_batch+=batch
-                except RuntimeError as exception:
-                    if "out of memory" in str(exception):
-                        logging.info("WARNING: ran out of memory during generation, and the batch will be divided half, batch size:{}, turn num:{}"\
-                            .format(len(batch),len(batch[0])))
-                        if hasattr(torch.cuda, 'empty_cache'):
-                            with torch.cuda.device(device):
-                                torch.cuda.empty_cache()
-                        #current batch out of memory, split it half
-                        batches+= [ batch[:len(batch)//2], batch[len(batch)//2:] ]
-                    else:
-                        logging.info(str(exception))
-                        raise exception
-
-        return new_batch
-
     def save_model(self, posterior=False, path=None, model=None):
         if not path:
             if posterior:
@@ -965,7 +998,6 @@ class Modal(object):
         return total_loss/len(all_batches)
             
 
-
     def eval(self,data='dev', posterior=False, model=None):
         model.eval()
         temp=cfg.batch_size
@@ -988,33 +1020,6 @@ class Modal(object):
                 total_loss+=loss.item()
         cfg.batch_size=temp
         return total_loss/total_batch
-
-    def load_data(self, path):
-        data=json.load(open(path,'r', encoding='utf-8'))
-        encoded_data=[]
-        for dial in data:
-            if cfg.len_limit and (len(data[dial])>16 or len(data[dial])<2):
-                continue
-            encoded_dial=[]
-            max_len=0
-            for turn in data[dial]:
-                encoded_turn={}
-                encoded_turn['dial_id']=dial
-                encoded_turn['user']=self.tokenizer.encode('<sos_u>'+turn['user']+'<eos_u>')
-                if cfg.delex_as_damd:
-                    encoded_turn['resp']=self.tokenizer.encode('<sos_r>'+turn['resp_delex']+'<eos_r>')
-                else:
-                    encoded_turn['resp']=self.tokenizer.encode('<sos_r>'+turn['resp_delex1']+'<eos_r>')
-                encoded_turn['turn_domain']=turn['turn_domain']
-                encoded_dial.append(encoded_turn)
-                user_len=len(encoded_turn['user'])
-                resp_len=len(encoded_turn['resp'])
-                if max(user_len,resp_len)>max_len:
-                    max_len=max(user_len,resp_len)
-            if cfg.len_limit and max_len>=76:
-                continue
-            encoded_data.append(encoded_dial)
-        return encoded_data
 
     def validate_fast(self,data='dev'):
         # predict one dialog/ one turn at a time
@@ -1052,8 +1057,6 @@ class Modal(object):
             eval_results['result'] = 'validation [CTR] match: %2.2f  success: %2.2f  bleu: %2.2f    score: %.2f' % (match, success, bleu, score)
             return eval_results
         
-        
-
         # valid_losses = []
         result_collection = {}
         st=time.time()
@@ -1064,7 +1067,7 @@ class Modal(object):
                 if cfg.turn_level:
                     batch=self.generate_batch_turn_level(batch)
                 else:
-                    batch=self.generate_batch(batch)
+                    batch=self.generate_batch_e2e(batch)
                 for dialog in batch:
                     result_collection.update(self.reader.inverse_transpose_turn(dialog))
             except RuntimeError as exception:
@@ -1106,7 +1109,115 @@ class Modal(object):
         cfg.batch_size=cfg.origin_batch_size
         return eval_results
 
-    def generate_batch(self, batch):
+    def generate_batch(self, model, contexts, max_len, eos_id, beam=1):
+        # generate by batch
+        # contexts: a list of ids
+        # max_len: the max generated length
+        # eos_id: the end id
+        # return: a batch of ids with pre pad 
+        batch_size=len(contexts)
+        end_flag=np.zeros(batch_size)
+        if beam>1:
+            beam_box=[beam]*batch_size
+            beam_result=[[] for _ in range(batch_size)]
+            max_prob=[-float('inf')]*batch_size
+        past_key_values=None
+        inputs,attentions=self.reader.batch_align(contexts,left_len=max_len,return_attn=True)
+        inputs=torch.tensor(inputs).to(model.device)
+        attentions=torch.tensor(attentions).to(model.device)
+        model.eval()
+        with torch.no_grad():
+            for i in range(max_len):
+                if beam==1:
+                    position_ids = attentions.long().cumsum(-1) - 1
+                    position_ids.masked_fill_(attentions == 0, 1)
+                    if past_key_values is not None:
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                    if inputs.size(0)==0:
+                        raise ValueError(contexts, inputs.cpu().list(), attentions)
+                    outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                            return_dict=True,use_cache=True,past_key_values=past_key_values)
+
+                    past_key_values=outputs.past_key_values
+
+                    preds=outputs.logits[:,-1,:].argmax(-1)#B
+                    if i==0:
+                        gen_tensor=preds.unsqueeze(1)
+                    else:
+                        gen_tensor=torch.cat([gen_tensor,preds.unsqueeze(1)],dim=1)
+                    attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
+                    inputs=preds.unsqueeze(1)
+                    end_flag+=(preds.cpu().numpy()==eos_id).astype(float)
+                    if sum(end_flag==0)==0:
+                        break
+                else:
+                    if i==0:
+                        position_ids = attentions.long().cumsum(-1) - 1
+                        position_ids.masked_fill_(attentions == 0, 1)
+                        outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                                return_dict=True,use_cache=True,past_key_values=past_key_values)
+                        past_key_values=[outputs.past_key_values]*beam
+                        log_prob=F.log_softmax(outputs.logits[:, -1, :], -1) # B, V
+                        beam_prob, beam_idx=torch.topk(log_prob, beam, -1) # B, beam
+                        gen_tensor=beam_idx.unsqueeze(-1)# B, beam, 1
+                        attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
+                        position_ids = attentions.long().cumsum(-1) - 1
+                        position_ids.masked_fill_(attentions == 0, 1)
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                        pv_beam_prob=beam_prob #B, beam
+                        pv_beam_idx=beam_idx#B, beam
+                    else:
+                        for j in range(beam):
+                            inputs=pv_beam_idx[:,j].unsqueeze(-1) # B, 1
+                            outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                                return_dict=True,use_cache=True,past_key_values=past_key_values[j])
+                            past_key_values[j]=outputs.past_key_values
+                            log_prob=F.log_softmax(outputs.logits[:, -1, :], -1) # B, V
+                            beam_prob, beam_idx=torch.topk(log_prob, beam, -1) # B, beam
+                            if j==0:
+                                prob_pool= beam_prob+pv_beam_prob[:, j].unsqueeze(-1).expand(-1, beam) # B, beam
+                                id_pool=beam_idx
+                            else:
+                                prob_pool=torch.cat([prob_pool, beam_prob+pv_beam_prob[:, j].unsqueeze(-1).expand(-1, beam)],-1) # B, beam*beam
+                                id_pool=torch.cat([id_pool, beam_idx], -1)# B, beam*beam
+                        beam_prob, temp_id=torch.topk(prob_pool, beam, -1) #B, beam
+                        beam_idx=torch.gather(id_pool, -1, temp_id)
+                        temp_id=temp_id//beam
+                        new_past_key_values=copy.deepcopy(past_key_values)
+                        for b in range(batch_size):
+                            gen_tensor[b, :, :]=gen_tensor[b, :, :].index_select(0, temp_id[b, :])
+                            for t in range(beam):
+                                for l in range(6):
+                                    new_past_key_values[t][l][:, b, :,:,:]=past_key_values[temp_id[b, t]][l][:, b, :, :, :]
+                        past_key_values=new_past_key_values
+                        #past_key_values=[past_key_values[t] for t in temp_id.cpu().list()]
+                        gen_tensor=torch.cat([gen_tensor, beam_idx.unsqueeze(-1)],-1) #B, beam, T
+                        attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
+                        position_ids = attentions.long().cumsum(-1) - 1
+                        position_ids.masked_fill_(attentions == 0, 1)
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                        pv_beam_prob=beam_prob #B, beam
+                        pv_beam_idx=beam_idx
+                    for m in range(batch_size):
+                        for n, gen in enumerate(gen_tensor.cpu().tolist()[m]):
+                            if eos_id in gen:
+                                beam_box[m]-=1
+                                avg_prob=pv_beam_prob[m][n]/len(gen)
+                                beam_result[m].append((gen, avg_prob))
+                                pv_beam_prob[m][n]=-float('inf')
+                    # we do not break during beam search
+                    #if not any(beam_box):
+                     #   break
+            
+        if beam==1:
+            return gen_tensor.cpu().tolist()
+        else:
+            for i, tup in enumerate(beam_result):
+                beam_list=sorted(tup, key=lambda item:item[1], reverse=True)
+                beam_result[i]=[item[0] for item in beam_list[:beam]]
+            return beam_result
+
+    def generate_batch_e2e(self, batch):
         bs_max_len=75
         resp_max_len=80 if cfg.model_act else 60
         sos_b_id=self.sos_b_id
@@ -1537,17 +1648,21 @@ def main():
     m = Modal(device)
 
     if args.mode =='pretrain' or args.mode=='train':
-        if cfg.train_sys:
+        if cfg.train_modular:
+            m.train_modular(modular=cfg.modular)
+        elif cfg.train_sys:
             m.pretrain_sys_model()
         elif cfg.turn_level:
             m.pretrain_turn_level()
         else:
             m.pretrain(posterior=cfg.posterior_train)
-
-    elif args.mode =='test_pos':
-        m.validate_pos(data='test')
     else:  # test
-        if cfg.train_us:
+        if cfg.train_modular:
+            if cfg.combine_eval:
+                m.combine_modules()
+            else:
+                m.eval_modular(cfg.modular)
+        elif cfg.train_us:
             m.validate_us('test')
         else:
             logging.info("Generate setting: \n\t use true_prev_bspn={} \n\t use true_prev_aspn={} \n\t use true_db_pointer={} \n\t use true_prev_resp={} \n\t use true_curr_bspn={} \n\t use true_curr_aspn={} \n\t use_all_previous_context={}".format(

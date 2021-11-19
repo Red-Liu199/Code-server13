@@ -26,9 +26,8 @@ def compute_jacc(data,default_cleaning_flag=True):
     joint_acc = 0
     clean_tokens = ['<|endoftext|>', ]
     for turn_data in data:
-        if turn_data['user']=='':
+        if 'user' in turn_data and turn_data['user']=='':
             continue
-        turn_id=turn_data['turn_num']
         turn_target = turn_data['bspn']
         turn_pred = turn_data['bspn_gen']
         turn_target = paser_bs(turn_target)

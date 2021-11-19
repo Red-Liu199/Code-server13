@@ -7,6 +7,7 @@ import json
 import spacy
 import utils
 import ontology
+import torch
 from copy import deepcopy
 from collections import OrderedDict
 from db_ops import MultiWozDB
@@ -602,11 +603,11 @@ class MultiWozReader(_ReaderBase):
                 if key not in self.dev_list and key not in self.test_list:
                     self.train_list.append(key)
 
-            if cfg.rl_train and cfg.RL_ablation:
+            if cfg.rl_train:
                 data_path='data/multi-woz-2.1-processed/data_for_rl.json'
                 self.data=json.loads(open(data_path, 'r', encoding='utf-8').read().lower())
                 logging.info('Reading data from {}'.format(data_path))
-            if not cfg.rl_train:
+            if not cfg.rl_train or 'test' in cfg.mode:
                 if os.path.exists(encoded_file):
                     logging.info('Reading encoded data from {}'.format(encoded_file))
                     encoded_data = json.loads(open(encoded_file, 'r', encoding='utf-8').read())
@@ -725,6 +726,7 @@ class MultiWozReader(_ReaderBase):
             encoded_dial.append(enc)
         return encoded_dial
     
+
     def _get_encoded_us_data(self, fn, dial):
         encoded_dial=[]
         for idx, t in enumerate(dial):  # tokenize to list of ids
@@ -741,6 +743,14 @@ class MultiWozReader(_ReaderBase):
             encoded_dial.append(enc)
         
         return encoded_dial
+
+    def encode_data(self, data, tokenizer, modular='dst'):
+        encoded_data={}
+        for set in data:
+            encoded_data[set]=[]
+            for item in data[set]:
+                encoded_data[set].append([self.modified_encode(item[0], tokenizer), self.modified_encode(item[1], tokenizer)])
+        return encoded_data
 
     def update_goal(self, init_goal, user_act, constraint=None, sys_act=None):
         # constraint and sys_act are from last turn
@@ -876,7 +886,6 @@ class MultiWozReader(_ReaderBase):
                         new_goal[domain]['request'].append(slot.lower())
         
         return new_goal
-
 
     def bspan_to_constraint_dict(self, bspan, bspn_mode='bspn'):
         bspan = bspan.split() if isinstance(bspan, str) else bspan
@@ -1503,6 +1512,7 @@ class MultiWozReader(_ReaderBase):
                 new_pv_batch.append(r+a)
         return new_pv_batch
 
+
     def convert_batch_turn(self, turn_batch, pv_batch, first_turn=False, rl_train=False, mode='oracle', side='sys'):
         assert mode in ['oracle', 'gen']
         assert side in ['sys', 'user']
@@ -1603,6 +1613,34 @@ class MultiWozReader(_ReaderBase):
                     eval_batch.append(hist+u+b+d+[self.sos_a_id])
         return eval_batch
     
+    def convert_dst_eval_batch(self, turn_batch, pv_bspn):
+        eval_batch=[]
+        if pv_bspn is None:
+            for u in turn_batch['user']:
+                eval_batch.append(u+[self.sos_b_id])
+        else:
+            for b, u in zip(pv_bspn, turn_batch['user']):
+                eval_batch.append(b+u+[self.sos_b_id])
+        return eval_batch
+    
+    def convert_dm_eval_batch(self, turn_batch, db_batch, pv_aspn):
+        eval_batch=[]
+        if pv_aspn is None:
+            for u, db in zip(turn_batch['user'], db_batch):
+                eval_batch.append(u+db+[self.sos_a_id])
+            
+        else:
+            for a, u, db in zip(pv_aspn, turn_batch['user'], db_batch):
+                eval_batch.append(a+u+db+[self.sos_a_id])
+        return eval_batch
+
+    def convert_nlg_eval_batch(self, aspn_batch):
+        eval_batch=[]
+        for a in aspn_batch:
+            eval_batch.append(a+[self.sos_r_id])
+        return eval_batch
+
+
     def convert_eval_batch_turn_us(self, turn_batch, pv_batch, user_act=None):
         eval_batch=[]
         if user_act is None:# generate user act (and utterance)
@@ -1719,6 +1757,33 @@ class MultiWozReader(_ReaderBase):
 
         return results, field
 
+class tod_dataset(Dataset):
+    def __init__(self, data):
+        self.data=data
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, index):
+        return self.data[index]
+
+def train_collate_fn(batch):
+    # item[0]: input text
+    # item[1]: target text
+    data=[item[0]+item[1] for item in batch]
+    label=[[cfg.pad_id]*len(item[0])+item[1] for item in batch]
+    data_np, _=utils.padSeqs_gpt(data, cfg.pad_id)
+    label_np, _=utils.padSeqs_gpt(label, cfg.pad_id)
+    data_tensor=torch.from_numpy(data_np).long()
+    label_tensor=torch.from_numpy(label_np).long()
+    return [data_tensor, label_tensor]
+
+def test_collate_fn(batch):
+    # prediction
+    sos_id=batch[0][1][0]
+    data=[item[0]+[sos_id] for item in batch]
+    label=[item[1] for item in batch]
+    return [data, label]
 
 if __name__ == '__main__':
     reader = MultiWozReader()

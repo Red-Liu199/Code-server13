@@ -219,6 +219,13 @@ class _Config:
         self.beam_search=False
         self.beam_size=5
 
+        self.train_modular=False
+        self.modular='dst'
+        self.combine_eval=False
+        self.gpt_path1=''
+        self.gpt_path2=''
+        self.gpt_path3=''
+
     def __str__(self):
         s = ''
         for k,v in self.__dict__.items():

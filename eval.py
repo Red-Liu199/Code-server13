@@ -1014,6 +1014,89 @@ class MultiWozEvaluator(object):
         avg_r=total_r/total_turn
         return bleu, avg_p, avg_r, avg_f1
         '''
+
+    def calculate_metrics(self, gen, oracle, modular='dst'):
+        eps=1e-10
+        total_tp=0
+        total_fp=0
+        total_fn=0
+        joint_acc=0
+        if modular=='dst':
+            for (gen_bspn, gt_bspn) in zip(gen, oracle):
+                gen_cons=self.reader.bspan_to_constraint_dict(gen_bspn)
+                gt_cons=self.reader.bspan_to_constraint_dict(gt_bspn)
+                tp=0
+                fp=0
+                fn=0
+                for domain in gen_cons:
+                    if domain not in gt_cons:
+                        fp+=len(gen_cons[domain])
+                        continue
+                    for slot in gen_cons[domain]:
+                        if slot not in gt_cons[domain]:
+                            fp+=1
+                        elif gt_cons[domain][slot]!=gen_cons[domain][slot]:
+                            fp+=1
+                        else:
+                            tp+=1
+                for domain in gt_cons:
+                    if domain not in gen_cons:
+                        fn+=len(gt_cons[domain])
+                        continue
+                    for slot in gt_cons[domain]:
+                        if slot not in gen_cons[domain]:
+                            fn+=1
+                total_tp+=tp
+                total_fp+=fp
+                total_fn+=fn
+                if fp==0 and fn==0:
+                    joint_acc+=1
+            joint_acc/=len(gen)
+            P=total_tp/(total_tp+total_fp+eps)
+            R=total_tp/(total_tp+total_fn+eps)
+            F1=2*P*R/(P+R+eps)
+            return joint_acc, (P, R, F1)
+        elif modular=='dm':
+            for (gen_aspn, gt_aspn) in zip(gen, oracle):
+                gen_act=self.reader.aspan_to_act_dict(gen_aspn)
+                gt_act=self.reader.aspan_to_act_dict(gt_aspn)
+                tp=0
+                fp=0
+                fn=0
+                for domain in gen_act:
+                    for intent, slots in gen_act[domain].items():
+                        if domain not in gt_act or intent not in gt_act[domain]:
+                            fp+=len(slots)
+                            continue
+                        for slot in slots:
+                            if slot not in gt_act[domain][intent]:
+                                fp+=1
+                            else:
+                                tp+=1
+                for domain in gt_act:
+                    for intent, slots in gt_act[domain].items():
+                        if domain not in gen_act or intent not in gen_act[domain]:
+                            fn+=len(slots)
+                            continue
+                        for slot in slots:
+                            if slot not in gen_act[domain][intent]:
+                                fn+=1
+                total_tp+=tp
+                total_fp+=fp
+                total_fn+=fn
+                if fp==0 and fn==0:
+                    joint_acc+=1
+            joint_acc/=len(gen)
+            P=total_tp/(total_tp+total_fp+eps)
+            R=total_tp/(total_tp+total_fn+eps)
+            F1=2*P*R/(P+R+eps)
+            return joint_acc, (P, R, F1)
+        elif modular=='nlg':
+            wrap_generated = [[sent.replace('<sos_r>', '').replace('<eos_r>', '').strip()] for sent in gen]
+            wrap_truth = [[sent.replace('<sos_r>', '').replace('<eos_r>', '').strip()] for sent in oracle]
+            sc = self.bleu_scorer.score(zip(wrap_generated, wrap_truth))
+            return sc
+            
                 
 
 if __name__ == '__main__':

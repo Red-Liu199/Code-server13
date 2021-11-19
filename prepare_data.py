@@ -199,8 +199,42 @@ def temp():
             new_data[dial_id]['log'].append(turn)
     json.dump(new_data, open('data/multi-woz-2.1-processed/data_for_rl.json', 'w'), indent=2)
 
+def prepare_modular_data():
+    path='data/multi-woz-2.1-processed/data_for_rl.json'
+    data=json.load(open(path,'r', encoding='utf-8'))
+    dst_data={'train':[], 'dev':[], 'test':[]}
+    dm_data={'train':[], 'dev':[], 'test':[]}
+    nlg_data={'train':[], 'dev':[], 'test':[]}
+    for dial_id in data:
+        if dial_id in reader.dev_list:
+            set='dev'
+        elif dial_id in reader.test_list:
+            set='test'
+        else:
+            set='train'
+        dial=data[dial_id]['log']
+        for turn_id, turn in enumerate(dial):
+            nlg_sample = [turn['aspn'], turn['resp']]
+            if turn_id==0:
+                dst_sample=[turn['user'], turn['bspn']]
+                #dm_sample=[turn['user']+turn['bspn']+turn['db'], turn['aspn']]
+                dm_sample=[turn['user']+turn['db'], turn['aspn']]
+            else:
+                pv_turn=dial[turn_id-1]
+                dst_sample=[pv_turn['bspn']+turn['user'], turn['bspn']]
+                #dm_sample=[pv_turn['resp']+turn['user']+turn['bspn']+turn['db'], turn['aspn']]
+                dm_sample=[pv_turn['aspn']+turn['user']+turn['db'], turn['aspn']]
+            dst_data[set].append(dst_sample)
+            nlg_data[set].append(nlg_sample)
+            dm_data[set].append(dm_sample)
+    #json.dump(dst_data,open('data/multi-woz-2.1-processed/data_for_dst.json', 'w'), indent=2)
+    json.dump(dm_data,open('data/multi-woz-2.1-processed/data_for_dm.json', 'w'), indent=2)
+    #json.dump(nlg_data,open('data/multi-woz-2.1-processed/data_for_nlg.json', 'w'), indent=2)
+
+
 if __name__ == "__main__":
     #prepare_us_data()
-    temp()
+    #temp()
+    prepare_modular_data()
     
     

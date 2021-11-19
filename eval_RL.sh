@@ -5,5 +5,5 @@ path2=/home/liuhong/myworkspace/experiments_21/all_turn-level-us-111_sd11_lr0.00
 python session.py -mode test\
  -cfg DS_path=$path1 US_path=$path2\
  debugging=True\
- beam_search=True beam_size=8\
+ beam_search=True beam_size=10\
  DS_device=$1 US_device=$1
