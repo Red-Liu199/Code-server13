@@ -250,13 +250,32 @@ def extract_goal():
         goal_list.append(goal)
     json.dump(goal_list, open('analysis/goals.json', 'w'), indent=2)
 
-
+def prepare_for_std_eval(path=None, data=None):
+    if path:
+        data=json.load(open(path, 'r', encoding='utf-8'))
+    new_data={}
+    dials=evaluator.pack_dial(data)
+    for dial_id in dials:
+        new_data[dial_id]=[]
+        dial=dials[dial_id]
+        for turn in dial:
+            if turn['user']=='':
+                continue
+            entry={}
+            entry['response']=turn['resp_gen']
+            entry['state']=reader.bspan_to_constraint_dict(turn['bspn_gen'])
+            new_data[dial_id].append(entry)
+    if path:
+        new_path=path[:-5]+'std.json'
+        json.dump(new_data, open(new_path, 'w'), indent=2)
+    return new_data
 
 if __name__=='__main__':
-    path1='experiments_21/turn-level-DS/best_score_model/result.json'
-    path2='RL_exp/rl-10-19-use-scheduler/best_DS/result.json'
-    unseen_turns=find_unseen_sys_act()
-    calculate_unseen_acc(unseen_turns, path1, path2)
+    path1='/home/liuhong/myworkspace/experiments_21/all_turn-level-DS-11-26_sd11_lr0.0001_bs8_ga4/best_score_model/result.json'
+    prepare_for_std_eval(path1)
+    #path2='RL_exp/rl-10-19-use-scheduler/best_DS/result.json'
+    #unseen_turns=find_unseen_sys_act()
+    #calculate_unseen_acc(unseen_turns, path1, path2)
     #compare_offline_result(path1, path2, show_num=30)
     #path1='experiments_21/turn-level-DS/best_score_model/validate_result.json'
     #path2='RL_exp/rl-10-19-use-scheduler/best_DS/validate_result.json'

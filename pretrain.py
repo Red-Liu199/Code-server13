@@ -10,6 +10,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
+from analyze_result import prepare_for_std_eval
+from mwzeval.metrics import Evaluator
 
 import os
 import shutil
@@ -76,6 +78,7 @@ class Modal(object):
             self.dm_model.to(self.device1)
             self.nlg_model.to(self.device1)
         self.evaluator = MultiWozEvaluator(self.reader)
+        self.std_evaluator=Evaluator(bleu=1, success=1, richness=0)
         if cfg.save_log:
             log_path='./log21/log_{}'.format(cfg.exp_no) if cfg.dataset==1 else './log/log_{}'.format(cfg.exp_no)
             if os.path.exists(log_path):
@@ -322,7 +325,7 @@ class Modal(object):
         warmup_epochs=cfg.warmup_steps*cfg.gradient_accumulation_steps*cfg.batch_size//num_dials \
             if cfg.warmup_steps>=0 else int(cfg.epoch_num*cfg.warmup_ratio)
         if cfg.debugging:
-            self.validate_us('dev')
+            self.validate_fast()
         for epoch in range(cfg.epoch_num):
             epoch_step = 0
             tr_loss = 0.0
@@ -412,28 +415,21 @@ class Modal(object):
                                 logging.info('early stopped')
                                 break
                 elif cfg.save_type=='max_score' and epoch>epoch_th:
-                    if posterior:
-                        eval_result=self.validate_pos(data='dev')
-                        self.tb_writer.add_scalar('joint_goal',eval_result['joint_acc'],epoch)
-                        self.tb_writer.add_scalar('act_F1',eval_result['act_F1'],epoch)
-                        self.tb_writer.add_scalar('db_acc',eval_result['db_acc'],epoch)
-                        score=eval_result['joint_acc']
+                    if cfg.train_us:
+                        bleu, P, R, F1=self.validate_us(data='dev')
+                        self.tb_writer.add_scalar('P',P,epoch)
+                        self.tb_writer.add_scalar('R',R,epoch)
+                        self.tb_writer.add_scalar('F1',F1,epoch)
+                        self.tb_writer.add_scalar('bleu',bleu,epoch)
+                        score=F1*100
                     else:
-                        if cfg.train_us:
-                            bleu, P, R, F1=self.validate_us(data='dev')
-                            self.tb_writer.add_scalar('P',P,epoch)
-                            self.tb_writer.add_scalar('R',R,epoch)
-                            self.tb_writer.add_scalar('F1',F1,epoch)
-                            self.tb_writer.add_scalar('bleu',bleu,epoch)
-                            score=F1*100
-                        else:
-                            eval_result=self.validate_fast(data='dev')
-                            self.tb_writer.add_scalar('joint_goal',eval_result['joint_acc'],epoch)
-                            self.tb_writer.add_scalar('match',eval_result['match'],epoch)
-                            self.tb_writer.add_scalar('success',eval_result['success'],epoch)
-                            self.tb_writer.add_scalar('bleu',eval_result['bleu'],epoch)
-                            self.tb_writer.add_scalar('combined_score',eval_result['score'],epoch)
-                            score=eval_result['score']
+                        eval_result=self.validate_fast(data='dev')
+                        self.tb_writer.add_scalar('joint_goal',eval_result['joint_acc'],epoch)
+                        self.tb_writer.add_scalar('match',eval_result['match'],epoch)
+                        self.tb_writer.add_scalar('success',eval_result['success'],epoch)
+                        self.tb_writer.add_scalar('bleu',eval_result['bleu'],epoch)
+                        self.tb_writer.add_scalar('combined_score',eval_result['score'],epoch)
+                        score=eval_result['score']
                     if score>max_score:
                         early_stop_count=cfg.early_stop_count
                         max_score=score
@@ -445,10 +441,7 @@ class Modal(object):
                             if early_stop_count==0 and cfg.early_stop:
                                 logging.info('early stopped')
                                 break
-            else:#save the model with minimal training loss
-                if total_loss/epoch_step<min_loss:
-                    min_loss=total_loss/epoch_step
-                    self.save_model(posterior=posterior,model=self.model)
+            
     
     def pretrain_sys_model(self):
         data=self.reader.train
@@ -1030,14 +1023,22 @@ class Modal(object):
         self.PrioriModel.eval()
         eval_data = self.reader.get_eval_data(data)
         if cfg.debugging:
-            eval_data=eval_data[:100]
+            eval_data=eval_data[:32]
         cfg.batch_size=cfg.eval_batch_size
         batches=self.reader.get_batches('test',data=eval_data)
-        result_path=os.path.join(cfg.eval_load_path,'result.csv')
+        result_path=os.path.join(cfg.eval_load_path,'result.json')
         
         if os.path.exists(result_path) and cfg.mode=='test':
-            results,field=self.reader.load_result(result_path)
+            #results,field=self.reader.load_result(result_path)
+            results=json.load(open(result_path, 'r'))
             joint_acc=compute_jacc(results)
+            input_data=prepare_for_std_eval(data=results)
+            std_metrics = self.std_evaluator.evaluate(input_data)
+            bleu=std_metrics['bleu']['damd']
+            match=std_metrics['success']['inform']['total']
+            success=std_metrics['success']['success']['total']
+            score = 0.5 * (success + match) + bleu
+            '''
             #joint_acc=0
             cfg.use_true_bspn_for_ctr_eval=True
             bleu, success, match = self.evaluator.validation_metric(results)
@@ -1046,6 +1047,7 @@ class Modal(object):
             cfg.use_true_bspn_for_ctr_eval=False
             bleu, success, match = self.evaluator.validation_metric(results)
             score = 0.5 * (success + match) + bleu
+            '''
             logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
 
             eval_results = {}
@@ -1086,19 +1088,32 @@ class Modal(object):
         results, field = self.reader.wrap_result_lm(result_collection)
         logging.info('Inference time:{:.3f} min'.format((time.time()-st)/60))
 
-        cfg.use_true_bspn_for_ctr_eval=True
-        bleu, success, match = self.evaluator.validation_metric(results)
         joint_acc=compute_jacc(results)
         #joint_acc=0
-        score = 0.5 * (success + match) + bleu
-        logging.info('validation [CTR] %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+        '''
         cfg.use_true_bspn_for_ctr_eval=False
         bleu, success, match = self.evaluator.validation_metric(results)
         score = 0.5 * (success + match) + bleu
         logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+        '''
+        input_data=prepare_for_std_eval(data=results)
+        std_metrics = self.std_evaluator.evaluate(input_data)
+        bleu=std_metrics['bleu']['damd']
+        match=std_metrics['success']['inform']['total']
+        success=std_metrics['success']['success']['total']
+        score = 0.5 * (success + match) + bleu
+        if cfg.mode=='test':
+            logging.info(std_metrics)
+        logging.info('[Std] validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
         self.reader.save_result('w', results, field,result_name='result.csv')
 
         eval_results = {}
+        eval_results['bleu'] = std_metrics['bleu']['damd']
+        eval_results['success'] = std_metrics['success']['success']['total']
+        eval_results['match'] = std_metrics['success']['inform']['total']
+        eval_results['score'] = score
+        eval_results['joint_acc']=joint_acc
+        '''
         eval_results['bleu'] = bleu
         eval_results['success'] = success
         eval_results['match'] = match
@@ -1106,6 +1121,7 @@ class Modal(object):
         eval_results['joint_acc']=joint_acc
         eval_results['result'] = 'validation [CTR] match: %2.2f  success: %2.2f  bleu: %2.2f    \
             score: %.2f  joint goal:%.2f' % (match, success, bleu, score,joint_acc)
+        '''
         cfg.batch_size=cfg.origin_batch_size
         return eval_results
 
