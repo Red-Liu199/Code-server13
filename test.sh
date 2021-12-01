@@ -1,6 +1,6 @@
 #path=experiments_21/DS_base/best_score_model
 #path=/home/liuhong/myworkspace/experiments_21/DS_base/best_score_model
-path=/home/liuhong/myworkspace/experiments_21/turn-level-DS/best_score_model
+path=/home/liuhong/myworkspace/RL_exp/RL-simple-ablation/best_DS
 #path=RL_exp/rl-10-26/best_DS
 python pretrain.py -mode test\
     -cfg gpt_path=$path  cuda_device=$1\

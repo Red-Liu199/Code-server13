@@ -8,6 +8,7 @@ import numpy as np
 import ontology
 import json
 import shutil
+import math
 import copy
 import torch.nn as nn
 import torch.nn.functional as F
@@ -642,11 +643,11 @@ class turn_level_session(object):
 
             if i>0: # update goals
                 #generate pv_aspn batch
-                contexts=self.get_us_contexts(pv_resp_batch)
-                contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
-                pv_aspn_batch_ids=self.generate_batch(self.US, contexts_ids, act_max_len, self.US_tok.convert_tokens_to_ids('<eos_a>'))
-                pv_aspn_batch=self.convert_batch_ids_to_tokens(self.US_tok, pv_aspn_batch_ids, self.US_tok.convert_tokens_to_ids('<sos_a>'), 
-                    self.US_tok.convert_tokens_to_ids('<eos_a>'))
+                #contexts=self.get_us_contexts(pv_resp_batch)
+                #contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
+                #pv_aspn_batch_ids=self.generate_batch(self.US, contexts_ids, act_max_len, self.US_tok.convert_tokens_to_ids('<eos_a>'))
+                #pv_aspn_batch=self.convert_batch_ids_to_tokens(self.US_tok, pv_aspn_batch_ids, self.US_tok.convert_tokens_to_ids('<sos_a>'), 
+                 #   self.US_tok.convert_tokens_to_ids('<eos_a>'))
                 for batch_id, goal in enumerate(goal_batch):
                     pv_user_act_dict=self.reader.aspan_to_act_dict(pv_user_act_batch[batch_id], side='user')
                     pv_sys_act=self.reader.aspan_to_act_dict(pv_aspn_batch[batch_id], side='sys')
@@ -655,7 +656,7 @@ class turn_level_session(object):
                     self.goal_list_batch[batch_id].append(goal)
                     gpan_batch[batch_id]='<sos_g> '+self.reader.goal_to_gpan(goal)+' <eos_g>'
             # generate user act batch
-            contexts=self.get_us_contexts(pv_resp_batch, pv_aspn_batch, gpan_batch)
+            contexts=self.get_us_contexts(pv_resp_batch, gpan_batch)
             contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
             if cfg.beam_search:
                 beam_ids=self.generate_batch(self.US, contexts_ids, act_max_len, self.eos_ua_id, beam=cfg.beam_size)
@@ -671,7 +672,7 @@ class turn_level_session(object):
                 user_act_batch=self.convert_batch_ids_to_tokens(self.US_tok, user_act_batch_ids, 
                     self.sos_ua_id, self.eos_ua_id)
             # generate user batch
-            contexts=self.get_us_contexts(pv_resp_batch, pv_aspn_batch, gpan_batch, user_act_batch)
+            contexts=self.get_us_contexts(pv_resp_batch, gpan_batch, user_act_batch)
             contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
             user_batch_ids=self.generate_batch(self.US, contexts_ids, resp_max_len, self.eos_u_id)
             user_batch=self.convert_batch_ids_to_tokens(self.US_tok, user_batch_ids, 
@@ -708,6 +709,7 @@ class turn_level_session(object):
             # before next turn
             pv_bspn_batch=bspn_batch
             pv_resp_batch=resp_batch
+            pv_aspn_batch=aspn_batch
             pv_user_act_batch=user_act_batch
 
             # collect dialogs and judge stop
@@ -872,7 +874,7 @@ class turn_level_session(object):
                 beam_result[i]=[item[0] for item in beam_list[:beam]]
             return beam_result
     
-    def get_us_contexts(self, pv_resp_batch=None, pv_aspn_batch=None, gpan_batch=None, user_act_batch=None):
+    def get_us_contexts(self, pv_resp_batch=None, gpan_batch=None, user_act_batch=None):
         contexts=[]
         if pv_resp_batch==None:# first turn
             if user_act_batch is None:
@@ -884,17 +886,13 @@ class turn_level_session(object):
                     context = gpan + ua + '<sos_u>'
                     contexts.append(context)
         else:
-            if pv_aspn_batch is None:
-                for pv_r in pv_resp_batch:
-                    context=pv_r+'<sos_a>'
-                    contexts.append(context)
-            elif user_act_batch is None:
-                for gpan, pv_r, pv_a in zip(gpan_batch, pv_resp_batch, pv_aspn_batch):
-                    context = pv_r + pv_a + gpan + '<sos_ua>'
+            if user_act_batch is None:
+                for gpan, pv_r in zip(gpan_batch, pv_resp_batch):
+                    context = pv_r + gpan + '<sos_ua>'
                     contexts.append(context)
             else:
-                for gpan, pv_r, pv_a, ua in zip(gpan_batch, pv_resp_batch, pv_aspn_batch, user_act_batch):
-                    context = pv_r + pv_a + gpan + ua + '<sos_u>'
+                for gpan, pv_r, ua in zip(gpan_batch, pv_resp_batch, user_act_batch):
+                    context = pv_r + gpan + ua + '<sos_u>'
                     contexts.append(context)
         return contexts
     
@@ -1039,7 +1037,8 @@ class turn_level_session(object):
             
             final_reward= reqt_reward + goal_reward + repeat_reward + goal_comp_rate
             if cfg.non_neg_reward:
-                final_reward=max(final_reward, 0)
+                final_reward=1/(1+math.exp(-final_reward)) # sigmoid
+                #final_reward=max(final_reward, 0)
             
             if cfg.simple_reward:
                 final_reward=success
@@ -1093,7 +1092,8 @@ class turn_level_session(object):
             sys_act_list.append(sys_act)
             final_reward = reqt_reward + repeat_reward + success
             if cfg.non_neg_reward:
-                final_reward=max(final_reward,0)
+                final_reward=1/(1+math.exp(-final_reward)) # sigmoid
+                #final_reward=max(final_reward,0)
             if cfg.simple_reward:
                 final_reward=success
             rewards.append(final_reward)

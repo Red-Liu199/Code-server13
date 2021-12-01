@@ -14,15 +14,15 @@ python session.py -mode train\
  DS_path=$path1 US_path=$path2\
  DS_device=$1 US_device=$1\
  rl_for_bspn=True\
- non_neg_reward=False\
+ non_neg_reward=True\
  clip_grad=True\
  loss_reg=True\
  rl_dial_per_epoch=128\
  joint_train_ds=True\
  joint_train_us=True\
- simple_reward=True\
+ simple_reward=False\
  simple_training=False\
- exp_no=RL-simple-reward2-11-30\
+ exp_no=RL-sigmoid_reward\
  rl_iterate=True\
  RL_ablation=False\
  notes='Simple reward with loss reg'

@@ -1105,7 +1105,8 @@ class Modal(object):
         if cfg.mode=='test':
             logging.info(std_metrics)
         logging.info('[Std] validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
-        self.reader.save_result('w', results, field,result_name='result.csv')
+        json.dump(results, open(result_path, 'w'), indent=2)
+        #self.reader.save_result('w', results, field,result_name='result.csv')
 
         eval_results = {}
         eval_results['bleu'] = std_metrics['bleu']['damd']
