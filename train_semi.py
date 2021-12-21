@@ -26,8 +26,8 @@ from config import global_config as cfg
 # from config21 import global_config as cfg  # global, already initialized
 
 
-import warnings
-warnings.filterwarnings("ignore")
+#import warnings
+#warnings.filterwarnings("ignore")
 
 class Modal(object):
     def __init__(self, device=[0]):
@@ -452,26 +452,12 @@ class Modal(object):
                     min_loss=total_loss/epoch_step
                     self.save_model(posterior=posterior,model=self.model)
     
+
     def semi_ST(self):
         logging.info('------Running self training------')
-        if cfg.data_aug:
-            if cfg.delex_as_damd:
-                data_path='./data/multi-woz-processed/new_db_se_blank_encoded.data.json' if cfg.dataset==0 \
-                    else './data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json'
-            else:
-                data_path='./data/multi-woz-processed/new_db_se_blank_encoded.data2.json' if cfg.dataset==0 \
-                    else './data/multi-woz-2.1-processed/new_db_se_blank_encoded.data2.json'
-            data_lab=json.loads(open(data_path,'r', encoding='utf-8').read())
-            data_lab=data_lab['train']
-            #data1=[] if cfg.only_SGD else self.load_data('../data/taskmaster/TM2MultiWOZ.json')
-            #data2=[] if cfg.only_TM else self.load_data('../data/schema-guided/SGD2MultiWOZ.json')
-            data1=[] if cfg.only_SGD else self.load_data('extra_data/TM2MultiWOZ.json')
-            data2=[] if cfg.only_TM else self.load_data('extra_data/SGD2MultiWOZ.json')
-            data_unl=data1+data2
-        else:
-            data=json.loads(open(cfg.divided_path, 'r', encoding='utf-8').read())
-            data_lab=data['pre_data']
-            data_unl=data['post_data']
+        data=json.loads(open(cfg.divided_path, 'r', encoding='utf-8').read())
+        data_lab=data['pre_data']
+        data_unl=data['post_data']
             
         logging.info('Labeled dials:{}, unlabeled dials:{}'.format(len(data_lab),len(data_unl)))
         num_dials=len(data_lab)+len(data_unl)
@@ -629,25 +615,11 @@ class Modal(object):
                     self.save_model(posterior=False,model=self.model)
 
     def semi_VL(self):
-        if cfg.data_aug:
-            if cfg.delex_as_damd:
-                data_path='./data/multi-woz-processed/new_db_se_blank_encoded.data.json' if cfg.dataset==0 \
-                    else './data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json'
-            else:
-                data_path='./data/multi-woz-processed/new_db_se_blank_encoded.data2.json' if cfg.dataset==0 \
-                    else './data/multi-woz-2.1-processed/new_db_se_blank_encoded.data2.json'
-            data_lab=json.loads(open(data_path,'r', encoding='utf-8').read())
-            data_lab=data_lab['train']
-            #data1=[] if cfg.only_SGD else self.load_data('../data/taskmaster/TM2MultiWOZ.json')
-            #data2=[] if cfg.only_TM else self.load_data('../data/schema-guided/SGD2MultiWOZ.json')
-            data1=[] if cfg.only_SGD else self.load_data('extra_data/TM2MultiWOZ.json')
-            data2=[] if cfg.only_TM else self.load_data('extra_data/SGD2MultiWOZ.json')
-            data_unl=data1+data2
-        else:
-            logging.info('Reading encoded data from %s'%cfg.divided_path)
-            data = json.loads(open(cfg.divided_path,'r', encoding='utf-8').read())
-            data_lab=data['pre_data']
-            data_unl=data['post_data']
+        
+        logging.info('Reading encoded data from %s'%cfg.divided_path)
+        data = json.loads(open(cfg.divided_path,'r', encoding='utf-8').read())
+        data_lab=data['pre_data']
+        data_unl=data['post_data']
         logging.info('Labeled dials:{}, unlabeled dials:{}'.format(len(data_lab),len(data_unl)))
         num_dials=len(data_lab)+len(data_unl)
 
@@ -1080,7 +1052,8 @@ class Modal(object):
                 max_len=dial_len
         return max_len
     
-    def convert_eval_batch(self,data,contexts, turn_num,bs_gen,prior=False,db_gen=None,resp_gen=None,aspn_gen=None, gen_db=False):
+
+    def convert_eval_batch(self, data, contexts, turn_num,bs_gen,prior=False,db_gen=None,resp_gen=None,aspn_gen=None, gen_db=False):
         
         if gen_db:#在使用后验网络生成数据库结果时使用
             new_contexts=[]
@@ -1201,19 +1174,13 @@ class Modal(object):
             prior=True
         self.model.eval()
         device=self.model.device
-        max_len=35 if cfg.data_aug else 60#for additional dataset, we don't generate too long
-        max_len_a=15 if cfg.data_aug else 20
+        max_len=60#for additional dataset, we don't generate too long
+        max_len_a=20
         sos_b_id=self.sos_b_id
         eos_b_id=self.eos_b_id
         eos_a_id=self.eos_a_id
         with torch.no_grad():
-            context_len=self.get_max_len(original_batch)
-            if context_len>900:
-                logging.info('The max length of current batch is:{}, we divide it by half'.format(context_len))
-                batch_size=len(original_batch)
-                batches=[ original_batch[:batch_size//2], original_batch[batch_size//2:] ]
-            else:
-                batches=[ original_batch ]
+            batches=[ original_batch ]
             new_batch=[]
             for batch in batches:
                 try:
@@ -1477,7 +1444,7 @@ class Modal(object):
                 if cfg.turn_level:
                     batch=self.generate_batch_turn_level(batch)
                 else:
-                    batch=self.generate_batch(batch)
+                    batch=self.generate_batch_session_level(batch)
                 for dialog in batch:
                     generated_data.append(dialog)
                     result_collection.update(self.reader.inverse_transpose_turn(dialog))
@@ -1538,9 +1505,116 @@ class Modal(object):
                 avg_log_prob=-loss.item()
                 total_log_prob+=avg_log_prob
         return total_log_prob/len(all_batches)
-            
 
-    def generate_batch(self, batch):
+    def generate_batch(self, model, contexts, max_len, eos_id, beam=1):
+        # generate by batch
+        # contexts: a list of ids
+        # max_len: the max generated length
+        # eos_id: the end id
+        # return: a batch of ids with pre pad 
+        batch_size=len(contexts)
+        end_flag=np.zeros(batch_size)
+        if beam>1:
+            beam_box=[beam]*batch_size
+            beam_result=[[] for _ in range(batch_size)]
+            max_prob=[-float('inf')]*batch_size
+        past_key_values=None
+        inputs,attentions=self.reader.batch_align(contexts,left_len=max_len,return_attn=True)
+        inputs=torch.tensor(inputs).to(model.device)
+        attentions=torch.tensor(attentions).to(model.device)
+        model.eval()
+        with torch.no_grad():
+            for i in range(max_len):
+                if beam==1:
+                    position_ids = attentions.long().cumsum(-1) - 1
+                    position_ids.masked_fill_(attentions == 0, 1)
+                    if past_key_values is not None:
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                    if inputs.size(0)==0:
+                        raise ValueError(contexts, inputs.cpu().list(), attentions)
+                    outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                            return_dict=True,use_cache=True,past_key_values=past_key_values)
+
+                    past_key_values=outputs.past_key_values
+
+                    preds=outputs.logits[:,-1,:].argmax(-1)#B
+                    if i==0:
+                        gen_tensor=preds.unsqueeze(1)
+                    else:
+                        gen_tensor=torch.cat([gen_tensor,preds.unsqueeze(1)],dim=1)
+                    attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
+                    inputs=preds.unsqueeze(1)
+                    end_flag+=(preds.cpu().numpy()==eos_id).astype(float)
+                    if sum(end_flag==0)==0:
+                        break
+                else:
+                    if i==0:
+                        position_ids = attentions.long().cumsum(-1) - 1
+                        position_ids.masked_fill_(attentions == 0, 1)
+                        outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                                return_dict=True,use_cache=True,past_key_values=past_key_values)
+                        past_key_values=[outputs.past_key_values]*beam
+                        log_prob=F.log_softmax(outputs.logits[:, -1, :], -1) # B, V
+                        beam_prob, beam_idx=torch.topk(log_prob, beam, -1) # B, beam
+                        gen_tensor=beam_idx.unsqueeze(-1)# B, beam, 1
+                        attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
+                        position_ids = attentions.long().cumsum(-1) - 1
+                        position_ids.masked_fill_(attentions == 0, 1)
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                        pv_beam_prob=beam_prob #B, beam
+                        pv_beam_idx=beam_idx#B, beam
+                    else:
+                        for j in range(beam):
+                            inputs=pv_beam_idx[:,j].unsqueeze(-1) # B, 1
+                            outputs=model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                                return_dict=True,use_cache=True,past_key_values=past_key_values[j])
+                            past_key_values[j]=outputs.past_key_values
+                            log_prob=F.log_softmax(outputs.logits[:, -1, :], -1) # B, V
+                            beam_prob, beam_idx=torch.topk(log_prob, beam, -1) # B, beam
+                            if j==0:
+                                prob_pool= beam_prob+pv_beam_prob[:, j].unsqueeze(-1).expand(-1, beam) # B, beam
+                                id_pool=beam_idx
+                            else:
+                                prob_pool=torch.cat([prob_pool, beam_prob+pv_beam_prob[:, j].unsqueeze(-1).expand(-1, beam)],-1) # B, beam*beam
+                                id_pool=torch.cat([id_pool, beam_idx], -1)# B, beam*beam
+                        beam_prob, temp_id=torch.topk(prob_pool, beam, -1) #B, beam
+                        beam_idx=torch.gather(id_pool, -1, temp_id)
+                        temp_id=temp_id//beam
+                        new_past_key_values=copy.deepcopy(past_key_values)
+                        for b in range(batch_size):
+                            gen_tensor[b, :, :]=gen_tensor[b, :, :].index_select(0, temp_id[b, :])
+                            for t in range(beam):
+                                for l in range(6):
+                                    new_past_key_values[t][l][:, b, :,:,:]=past_key_values[temp_id[b, t]][l][:, b, :, :, :]
+                        past_key_values=new_past_key_values
+                        #past_key_values=[past_key_values[t] for t in temp_id.cpu().list()]
+                        gen_tensor=torch.cat([gen_tensor, beam_idx.unsqueeze(-1)],-1) #B, beam, T
+                        attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(model.device)),dim=1)
+                        position_ids = attentions.long().cumsum(-1) - 1
+                        position_ids.masked_fill_(attentions == 0, 1)
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                        pv_beam_prob=beam_prob #B, beam
+                        pv_beam_idx=beam_idx
+                    for m in range(batch_size):
+                        for n, gen in enumerate(gen_tensor.cpu().tolist()[m]):
+                            if eos_id in gen:
+                                beam_box[m]-=1
+                                avg_prob=pv_beam_prob[m][n]/len(gen)
+                                beam_result[m].append((gen, avg_prob))
+                                pv_beam_prob[m][n]=-float('inf')
+                    # we do not break during beam search
+                    #if not any(beam_box):
+                     #   break
+            
+        if beam==1:
+            return gen_tensor.cpu().tolist()
+        else:
+            for i, tup in enumerate(beam_result):
+                beam_list=sorted(tup, key=lambda item:item[1], reverse=True)
+                beam_result[i]=[item[0] for item in beam_list[:beam]]
+            return beam_result        
+
+    def generate_batch_session_level(self, batch):
         bs_max_len=75
         resp_max_len=80 if cfg.model_act else 60
         sos_b_id=self.sos_b_id
@@ -1925,8 +1999,6 @@ def main():
     if args.mode =='pretrain' or args.mode=='train':
         if cfg.turn_level:
             m.pretrain_turn_level()
-        else:
-            m.pretrain(posterior=cfg.posterior_train)
     elif args.mode =='semi_VL':
         m.semi_VL()
     elif args.mode == 'semi_ST':

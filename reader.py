@@ -83,6 +83,22 @@ class _ReaderBase(object):
             dial_batch.append(turn_l)
         return dial_batch
     
+    def split_turn_batch(self, turn_batch, batch_size, other_batch=None):
+        batches=[]
+        other_batches=[]
+        B=len(turn_batch['user'])
+        for i in range(0, B, batch_size):
+            new_turn_batch={}
+            if other_batch:
+                other_batches.append(other_batch[i:i+batch_size])
+            for key in turn_batch:
+                new_turn_batch[key]=turn_batch[key][i:i+batch_size]
+            batches.append(new_turn_batch)
+        if other_batch:
+            return batches, other_batches
+        else:
+            return batches, None
+
 
     def inverse_transpose_turn(self, turn_list):
         """
@@ -1514,7 +1530,20 @@ class MultiWozReader(_ReaderBase):
         return new_pv_batch
 
 
-    def convert_batch_turn(self, turn_batch, pv_batch, first_turn=False, rl_train=False, mode='oracle', side='sys'):
+    def convert_batch_turn(self, 
+        turn_batch, 
+        pv_batch, 
+        first_turn=False, 
+        rl_train=False, 
+        mode='oracle', 
+        side='sys', 
+        posterior=False,
+        seg_label=False
+        ):
+        '''
+        Args:
+        Returns:
+        '''
         assert mode in ['oracle', 'gen']
         assert side in ['sys', 'user']
         inputs = {}
@@ -1524,6 +1553,9 @@ class MultiWozReader(_ReaderBase):
         if rl_train:
             rl_labels={}
             rl_label_contexts=[]
+        if seg_label:
+            seg_labels={}
+            seg_contexts=[]
         if side=='sys':
             if first_turn:
                 if mode=='oracle':
@@ -1534,14 +1566,22 @@ class MultiWozReader(_ReaderBase):
                         turn_batch['db_gen'], turn_batch['aspn_gen'], turn_batch['resp_gen'])
                     
                 for u, b, db, a, r in batch_zipped:
-                    context = u+b+db+a+r
-                    label_context=len(u)*[cfg.pad_id]+b+db+a+r
+                    if posterior:
+                        context=u+r + b+db+a
+                        label_context=len(u+r)*[cfg.pad_id] + b+db+a
+                    else:
+                        context = u+b+db+a+r
+                        label_context=len(u)*[cfg.pad_id]+b+db+a+r
                     contexts.append(context)
                     label_contexts.append(label_context)
                     if rl_train:
                         # 1 for belief state, 2 for system act, 3 for response and 0 for others
                         rl_label_context=len(u)*[0]+len(b)*[1]+len(db)*[0]+len(a)*[2]+len(r)*[3]
                         rl_label_contexts.append(rl_label_context)
+                    if seg_label:
+                        # 1 for hidden state, 2 for response, 0 for others
+                        seg_context=len(u)*[0] + len(b+db+a)*[1] + len(r)*[2]
+                        seg_contexts.append(seg_context)
             else:
                 if mode=='oracle':
                     batch_zipped = zip(pv_batch,turn_batch['user'], turn_batch['bspn'], 
@@ -1550,14 +1590,22 @@ class MultiWozReader(_ReaderBase):
                     batch_zipped = zip(pv_batch,turn_batch['user'], turn_batch['bspn_gen'], 
                         turn_batch['db_gen'], turn_batch['aspn_gen'], turn_batch['resp_gen'])
                 for ur, u, b, db, a, r in batch_zipped:
-                    context = ur + u + b + db + a + r
-                    label_context=len(ur+u)*[cfg.pad_id]+b+db+a+r
+                    if posterior:
+                        context = ur + u + r + b + db + a
+                        label_context=len(ur+u+r)*[cfg.pad_id] + b+db+a
+                    else:
+                        context = ur + u + b + db + a + r
+                        label_context=len(ur+u)*[cfg.pad_id]+b+db+a+r
                     contexts.append(context)
                     label_contexts.append(label_context)
                     if rl_train:
                         # 1 for belief state, 2 for system act, 3 for response and 0 for others
                         rl_label_context=len(ur+u)*[0]+len(b)*[1]+len(db)*[0]+len(a)*[2]+len(r)*[3]
                         rl_label_contexts.append(rl_label_context)
+                    if seg_label:
+                        # 1 for hidden state, 2 for response, 0 for others
+                        seg_context=len(ur+u)*[0] + len(b+db+a)*[1] + len(r)*[2]
+                        seg_contexts.append(seg_context)
         
         elif side=='user':
             if first_turn:
@@ -1587,6 +1635,10 @@ class MultiWozReader(_ReaderBase):
         inputs['contexts_np'], inputs['lengths'] = utils.padSeqs_gpt(inputs['contexts'], cfg.pad_id)
         labels['contexts']=label_contexts
         labels['contexts_np'], labels['lengths']=utils.padSeqs_gpt(labels['contexts'], cfg.pad_id)
+        if seg_label and side=='sys':
+            seg_labels['contexts']=seg_contexts
+            seg_labels['contexts_np'], seg_labels['lengths']=utils.padSeqs_gpt(seg_labels['contexts'], cfg.pad_id)
+            return inputs, labels, seg_labels
         if rl_train and side=='sys':
             rl_labels['contexts']=rl_label_contexts
             rl_labels['contexts_np'], rl_labels['lengths']=utils.padSeqs_gpt(rl_labels['contexts'], cfg.pad_id)
@@ -1595,23 +1647,27 @@ class MultiWozReader(_ReaderBase):
             return inputs, labels
 
 
-    def convert_eval_batch_turn(self, turn_batch, pv_batch, mode='gen_bspn', bspn_gen=None, db_gen=None):
+    def convert_eval_batch_turn(self, turn_batch, pv_batch, mode='gen_bspn', bspn_gen=None, db_gen=None, posterior=False):
         eval_batch=[]
         assert mode in ['gen_bspn', 'gen_ar']
         if pv_batch is None:
             if mode=='gen_bspn':
-                for u in turn_batch['user']:
-                    eval_batch.append(u+[self.sos_b_id])
+                for u, r in zip(turn_batch['user'], turn_batch['resp']):
+                    context=u+r+[self.sos_b_id] if posterior else u+[self.sos_b_id]
+                    eval_batch.append(context)
             else:
-                for u, b, d in zip(turn_batch['user'], bspn_gen, db_gen):
-                    eval_batch.append(u+b+d+[self.sos_a_id])
+                for u, b, d, r in zip(turn_batch['user'], bspn_gen, db_gen, turn_batch['resp']):
+                    context=u+r+b+d+[self.sos_a_id] if posterior else u+b+d+[self.sos_a_id]
+                    eval_batch.append(context)
         else:
             if mode=='gen_bspn':
-                for hist, u in zip(pv_batch, turn_batch['user']):
-                    eval_batch.append(hist+u+[self.sos_b_id])
+                for hist, u, r in zip(pv_batch, turn_batch['user'], turn_batch['resp']):
+                    context=hist+u+r+[self.sos_b_id] if posterior else hist+u+[self.sos_b_id]
+                    eval_batch.append(context)
             else:
-                for hist, u, b, d in zip(pv_batch, turn_batch['user'], bspn_gen, db_gen):
-                    eval_batch.append(hist+u+b+d+[self.sos_a_id])
+                for hist, u, b, d, r in zip(pv_batch, turn_batch['user'], bspn_gen, db_gen, turn_batch['resp']):
+                    context=hist+u+r+b+d+[self.sos_a_id] if posterior else hist+u+b+d+[self.sos_a_id]
+                    eval_batch.append(context)
         return eval_batch
     
     def convert_dst_eval_batch(self, turn_batch, pv_bspn):

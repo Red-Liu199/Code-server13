@@ -1,16 +1,15 @@
 # Copyright 2021 Tsinghua SPMI Lab, Author: Hong Liu
 # This script run the supervised baseline with 100% labeled data.
-python pretrain.py -mode train\
+ratio=$2
+python pretrain.py -mode pretrain\
     -cfg  lr=1e-4\
     gradient_accumulation_steps=16 batch_size=2\
-    seed=123\
-    epoch_num=50\
-    exp_no=UBAR\
+    seed=11\
+    epoch_num=80\
+    spv_proportion=$ratio\
+    exp_no=UBAR-${ratio}\
     cuda_device=$1\
-    train_us=False\
     save_type=max_score\
     turn_level=False\
     only_target_loss=True\
-    input_history=True\
-    input_prev_resp=True\
     loss_reg=True

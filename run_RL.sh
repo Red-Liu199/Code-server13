@@ -1,6 +1,7 @@
-#path1=experiments_21/all_turn-level-ds-S_sd11_lr0.0001_bs8_ga4/best_score_model
-path1=experiments_21/turn-level-DS/best_score_model
-path2=experiments_21/all_turn-level-us-111_sd11_lr0.0001_bs8_ga4/best_score_model
+#path1=experiments_21/all_turn-level-ds-otl-12-6_sd11_lr0.0001_bs4_ga8/best_score_model
+path1=experiments_21/all_turn-level-ds-S_sd11_lr0.0001_bs8_ga4/best_score_model
+path2=experiments_21/all_turn-level-us-12-1_sd11_lr0.0001_bs8_ga4/best_score_model
+#path2=RL_exp/RL-std-only-us/best_US
 python session.py -mode train\
  -cfg use_scheduler=False\
  lr=2e-5\
@@ -18,11 +19,12 @@ python session.py -mode train\
  clip_grad=True\
  loss_reg=True\
  rl_dial_per_epoch=128\
- joint_train_ds=True\
+ joint_train_ds=False\
  joint_train_us=True\
- simple_reward=False\
+ simple_reward=True\
  simple_training=False\
- exp_no=RL-sigmoid_reward\
+ exp_no=RL-old-ds-new-us-only-us\
  rl_iterate=True\
  RL_ablation=False\
- notes='Simple reward with loss reg'
+ iterative_update=False\
+ notes=''

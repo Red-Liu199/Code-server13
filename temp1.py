@@ -90,4 +90,9 @@ def detect_bs_error(data):
 #detect_bs_error(data)
 #count_end_act(data)
 #clean_dataset(data)
-count_turn_domain(data)
+
+#count_turn_domain(data)
+a=[[1,2,3,4], [3,4,5,2]]
+for i, item in enumerate(a):
+    item[2]=11
+print(a)

@@ -30,8 +30,8 @@ from config import global_config as cfg
 # from config21 import global_config as cfg  # global, already initialized
 
 
-import warnings
-warnings.filterwarnings("ignore")
+#import warnings
+#warnings.filterwarnings("ignore")
 
 class Modal(object):
     def __init__(self, device=[0]):
@@ -158,6 +158,7 @@ class Modal(object):
         #logging.info('initial evaluation loss:%f'%eval_loss)
         num_batch=len(all_batches)
         epoch_th=0.1*cfg.epoch_num if 'distilgpt2' in cfg.gpt_path else -1
+        #epoch_th=-1
         for epoch in tqdm(range(cfg.epoch_num)):
             epoch_step = 0
             total_loss=0
@@ -186,7 +187,10 @@ class Modal(object):
                     
                     # loss
                     outputs = self.model(inputs['contexts_tensor'])
-                    loss=self.calculate_loss_and_accuracy(outputs,labels['contexts_tensor'])
+                    if cfg.only_target_loss:
+                        loss=self.calculate_loss_and_accuracy(outputs,labels['contexts_tensor'])
+                    else:
+                        loss=self.calculate_loss_and_accuracy(outputs,inputs['contexts_tensor'])
                     if cfg.loss_reg:
                         loss=loss/cfg.gradient_accumulation_steps
                     loss.backward()
@@ -320,8 +324,8 @@ class Modal(object):
         min_eval_loss=1000
         max_score=0
         early_stop_count=cfg.early_stop_count
-        #epoch_th=0.05*cfg.epoch_num if 'distilgpt2' in cfg.gpt_path else -1
-        epoch_th=-1
+        epoch_th=0.1*cfg.epoch_num if 'distilgpt2' in cfg.gpt_path else -1
+        #epoch_th=-1
         warmup_epochs=cfg.warmup_steps*cfg.gradient_accumulation_steps*cfg.batch_size//num_dials \
             if cfg.warmup_steps>=0 else int(cfg.epoch_num*cfg.warmup_ratio)
         if cfg.debugging:
@@ -510,8 +514,8 @@ class Modal(object):
         global_step = 0
         max_score=0
         early_stop_count=cfg.early_stop_count
-        #epoch_th=0.05*cfg.epoch_num if 'distilgpt2' in cfg.gpt_path else -1
-        epoch_th=-1
+        epoch_th=0.05*cfg.epoch_num if 'distilgpt2' in cfg.gpt_path else -1
+        #epoch_th=-1
         warmup_epochs=cfg.warmup_steps*cfg.gradient_accumulation_steps*cfg.batch_size//num_turns \
             if cfg.warmup_steps>=0 else int(cfg.epoch_num*cfg.warmup_ratio)
         logging.info('Warmup epochs:{}'.format(warmup_epochs))
@@ -1032,23 +1036,20 @@ class Modal(object):
             #results,field=self.reader.load_result(result_path)
             results=json.load(open(result_path, 'r'))
             joint_acc=compute_jacc(results)
+            #joint_acc=0
+            cfg.use_true_bspn_for_ctr_eval=False
+            bleu, success, match = self.evaluator.validation_metric(results)
+            score = 0.5 * (success + match) + bleu
+            logging.info('[Old] validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+            
             input_data=prepare_for_std_eval(data=results)
             std_metrics = self.std_evaluator.evaluate(input_data)
             bleu=std_metrics['bleu']['damd']
             match=std_metrics['success']['inform']['total']
             success=std_metrics['success']['success']['total']
             score = 0.5 * (success + match) + bleu
-            '''
-            #joint_acc=0
-            cfg.use_true_bspn_for_ctr_eval=True
-            bleu, success, match = self.evaluator.validation_metric(results)
-            score = 0.5 * (success + match) + bleu
-            logging.info('validation [CTR] %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
-            cfg.use_true_bspn_for_ctr_eval=False
-            bleu, success, match = self.evaluator.validation_metric(results)
-            score = 0.5 * (success + match) + bleu
-            '''
-            logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+            logging.info(std_metrics)
+            logging.info('[Std] validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
 
             eval_results = {}
             eval_results['bleu'] = bleu
@@ -1056,7 +1057,6 @@ class Modal(object):
             eval_results['match'] = match
             eval_results['score'] = score
             eval_results['joint_acc']=joint_acc
-            eval_results['result'] = 'validation [CTR] match: %2.2f  success: %2.2f  bleu: %2.2f    score: %.2f' % (match, success, bleu, score)
             return eval_results
         
         # valid_losses = []
@@ -1090,20 +1090,21 @@ class Modal(object):
 
         joint_acc=compute_jacc(results)
         #joint_acc=0
-        '''
         cfg.use_true_bspn_for_ctr_eval=False
         bleu, success, match = self.evaluator.validation_metric(results)
         score = 0.5 * (success + match) + bleu
-        logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
-        '''
+        logging.info('[Old] validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
         input_data=prepare_for_std_eval(data=results)
         std_metrics = self.std_evaluator.evaluate(input_data)
         bleu=std_metrics['bleu']['damd']
         match=std_metrics['success']['inform']['total']
         success=std_metrics['success']['success']['total']
         score = 0.5 * (success + match) + bleu
+        #logger = logging.getLogger()
+        #logger.setLevel(logging.INFO)
         if cfg.mode=='test':
             logging.info(std_metrics)
+        
         logging.info('[Std] validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
         json.dump(results, open(result_path, 'w'), indent=2)
         #self.reader.save_result('w', results, field,result_name='result.csv')
@@ -1114,15 +1115,6 @@ class Modal(object):
         eval_results['match'] = std_metrics['success']['inform']['total']
         eval_results['score'] = score
         eval_results['joint_acc']=joint_acc
-        '''
-        eval_results['bleu'] = bleu
-        eval_results['success'] = success
-        eval_results['match'] = match
-        eval_results['score'] = score
-        eval_results['joint_acc']=joint_acc
-        eval_results['result'] = 'validation [CTR] match: %2.2f  success: %2.2f  bleu: %2.2f    \
-            score: %.2f  joint goal:%.2f' % (match, success, bleu, score,joint_acc)
-        '''
         cfg.batch_size=cfg.origin_batch_size
         return eval_results
 
@@ -1652,6 +1644,7 @@ def main():
 
     fix_cfg()
     cfg._init_logging_handler(args.mode)
+    logging.info('Model path:{}'.format(cfg.eval_load_path))
     device=cfg.cuda_device
     cfg.divided_path=os.path.join(cfg.data_path,'divided_data{}.json'.format(cfg.spv_proportion))
 

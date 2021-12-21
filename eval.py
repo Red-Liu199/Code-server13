@@ -685,8 +685,8 @@ class MultiWozEvaluator(object):
             #         sng_gen_stats[domain][1] += stats[domain][1]
             #         sng_gen_stats[domain][2] += stats[domain][2]
         
-        json.dump(success_list, open(os.path.join(cfg.eval_load_path, 'success_list.json'), 'w'))
-        json.dump(match_list, open(os.path.join(cfg.eval_load_path, 'match_list.json'), 'w'))
+        #json.dump(success_list, open(os.path.join(cfg.eval_load_path, 'success_list.json'), 'w'))
+        #json.dump(match_list, open(os.path.join(cfg.eval_load_path, 'match_list.json'), 'w'))
         # self.logger.info(report)
         succ_rate = successes/( float(dial_num) + 1e-10) * 100
         match_rate = matches/(float(dial_num) + 1e-10) * 100

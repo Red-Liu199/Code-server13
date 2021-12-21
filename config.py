@@ -40,8 +40,8 @@ class _Config:
         self.example_log=True
         self.delex_as_damd = True 
         self.gen_db=False # critical setting. Only True when we use posterior model to generate belief state and db result.
-        self.turn_level=False # turn-level training or session-level training
-        self.input_history=True # whether or not add the whole dialog history into the training sequence if train with turn-level 
+        self.turn_level=True # turn-level training or session-level training
+        self.input_history=False # whether or not add the whole dialog history into the training sequence if train with turn-level 
         self.input_prev_resp=True # whether or not add the prev response into the training sequence if input_history is False
         #pretrain:
         self.posterior_train=False
@@ -214,7 +214,8 @@ class _Config:
         self.add_resp_reward=False
         self.RL_ablation=False
         self.reward_ablation=False
-        
+        self.iterative_update=False
+
         self.eval_as_simpletod=True
         self.beam_search=False
         self.beam_size=5
@@ -237,22 +238,24 @@ class _Config:
         stderr_handler = logging.StreamHandler()
         if not os.path.exists('./log'):
             os.mkdir('./log')
-        if self.save_log and 'train' in mode:
+        if self.save_log and mode in ['semi_ST', 'semi_VL', 'train']:
             if self.dataset==0:
                 #file_handler = logging.FileHandler('./log/log_{}_{}_{}_{}_sd{}.txt'.format(self.log_time, mode, '-'.join(self.exp_domains), self.exp_no, self.seed))
-                file_handler = logging.FileHandler('./log/log_{}_{}_{}_sd{}.txt'.format(mode, '-'.join(self.exp_domains), self.exp_no, self.seed))
+                file_handler = logging.FileHandler('./log/log_{}_{}_sd{}.txt'.format(mode, self.exp_no, self.seed))
             elif self.dataset==1:
                 #file_handler = logging.FileHandler('./log21/log_{}_{}_{}_{}_sd{}.txt'.format(self.log_time, mode, '-'.join(self.exp_domains), self.exp_no, self.seed))
-                file_handler = logging.FileHandler('./log21/log_{}_{}_{}_sd{}.txt'.format(mode, '-'.join(self.exp_domains), self.exp_no, self.seed))
-            logging.basicConfig(handlers=[stderr_handler, file_handler])
+                file_handler = logging.FileHandler('./log21/log_{}_{}_sd{}.txt'.format(mode, self.exp_no, self.seed))
         elif 'test' in mode and os.path.exists(self.eval_load_path):
             eval_log_path = os.path.join(self.eval_load_path, 'eval_log.json')
             # if os.path.exists(eval_log_path):
             #     os.remove(eval_log_path)
             file_handler = logging.FileHandler(eval_log_path)
-            logging.basicConfig(handlers=[stderr_handler, file_handler])
+            file_handler.setLevel(logging.INFO)
         else:
-            logging.basicConfig(handlers=[stderr_handler])
+            pass
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
+        logging.basicConfig(handlers=[stderr_handler, file_handler])
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
 
