@@ -7,7 +7,6 @@ import json
 import spacy
 import utils
 import ontology
-import torch
 from copy import deepcopy
 from collections import OrderedDict
 from db_ops import MultiWozDB
@@ -27,13 +26,19 @@ class _ReaderBase(object):
     def _bucket_by_turn(self, encoded_data):
         turn_bucket = {}
         for dial in encoded_data:
+            if cfg.train_us:
+                dial_dict=dial
+                dial=dial_dict['log']
             turn_len = len(dial)
             #修改记录：对于turn_len=0情况的处理
             if turn_len==0:
                 continue
             if turn_len not in turn_bucket:
                 turn_bucket[turn_len] = []
-            turn_bucket[turn_len].append(dial)
+            if cfg.train_us:
+                turn_bucket[turn_len].append(dial_dict)
+            else:
+                turn_bucket[turn_len].append(dial)
         del_l = []
         for k in turn_bucket:
             if k >= 5:
@@ -81,7 +86,6 @@ class _ReaderBase(object):
                     turn_l[k].append(this_turn[k])
             dial_batch.append(turn_l)
         return dial_batch
-        
     def split_turn_batch(self, turn_batch, batch_size, other_batch=None):
         batches=[]
         other_batches=[]
@@ -133,9 +137,6 @@ class _ReaderBase(object):
                 dial_turn = {}
                 turn_batch = turn_batch_list[turn_n]
                 for key, v_list in turn_batch.items():
-                    if idx_in_batch>=len(v_list):
-                        print('list out of range',key, v_list)
-                        continue
                     value = v_list[idx_in_batch]
                     dial_turn[key] = value
                 dialog.append(dial_turn)
@@ -368,13 +369,11 @@ class MultiWozReader(_ReaderBase):
                 for fn in fn_list:
                     self.exp_files[fn.replace('.json', '')] = 1
         #
-
+        self.get_special_ids()
         self._load_data()
 
 
         self.multi_acts_record = None
-        self.get_special_ids()
-        self.clean_dial_id()
 
     def get_exp_domains(self, exp_domains, all_domains_list):
         if 'hotel' in exp_domains:
@@ -414,13 +413,6 @@ class MultiWozReader(_ReaderBase):
                 domains = ['taxi_single', 'taxi_multi']
         return domains
 
-    def clean_dial_id(self):
-        new_list=[]
-        for dial_id in self.dev_list:
-            if dial_id in self.data:
-                new_list.append(dial_id)
-        self.dev_list=new_list
-
     def add_sepcial_tokens(self):
         """
             add special tokens to gpt tokenizer
@@ -455,34 +447,14 @@ class MultiWozReader(_ReaderBase):
                 if cfg.delex_as_damd:
                     special_tokens.append(word)
         special_tokens.extend(ontology.special_tokens)
-        
         if cfg.train_us:
-            #special_tokens.extend(['[book]','[fail_book]','[fail_info]','[pre_invalid]','[invalid]','<sos_g>','<eos_g>','<sos_ua>','<eos_ua>'])
-            special_tokens.extend(['<sos_g>','<eos_g>','<sos_ua>','<eos_ua>'])
-        
+            special_tokens.extend(['[book]','[fail_book]','[fail_info]','[pre_invalid]','[invalid]','<sos_g>','<eos_g>','<sos_ua>','<eos_ua>'])
 
         special_tokens_dict = {'additional_special_tokens': special_tokens}
         self.tokenizer.add_special_tokens(special_tokens_dict)
         logging.info('Added special tokens to gpt tokenizer.')
 
         cfg.pad_id = self.tokenizer.encode('<pad>')[0]
-    
-    def get_special_ids(self):
-        self.sos_b_id=self.tokenizer.convert_tokens_to_ids('<sos_b>')
-        self.sos_a_id=self.tokenizer.convert_tokens_to_ids('<sos_a>')
-        self.sos_r_id=self.tokenizer.convert_tokens_to_ids('<sos_r>')
-        self.eos_b_id=self.tokenizer.convert_tokens_to_ids('<eos_b>')
-        self.eos_a_id=self.tokenizer.convert_tokens_to_ids('<eos_a>')
-        self.eos_r_id=self.tokenizer.convert_tokens_to_ids('<eos_r>')
-        self.sos_db_id=self.tokenizer.convert_tokens_to_ids('<sos_db>')
-        self.eos_db_id=self.tokenizer.convert_tokens_to_ids('<eos_db>')
-        self.sos_u_id=self.tokenizer.convert_tokens_to_ids('<sos_u>')
-        self.eos_u_id=self.tokenizer.convert_tokens_to_ids('<eos_u>')
-        if cfg.train_us:
-            self.sos_g_id=self.tokenizer.convert_tokens_to_ids('<sos_g>')
-            self.eos_g_id=self.tokenizer.convert_tokens_to_ids('<eos_g>')
-            self.sos_ua_id=self.tokenizer.convert_tokens_to_ids('<sos_ua>')
-            self.eos_ua_id=self.tokenizer.convert_tokens_to_ids('<eos_ua>')
 
     def _build_vocab(self):
         self.vocab = utils.Vocab(cfg.vocab_size)
@@ -603,7 +575,7 @@ class MultiWozReader(_ReaderBase):
                     else:
                         encoded_file = os.path.join(cfg.data_path, 'new_db_se_blank_encoded.data2.json')
                     if cfg.fix_data:
-                        encoded_file=encoded_file[:-5]+'_fix.json'
+                        encoded_file = encoded_file[:-5]+'_fix.json'
                 # encoded: no sos, se_encoded: sos and eos
                 # db: add db results every turn
             else:
@@ -612,48 +584,46 @@ class MultiWozReader(_ReaderBase):
                     os.makedirs(xdomain_dir)
                 encoded_file = os.path.join(xdomain_dir, '{}-encoded.data.json'.format('-'.join(cfg.exp_domains))) 
             
-            self.data = json.loads(open(cfg.data_path + cfg.data_file, 'r', encoding='utf-8').read().lower())
+            self.data = json.loads(open(cfg.data_path+cfg.data_file, 'r', encoding='utf-8').read().lower())
             self.train_list=[]
             for key in self.data:
                 if key not in self.dev_list and key not in self.test_list:
                     self.train_list.append(key)
 
-            if cfg.rl_train:
-                data_path='data/multi-woz-2.1-processed/data_for_rl.json'
-                self.data=json.loads(open(data_path, 'r', encoding='utf-8').read().lower())
-                logging.info('Reading data from {}'.format(data_path))
-            if not cfg.rl_train or 'test' in cfg.mode:
-                if os.path.exists(encoded_file):
-                    logging.info('Reading encoded data from {}'.format(encoded_file))
-                    encoded_data = json.loads(open(encoded_file, 'r', encoding='utf-8').read())
-                    self.train = encoded_data['train']
-                    self.dev = encoded_data['dev']
-                    self.test = encoded_data['test']
-                else:
-                    logging.info('Encoding data now and save the encoded data in {}'.format(encoded_file))
-                    # not exists, encode data and save
-                    data_path=cfg.data_path+cfg.data_file
-                    self.data = json.loads(open(data_path, 'r', encoding='utf-8').read().lower())
-                    if cfg.fix_data and not cfg.train_us:
-                        self.data=self.fix_dialog_state(self.data)
-                        data_path=data_path[:-5]+'_fix.json'
-                        json.dump(self.data, open(data_path, 'w'), indent=2)
-                    self.train, self.dev, self.test = [], [], []
-                    for fn, dial in self.data.items():
-                        if '.json' in fn:
-                            fn = fn.replace('.json', '')
-                        if 'all' in cfg.exp_domains or self.exp_files.get(fn):
-                            if self.dev_files.get(fn):
-                                self.dev.append(self._get_encoded_data(fn, dial))
-                            elif self.test_files.get(fn):
-                                self.test.append(self._get_encoded_data(fn, dial))
-                            else:
-                                self.train.append(self._get_encoded_data(fn, dial))
+            if os.path.exists(encoded_file):
+                logging.info('Reading encoded data from {}'.format(encoded_file))
+                encoded_data = json.loads(open(encoded_file, 'r', encoding='utf-8').read())
+                self.train = encoded_data['train']
+                self.dev = encoded_data['dev']
+                self.test = encoded_data['test']
+            else:
+                logging.info('Encoding data now and save the encoded data in {}'.format(encoded_file))
+                # not exists, encode data and save
+                self.data = json.loads(
+                    open(cfg.data_path+cfg.data_file, 'r', encoding='utf-8').read().lower())
+                self.train, self.dev, self.test = [], [], []
+                
+                data_path=cfg.data_path+cfg.data_file
+                if cfg.fix_data :
+                    self.data=self.fix_dialog_state(self.data)
+                    data_path=data_path[:-5]+'_fix.json'
+                    json.dump(self.data, open(data_path, 'w'), indent=2)
                     
-                    # save encoded data
-                    encoded_data = {'train': self.train, 'dev': self.dev, 'test': self.test}
-                    json.dump(encoded_data, open(encoded_file, 'w'), indent=2)
-                    logging.info('encoded file saved in %s'%encoded_file)
+                for fn, dial in self.data.items():
+                    if '.json' in fn:
+                        fn = fn.replace('.json', '')
+                    if 'all' in cfg.exp_domains or self.exp_files.get(fn):
+                        if self.dev_files.get(fn):
+                            self.dev.append(self._get_encoded_data(fn, dial))
+                        elif self.test_files.get(fn):
+                            self.test.append(self._get_encoded_data(fn, dial))
+                        else:
+                            self.train.append(self._get_encoded_data(fn, dial))
+                
+                # save encoded data
+                encoded_data = {'train': self.train, 'dev': self.dev, 'test': self.test}
+                json.dump(encoded_data, open(encoded_file, 'w'), indent=2)
+                logging.info('encoded file saved in %s'%encoded_file)
 
         else: # directly read processed data and encode
             self.train, self.dev, self.test = [], [], []
@@ -672,7 +642,7 @@ class MultiWozReader(_ReaderBase):
         # random.shuffle(self.dev)
         # random.shuffle(self.test)
         logging.info('train size:{}, dev size:{}, test size:{}'.format(len(self.train), len(self.dev), len(self.test)))
-
+        
     def fix_dialog_state(self, data):
         for dial_id in data:
             dial=data[dial_id]['log']
@@ -692,7 +662,7 @@ class MultiWozReader(_ReaderBase):
                                 cons_dict[domain].pop('name')
                     turn['constraint']=self.cons_dict_to_bspn(cons_dict)
         return data
-
+    
     def cons_dict_to_bspn(self, cons_dict):
         bs_list=[]
         for domain in cons_dict:
@@ -701,6 +671,23 @@ class MultiWozReader(_ReaderBase):
                 bs_list.append(slot)
                 bs_list.append(cons_dict[domain][slot])
         return ' '.join(bs_list)
+    
+    def get_special_ids(self):
+        self.sos_b_id=self.tokenizer.convert_tokens_to_ids('<sos_b>')
+        self.sos_a_id=self.tokenizer.convert_tokens_to_ids('<sos_a>')
+        self.sos_r_id=self.tokenizer.convert_tokens_to_ids('<sos_r>')
+        self.eos_b_id=self.tokenizer.convert_tokens_to_ids('<eos_b>')
+        self.eos_a_id=self.tokenizer.convert_tokens_to_ids('<eos_a>')
+        self.eos_r_id=self.tokenizer.convert_tokens_to_ids('<eos_r>')
+        self.sos_db_id=self.tokenizer.convert_tokens_to_ids('<sos_db>')
+        self.eos_db_id=self.tokenizer.convert_tokens_to_ids('<eos_db>')
+        self.sos_u_id=self.tokenizer.convert_tokens_to_ids('<sos_u>')
+        self.eos_u_id=self.tokenizer.convert_tokens_to_ids('<eos_u>')
+        if cfg.train_us:
+            self.sos_g_id=self.tokenizer.convert_tokens_to_ids('<sos_g>')
+            self.eos_g_id=self.tokenizer.convert_tokens_to_ids('<eos_g>')
+            self.sos_ua_id=self.tokenizer.convert_tokens_to_ids('<sos_ua>')
+            self.eos_ua_id=self.tokenizer.convert_tokens_to_ids('<eos_ua>')
 
     def _get_encoded_data(self, fn, dial):
         if cfg.train_us:
@@ -710,197 +697,41 @@ class MultiWozReader(_ReaderBase):
             enc = {}
             enc['dial_id'] = fn
             enc['user'] = self.modified_encode( '<sos_u> ' +t['user'] + ' <eos_u>')
-            #enc['usdx'] = self.modified_encode('<sos_u> ' + t['user'] + ' <eos_u>')
+            #enc['usdx'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_u> ' + t['user'] + ' <eos_u>'))
             #if cfg.delex_as_damd:
             enc['bspn'] = self.modified_encode('<sos_b> ' +t['constraint'] + ' <eos_b>')
-            #enc['bsdx'] = self.modified_encode('<sos_b> ' +t['cons_delex'] + ' <eos_b>')
             enc['resp'] = self.modified_encode('<sos_r> ' +t['resp'] + ' <eos_r>')
             enc['aspn'] = self.modified_encode('<sos_a> ' +t['sys_act'] + ' <eos_a>')
             enc['dspn'] = self.modified_encode('<sos_d> ' +t['turn_domain'] + ' <eos_d>')
             enc['pointer'] = [int(i) for i in t['pointer'].split(',')]
             enc['turn_domain'] = t['turn_domain'].split()
             enc['turn_num'] = t['turn_num']
-            if cfg.multi_acts_training:
-                enc['aspn_aug'] = []
-                if fn in self.multi_acts:
-                    turn_ma = self.multi_acts[fn].get(str(idx), {})
-                    for act_type, act_spans in turn_ma.items():
-                        enc['aspn_aug'].append([self.tokenizer.encode(
-                            a.split()+['<eos_a>']) for a in act_spans])
 
             # add db results to enc, at every turn
             db_pointer = self.bspan_to_DBpointer(t['constraint'], t['turn_domain'].split())
-            #修改记录
-            if not cfg.delex_as_damd:
-                if '[value_choice]' in t['resp']:
-                    t['resp']=t['resp'].replace('[value_choice]', db_pointer)
-                    enc['resp'] = self.modified_encode('<sos_r> ' +t['resp'] + ' <eos_r>')
             # db_tokens = ['<sos_db>', '<eos_db>', '[db_nores]', '[db_0]', '[db_1]', '[db_2]', '[db_3]']
-            enc['db'] = self.modified_encode('<sos_db> ' +db_pointer + ' <eos_db>')
+            enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> ' + db_pointer + ' <eos_db>'))
 
             encoded_dial.append(enc)
         return encoded_dial
     
-
     def _get_encoded_us_data(self, fn, dial):
-        encoded_dial=[]
-        for idx, t in enumerate(dial):  # tokenize to list of ids
+        encoded_dial = {}
+        encoded_dial['goal'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_g> ' +dial['goal'] + ' <eos_g>'))
+        encoded_dial['log']=[]
+        for idx, t in enumerate(dial['log']):  # tokenize to list of ids
             enc = {}
             enc['dial_id'] = fn
-            enc['goal']=self.modified_encode('<sos_g> ' +t['goal']+' <eos_g>')
-            enc['user'] = self.modified_encode( '<sos_u> ' +t['user'] + ' <eos_u>')
-            enc['resp'] = self.modified_encode('<sos_r> ' +t['resp'] + ' <eos_r>')
-            enc['sys_act'] = self.modified_encode('<sos_a> ' +t['sys_act'] + ' <eos_a>')
-            enc['usr_act'] = self.modified_encode('<sos_ua> ' +t['usr_act'] + ' <eos_ua>')
+            enc['user'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize( '<sos_u> ' +t['user'] + ' <eos_u>'))
+            enc['resp'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_r> ' +t['resp'] + ' <eos_r>'))
+            enc['sys_act'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_a> ' +t['sys_act'] + ' <eos_a>'))
+            enc['usr_act'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_ua> ' +t['usr_act'] + ' <eos_ua>'))
             enc['turn_domain'] = t['turn_domain'].split()
             enc['turn_num'] = t['turn_num']
 
-            encoded_dial.append(enc)
+            encoded_dial['log'].append(enc)
         
         return encoded_dial
-
-    def encode_data(self, data, tokenizer, modular='dst'):
-        encoded_data={}
-        for set in data:
-            encoded_data[set]=[]
-            for item in data[set]:
-                encoded_data[set].append([self.modified_encode(item[0], tokenizer), self.modified_encode(item[1], tokenizer)])
-        return encoded_data
-
-    def update_goal(self, init_goal, user_act, constraint=None, sys_act=None):
-        # constraint and sys_act are from last turn
-        goal=deepcopy(init_goal)
-        for domain in user_act:
-            if domain not in goal:
-                continue
-            for intent, sv in user_act[domain].items():
-                if intent=='inform':
-                    for slot, value in sv.items():
-                        # In user act, price can express both price and pricerange
-                        if slot=='price' and intent in goal[domain] and slot not in goal[domain][intent]:
-                            slot='pricerange'
-                        if  'inform' in goal[domain] and slot in goal[domain]['inform']:
-                            if goal[domain]['inform'][slot]==value:
-                                goal[domain]['inform'].pop(slot)
-                            if goal[domain]['inform']=={}:
-                                goal[domain].pop('inform')
-                        elif 'book' in goal[domain] and slot in goal[domain]['book']:
-                            if goal[domain]['book'][slot]==value:
-                                goal[domain]['book'].pop(slot)
-                            if goal[domain]['book']=={}:
-                                goal[domain].pop('book')
-                elif intent=='request':
-                    for slot in sv:
-                        if slot=='price' and intent in goal[domain] and slot not in goal[domain][intent]:
-                            slot='pricerange'
-                        if 'request' in goal[domain] and slot in goal[domain]['request']:
-                            goal[domain]['request'].pop(goal[domain]['request'].index(slot))
-                            if goal[domain]['request']==[]:
-                                goal[domain].pop('request')
-            if goal[domain]=={}:
-                goal.pop(domain)
-        if constraint:
-            for domain, sv in constraint.items():
-                if domain in goal:
-                    for slot, value in sv.items():
-                        if  'inform' in goal[domain] and slot in goal[domain]['inform']:
-                            if goal[domain]['inform'][slot]==value:
-                                goal[domain]['inform'].pop(slot)
-                            if goal[domain]['inform']=={}:
-                                goal[domain].pop('inform')
-                        elif 'book' in goal[domain] and slot in goal[domain]['book']:
-                            if goal[domain]['book'][slot]==value:
-                                goal[domain]['book'].pop(slot)
-                            if goal[domain]['book']=={}:
-                                goal[domain].pop('book')
-                    if goal[domain]=={}:
-                        goal.pop(domain)
-        if sys_act:
-            for domain in sys_act:
-                if domain not in goal:
-                    continue
-                for intent, slots in goal[domain].items():
-                    # if system has inform the slot in last turn then user simulator needn't request
-                    if (intent=='inform' or intent=='recommend') and 'request' in goal[domain]:
-                        for slot in slots:
-                            if slot in goal[domain]['request']:
-                                goal[domain]['request'].pop(goal[domain]['request'].index(slot))
-                        if goal[domain]['request']==[]:
-                            goal[domain].pop('request')
-                if goal[domain]=={}:
-                    goal.pop(domain)
-                
-        return goal
-
-    def goal_to_gpan(self, goal, cur_domain=None):
-        if goal=={}:
-            return ''
-        domain_gpan=[]
-        domain_idx=0
-        cur_domain_idx=-1
-        for domain in goal:
-            if domain==cur_domain:
-                cur_domain_idx=domain_idx
-            domain_idx+=1
-            goal_list=[]
-            goal_list.append('['+domain+']')
-            for intent in goal[domain]:
-                goal_list.append('['+intent+']')
-                if isinstance(goal[domain][intent],dict):
-                    for s, v in goal[domain][intent].items():
-                        goal_list.append(s)
-                        goal_list.append(v)
-                elif isinstance(goal[domain][intent],list):
-                    for s in goal[domain][intent]:
-                        goal_list.append(s)
-            domain_gpan.append(' '.join(goal_list))
-        # current domain must be the last
-        if cur_domain!='general' and cur_domain_idx>=0:
-            domain_gpan[cur_domain_idx], domain_gpan[-1] = domain_gpan[-1], domain_gpan[cur_domain_idx]
-        return ' '.join(domain_gpan)
-
-    def goal_norm(self, goal):
-        new_goal={}
-        for domain in goal:
-            '''
-            if 'book' in goal[domain]:
-                if 'reqt' in goal[domain]:
-                    if 'reference' not in goal[domain]['reqt']:
-                        goal[domain]['reqt'].append('reference')
-                else:
-                    goal[domain]['reqt']=['reference']
-            '''
-            new_goal[domain]={}
-            for intent in goal[domain]:
-                if intent in ['fail_book','fail_info']:
-                    continue
-                elif intent in ['info', 'book']:
-                    new_intent='inform' if intent=='info' else intent
-                    new_goal[domain][new_intent]={}
-                    for slot, value in goal[domain][intent].items():
-                        slot=slot.lower()
-                        if slot in ['pre_invalid','invalid']:
-                            continue
-                        else:
-                            if slot=='trainid':
-                                slot='id'
-                            elif slot=='car type':
-                                slot='car'
-                            elif slot in ['entrance fee', 'fee']:
-                                slot='price'
-                            elif slot=='duration':
-                                slot='time'
-                            elif slot=='arriveby':
-                                slot='arrive'
-                            elif slot=='leaveat':
-                                slot='leave'
-                        new_goal[domain][new_intent][slot]=value.lower()
-                elif intent=='reqt':
-                    new_goal[domain]['request']=[]
-                    for slot in goal[domain][intent]:
-                        new_goal[domain]['request'].append(slot.lower())
-        
-        return new_goal
 
     def bspan_to_constraint_dict(self, bspan, bspn_mode='bspn'):
         bspan = bspan.split() if isinstance(bspan, str) else bspan
@@ -969,7 +800,7 @@ class MultiWozReader(_ReaderBase):
         conslen = len(aspan)
         for idx, cons in enumerate(aspan):
             cons = self.vocab.decode(cons) if type(cons) is not str else cons
-            if cons in ['<eos_a>', '<eos_ua>']:
+            if cons == '<eos_a>':
                 break
             if '[' in cons and cons[1:-1] in ontology.dialog_acts:
                 domain = cons[1:-1]
@@ -984,7 +815,7 @@ class MultiWozReader(_ReaderBase):
                 vt = aspan[vidx]
                 vt = self.vocab.decode(vt) if type(vt) is not str else vt
                 no_param_act = True
-                while vidx < conslen and vt not in ['<eos_a>', '<eos_ua>'] and '[' not in vt:
+                while vidx < conslen and vt != '<eos_a>' and '[' not in vt:
                     no_param_act = False
                     acts.append(domain+'-'+cons[1:-1]+'-'+vt)
                     vidx += 1
@@ -994,50 +825,20 @@ class MultiWozReader(_ReaderBase):
                     vt = self.vocab.decode(vt) if type(vt) is not str else vt
                 if no_param_act:
                     acts.append(domain+'-'+cons[1:-1]+'-none')
+
         return acts
 
-    def aspan_to_act_dict(self, aspan, side='sys'):
-        assert side in ['sys', 'user'] # sys act or user act
+    def aspan_to_act_dict(self, aspan):
         act_list=self.aspan_to_act_list(aspan)
         act_dict={}
-        pv_slot=''
-        if side=='sys':
-            for act in act_list:
-                if act.count('-')!=2:
-                    continue
-                domain, intent, slot = act.split('-')
-                if domain not in act_dict:
-                    act_dict[domain]={}
-                if intent not in act_dict[domain]:
-                    act_dict[domain][intent]=[]
-                if slot not in act_dict[domain][intent]:
-                    act_dict[domain][intent].append(slot)
-        else:
-            for act in act_list:
-                if act.count('-')!=2:
-                    continue
-                domain, intent, slot = act.split('-')
-                if domain not in act_dict:
-                    act_dict[domain]={}
-                if intent not in act_dict[domain]:
-                    if intent=='inform':
-                        act_dict[domain][intent]={}
-                    elif intent=='request':
-                        act_dict[domain][intent]=[]
-                if intent=='inform':
-                    if slot in ontology.all_slots:
-                        act_dict[domain][intent][slot]='' 
-                        pv_slot=slot                    
-                    else:# slot is in fact a value in this condition
-                        if pv_slot not in act_dict[domain][intent]:
-                            continue
-                        if act_dict[domain][intent][pv_slot]=='':
-                            act_dict[domain][intent][pv_slot]=slot
-                        else:
-                            act_dict[domain][intent][pv_slot]+= ' '+slot
-                elif intent=='request':
-                    if slot not in act_dict[domain][intent]:
-                        act_dict[domain][intent].append(slot)
+        for act in act_list:
+            domain, intent, slot = act.split('-')
+            if domain not in act_dict:
+                act_dict[domain]={}
+            if intent not in act_dict[domain]:
+                act_dict[domain][intent]=[]
+            if slot not in act_dict[domain][intent]:
+                act_dict[domain][intent].append(slot)
         return act_dict
 
     def act_dict_to_aspan(self, act_dict):
@@ -1064,31 +865,7 @@ class MultiWozReader(_ReaderBase):
                 break
         return domains
 
-    def get_sys_batch(self, data, batch_size=16, mode='train'):
-        assert mode in ['train', 'test']
-        batches=[]
-        batch=[]
-        seq_num=0
-        for dial in data:
-            for turn in dial:
-                if mode=='train':
-                    batch.append(turn['resp'])
-                elif mode=='test':
-                    batch.append(turn['resp_gen'])
-                if len(batch)>=batch_size:
-                    seq_num+=len(batch)
-                    batch_np, _ = utils.padSeqs_gpt(batch, cfg.pad_id)
-                    batches.append(batch_np)
-                    batch=[]
-        if batch!=[]:
-            seq_num+=len(batch)
-            batch_np, _ = utils.padSeqs_gpt(batch, cfg.pad_id)
-            batches.append(batch_np)
-            batch=[]
-        logging.info('Total responses:{}'.format(seq_num))
-        return batches, seq_num
-
-
+    #修改记录：新增如下函数
     def bs_filter(self,data,is_batch=True):
         #将生成的 bs 进行过滤
         special_tokens=['<eos_r>','<eos_a>','<eos_u>','<sos_r>','<sos_a>','<sos_u>','<sos_db>','<eos_db>']
@@ -1135,7 +912,7 @@ class MultiWozReader(_ReaderBase):
 
         return all_data,(total_turn,count1,count2,count3)
 
-    def convert_batch_tokens_to_ids(self, dial_batch, tokenizer):
+    def convert_batch_tokens_to_ids(self, dial_batch):
         new_batch=[]
         for dial in dial_batch:
             if isinstance(dial,list):
@@ -1143,280 +920,52 @@ class MultiWozReader(_ReaderBase):
                 for turn in dial:
                     new_turn={}
                     for key in turn:
-                        if key in ['user','bspn','aspn','resp','db', 'usr_act', 'bspn_gen', 'aspn_gen', 
-                            'resp_gen', 'db_gen', 'user_gen', 'usr_act_gen', 'gpan', 'pv_aspn']:
+                        if key in ['user','usdx','bspn','aspn','resp','bsdx','dspn','db', 'usr_act']:
                             # GPT2Tokenizer of transformers3.5 needs to be modified
-                            new_turn[key]=self.modified_encode(turn[key], tokenizer)
+                            new_turn[key]=self.modified_encode(turn[key])
                         else:
                             new_turn[key]=turn[key]
                     new_dial.append(new_turn)
                 new_batch.append(new_dial)
             elif isinstance(dial,dict):
                 new_dial={}
-                new_dial['goal']=self.modified_encode(dial['goal'], tokenizer)
+                new_dial['goal']=self.modified_encode(dial['goal'])
                 new_dial['log']=[]
                 for turn in dial['log']:
                     new_turn={}
                     for key in turn:
-                        if key in ['user','usdx','bspn','aspn','resp','bsdx','dspn','db', 'usr_act','bspn_gen', 'aspn_gen', 'resp_gen']:
+                        if key in ['user','usdx','bspn','aspn','resp','bsdx','dspn','db', 'usr_act']:
                             # GPT2Tokenizer of transformers3.5 needs to be modified
-                            new_turn[key]=self.modified_encode(turn[key], tokenizer)
+                            new_turn[key]=self.modified_encode(turn[key])
                         else:
                             new_turn[key]=turn[key]
                     new_dial['log'].append(new_turn)
                 new_batch.append(new_dial)
         return new_batch
 
-    def convert_batch_ids_to_tokens(self, dial_batch):
-        new_batch=[]
-        for dial in dial_batch:
-            new_dial=[]
-            for turn in dial:
-                new_turn={}
-                for key in turn:
-                    if key in ['user','bspn','aspn','resp','db', 'usr_act', 'goal', 'bspn_gen', 
-                        'aspn_gen', 'resp_gen', 'db_gen','user_gen', 'usr_act_gen','sys_act']:
-                        # GPT2Tokenizer of transformers3.5 needs to be modified
-                        new_turn[key]=self.tokenizer.decode(turn[key])
-                    else:
-                        new_turn[key]=turn[key]
-                new_dial.append(new_turn)
-            new_batch.append(new_dial)
-        return new_batch
-
-    def transpose_ds_turn_batch(self, batch, rewards):
-        turn_batches=[]
-        label_batches=[]
-        reward_batches=[]
-        turn_batch=[]
-        label_batch=[]
-        reward_batch=[]
-        if cfg.transpose_batch:
-            p=0
-            while(p*cfg.training_batch_size<len(batch)-1):
-                batch_part=batch[p*cfg.training_batch_size:(p+1)*cfg.training_batch_size]
-                reward_part=rewards[p*cfg.training_batch_size:(p+1)*cfg.training_batch_size]
-                p+=1
-                turn_id=0
-                max_turn_num=max([len(dial) for dial in batch_part])
-                for turn_id in range(max_turn_num):
-                    if turn_id==0:
-                        for dial, reward in zip(batch_part, reward_part):
-                            if turn_id>len(dial)-1:
-                                continue
-                            turn=dial[turn_id]
-                            R=reward[turn_id]
-                            turn_batch.append(turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
-                            if cfg.rl_for_bspn:
-                                label_batch.append([cfg.pad_id]*len(turn['user'])+turn['bspn']+turn['db']+\
-                                    turn['aspn']+turn['resp'])
-                            else:
-                                label_batch.append([cfg.pad_id]*len(turn['user']+turn['bspn']+turn['db'])+\
-                                    turn['aspn']+[cfg.pad_id]*len(turn['resp']))
-                            reward_batch.append(R)
-                    else:
-                        for dial, reward in zip(batch_part, reward_part):
-                            if turn_id>len(dial)-1:
-                                continue
-                            turn=dial[turn_id]
-                            pv_turn=dial[turn_id-1]
-                            R=reward[turn_id]
-                            turn_batch.append(pv_turn['bspn']+pv_turn['resp']+turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
-                            if cfg.rl_for_bspn:
-                                label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
-                                    turn['user'])+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
-                            else:
-                                label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
-                                    turn['user']+turn['bspn']+turn['db'])+turn['aspn']+[cfg.pad_id]*len(turn['resp']))
-                            reward_batch.append(R)
-                    
-                    if len(turn_batch)>cfg.training_batch_size/2:
-                        turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-                        label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-                        turn_batches.append(turn_batch_np)
-                        label_batches.append(label_batch_np)
-                        reward_batches.append(reward_batch)
-                        turn_batch=[]
-                        label_batch=[]
-                        reward_batch=[]
-    
-        else:
-            for dial, reward in zip(batch, rewards):
-                pv_turn=None
-                for turn, R in zip(dial, reward):
-                    if pv_turn:
-                        turn_batch.append(pv_turn['bspn']+pv_turn['resp']+\
-                            turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
-                        if cfg.rl_for_bspn:
-                            label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
-                                turn['user'])+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
-                        else:
-                            label_batch.append([cfg.pad_id]*len(pv_turn['bspn']+pv_turn['resp']+\
-                                turn['user']+turn['bspn']+turn['db'])+turn['aspn']+[cfg.pad_id]*len(turn['resp']))
-                    else:
-                        turn_batch.append(turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
-                        if cfg.rl_for_bspn:
-                            label_batch.append([cfg.pad_id]*len(turn['user'])+turn['bspn']+turn['db']+\
-                                turn['aspn']+turn['resp'])
-                        else:
-                            label_batch.append([cfg.pad_id]*len(turn['user']+turn['bspn']+turn['db'])+\
-                                turn['aspn']+[cfg.pad_id]*len(turn['resp']))
-                    reward_batch.append(R)
-                    if len(turn_batch)==cfg.training_batch_size:
-                        turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-                        label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-                        turn_batches.append(turn_batch_np)
-                        label_batches.append(label_batch_np)
-                        reward_batches.append(reward_batch)
-                        turn_batch=[]
-                        label_batch=[]
-                        reward_batch=[]
-                    pv_turn=turn
-            if turn_batch!=[]:
-                turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-                label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-                turn_batches.append(turn_batch_np)
-                label_batches.append(label_batch_np)
-                reward_batches.append(reward_batch)
-        return turn_batches, label_batches, reward_batches
-    
-    def transpose_us_turn_batch(self, batch, rewards, tokenizer):
-        turn_batches=[]
-        label_batches=[]
-        reward_batches=[]
-        turn_batch=[]
-        label_batch=[]
-        reward_batch=[]
-        if cfg.transpose_batch:
-            p=0
-            while(p*cfg.training_batch_size<len(batch)-1):
-                batch_part=batch[p*cfg.training_batch_size:(p+1)*cfg.training_batch_size]
-                reward_part=rewards[p*cfg.training_batch_size:(p+1)*cfg.training_batch_size]
-                p+=1
-                turn_id=0
-                max_turn_num=max([len(dial) for dial in batch_part])
-                for turn_id in range(max_turn_num):
-                    if turn_id==0:
-                        for dial, reward in zip(batch_part, reward_part):
-                            if turn_id>len(dial)-1:
-                                continue
-                            turn=dial[turn_id]
-                            R=reward[turn_id]
-                            turn_batch.append(turn['gpan']+turn['usr_act']+turn['user'])
-                            if cfg.rl_for_bspn:
-                                label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+turn['user'])
-                            else:
-                                label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+[cfg.pad_id]*len(turn['user']))
-                            reward_batch.append(R)
-                    else:
-                        for dial, reward in zip(batch_part, reward_part):
-                            if turn_id>len(dial)-1:
-                                continue
-                            turn=dial[turn_id]
-                            pv_turn=dial[turn_id-1]
-                            R=reward[turn_id]
-                            #pv_aspn=turn['pv_aspn'] if 'pv_aspn' in turn else pv_turn['aspn']
-                            #turn_batch.append(pv_turn['resp']+pv_aspn+turn['gpan']+turn['usr_act']+turn['user'])
-                            turn_batch.append(pv_turn['resp']+turn['gpan']+turn['usr_act']+turn['user'])
-                            if cfg.rl_for_bspn:
-                                label_batch.append([cfg.pad_id]*len(pv_turn['resp']+turn['gpan'])+\
-                                    turn['usr_act']+turn['user'])
-                            else:
-                                label_batch.append([cfg.pad_id]*len(pv_turn['resp']+turn['gpan'])+\
-                                    turn['usr_act']+[cfg.pad_id]*len(turn['user']))
-                            reward_batch.append(R)
-                    if len(turn_batch)>cfg.training_batch_size/2:
-                        turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-                        label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-                        turn_batches.append(turn_batch_np)
-                        label_batches.append(label_batch_np)
-                        reward_batches.append(reward_batch)
-                        turn_batch=[]
-                        label_batch=[]
-                        reward_batch=[]
-        else:
-            for dial, reward in zip(batch, rewards):
-                pv_turn=None
-                for turn, R in zip(dial, reward):
-                    if pv_turn is None:
-                        turn_batch.append(turn['gpan']+turn['usr_act']+turn['user'])
-                        if cfg.rl_for_bspn:
-                            label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+turn['user'])
-                        else:
-                            label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+[cfg.pad_id]*len(turn['user']))
-                    else:
-                        #pv_aspn=turn['pv_aspn'] if 'pv_aspn' in turn else pv_turn['aspn']
-                        turn_batch.append(pv_turn['resp']+turn['gpan']+turn['usr_act']+turn['user'])
-                        if cfg.rl_for_bspn:
-                            label_batch.append([cfg.pad_id]*len(pv_turn['resp']+turn['gpan'])+\
-                                turn['usr_act']+turn['user'])
-                        else:
-                            label_batch.append([cfg.pad_id]*len(pv_turn['resp']+turn['gpan'])+\
-                                turn['usr_act']+[cfg.pad_id]*len(turn['user']))
-                    reward_batch.append(R)
-                    if len(turn_batch)==cfg.training_batch_size:
-                        turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-                        label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-                        turn_batches.append(turn_batch_np)
-                        label_batches.append(label_batch_np)
-                        reward_batches.append(reward_batch)
-                        turn_batch=[]
-                        label_batch=[]
-                        reward_batch=[]
-                    pv_turn=turn
-            if turn_batch!=[]:
-                turn_batch_np, _ = utils.padSeqs_gpt(turn_batch, cfg.pad_id)
-                label_batch_np, _ = utils.padSeqs_gpt(label_batch, cfg.pad_id)
-                turn_batches.append(turn_batch_np)
-                label_batches.append(label_batch_np)
-                reward_batches.append(reward_batch)
-        return turn_batches, label_batches, reward_batches
-
-    def modified_encode(self, text, tokenizer=None):
-        if tokenizer is None:
-            tokenizer=self.tokenizer
+    def modified_encode(self, text):
         if int(transformers.__version__[0])>=3:
             if isinstance(text, str):
                 word_list=text.split()
             elif isinstance(text, list):
                 word_list=text
-            else:             
-                raise TypeError(text)
             special_token_pos=[]
             results=[]
             for idx, word in enumerate(word_list):
-                if word in tokenizer.additional_special_tokens:
+                if word in self.tokenizer.additional_special_tokens:
                     special_token_pos.append(idx)
             for j, idx in enumerate(special_token_pos):
                 if j<len(special_token_pos)-1:
                     next_idx=special_token_pos[j+1]
-                    results+=tokenizer.encode(word_list[idx]) + tokenizer.encode(' '+' '.join(word_list[idx+1:next_idx]))
+                    results+=self.tokenizer.encode(word_list[idx]) + self.tokenizer.encode(' '+' '.join(word_list[idx+1:next_idx]))
                 else:
-                    results+=tokenizer.encode(word_list[idx])
+                    results+=self.tokenizer.encode(word_list[idx])
                     if idx<len(word_list)-1:# the last word is not a special token
-                        results+=tokenizer.encode(' '+' '.join(word_list[idx+1:]))
+                        results+=self.tokenizer.encode(' '+' '.join(word_list[idx+1:]))
             return results
 
         else:
-            return tokenizer.encode(text)
-
-    def batch_align(self,contexts,left_len,return_attn=False):
-        max_len=max([len(context) for context in contexts])
-        max_len=min(1024-left_len,max_len)
-        new_contexts=[]
-        attentions=[]
-        for id, context in enumerate(contexts):
-            if len(context)<max_len:
-                new_context=(max_len-len(context))*[cfg.pad_id]+context
-                attention=(max_len-len(context))*[0]+len(context)*[1]
-            else:
-                new_context=context[-max_len:]
-                attention=len(new_context)*[1]
-            new_contexts.append(new_context)
-            attentions.append(attention)
-        if return_attn:
-            return new_contexts, attentions
-        return new_contexts
+            return self.tokenizer.encode(text)
 
     def convert_batch_session(self, dial_batch,
         posterior_train=False, only_resp_label=False,bspn_label=False,bspn_pri=False,rl_train=False):
@@ -1473,7 +1022,7 @@ class MultiWozReader(_ReaderBase):
                             cell='db_pri'
                         else:
                             db_result=self.bspan_to_DBpointer(self.tokenizer.decode(turn['bspn']), turn['turn_domain'])
-                            turn[cell] = self.tokenizer.encode('<sos_db> '+ db_result + ' <eos_db>')
+                            turn[cell] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>'))
                     context.extend(turn[cell])
                     if cell in ignore_list:
                         label_context.extend(len(turn[cell])*[cfg.pad_id])#pad_id在计算损失时被自动忽略
@@ -1503,32 +1052,105 @@ class MultiWozReader(_ReaderBase):
             bspn_labels['contexts_np'],bspn_labels['lengths']=utils.padSeqs_gpt(bspn_labels['contexts'], cfg.pad_id)
             return inputs,labels,bspn_labels
 
-    def get_pv_batch(self, pv_batch, user=None, resp=None, bspn=None, aspn=None, side='sys'):
-        assert side in ['sys', 'user']
-        new_pv_batch=[] # pv_batch for next turn
-        if side=='sys':
-            if pv_batch is None:# first turn
-                for u, r, b in zip(user, resp, bspn): 
-                    if cfg.input_history:
-                        new_pv_batch.append(u+r)
-                    elif cfg.input_prev_resp:
-                        new_pv_batch.append(b+r)
-                    else:
-                        new_pv_batch.append(b)
-            else:
-                for hist, u, r, b in zip(pv_batch,user, resp, bspn):
-                    if cfg.input_history:
-                        new_pv_batch.append(hist+u+r)
-                    elif cfg.input_prev_resp:
-                        new_pv_batch.append(b+r)
-                    else:
-                        new_pv_batch.append(b)
-        else:# user's pv batch
-            for r, a in zip(resp, aspn):
-                new_pv_batch.append(r)
-        return new_pv_batch
+
+    def convert_us_batch_session(self, dial_batch):
+        """
+        convert the whole session for training
+        concat [U_0, B_0, A_0, R_0, ... , U_n, B_n, A_n, R_n]
+
+        try: [user, bspn, aspn, resp]
+        or
+        try: [user, bspn, db, aspn, resp]
+        """
+        inputs = {}
+        labels={}
+        contexts = []
+        label_contexts=[]
+        cell_list = ['usr_act','user','resp']
+
+        for idx, dial in enumerate(dial_batch):
+            context = []
+            label_context=[]
+            context.extend(dial['goal'])
+            label_context.extend(len(dial['goal'])*[cfg.pad_id])
+            for turn_num, turn in enumerate(dial['log']):
+                for cell in cell_list:                  
+                    context.extend(turn[cell])
+                    label_context.extend(turn[cell])           
+            contexts.append(context)
+            label_contexts.append(label_context)
+      
+        inputs['contexts'] = contexts
+        inputs['contexts_np'], inputs['lengths'] = utils.padSeqs_gpt(inputs['contexts'], cfg.pad_id)
+        labels['contexts']=label_contexts
+        labels['contexts_np'], labels['lengths']=utils.padSeqs_gpt(labels['contexts'], cfg.pad_id)
+
+        return inputs,labels
+    
+    def wrap_result_lm(self, result_dict, eos_syntax=None):
+        results = []
+        eos_syntax = ontology.eos_tokens if not eos_syntax else eos_syntax
+        sos_syntax = ontology.sos_tokens
+        # ground truth bs, as, ds.. generate response
+        field = ['dial_id', 'turn_num', 'user', 'bspn_gen', 'bsdx', 'resp_gen', 'resp', 'aspn_gen', 'aspn',
+                     'dspn_gen', 'dspn', 'bspn', 'pointer']
+
+        for dial_id, turns in result_dict.items():
+            #修改记录：下方的turn_num在源代码中写的是trun_num
+            entry = {'dial_id': dial_id, 'turn_num': len(turns)}
+            for f in field[2:]:
+                entry[f] = '' # ???
+            results.append(entry)
+            for turn_idx, turn in enumerate(turns):
+                entry = {'dial_id': dial_id}
+                for key in field:
+                    if key in ['dial_id']:
+                        continue
+                    v = turn.get(key, '')
+                    if key == 'turn_domain':
+                        v = ' '.join(v)
+
+                    if key in eos_syntax and v != '':
+                        # remove eos tokens
+                        v = self.tokenizer.decode(v)
+                        v = v.split()
+                        # remove eos/sos in span
+                        if eos_syntax[key] in v:
+                            v.remove(eos_syntax[key])
+                        if sos_syntax[key] in v:
+                            v.remove(sos_syntax[key])
+                        # if key != 'resp_gen':
+                        #     # remove eos/sos in span
+                        #     if eos_syntax[key] in v:
+                        #         v.remove(eos_syntax[key])
+                        #     if sos_syntax[key] in v:
+                        #         v.remove(sos_syntax[key])
+                        # else: # 'resp_gen'
+                        #     sos_index = 0
+                        #     eos_index = -1
+                        #     if sos_syntax[key] in v:
+                        #         sos_index = v.index(sos_syntax[key])
+                        #     if eos_syntax[key] in v:
+                        #         eos_index = v.index(eos_syntax[key])
+                        #     else:
+                        #         pass # take too long
+                        #         # no <eos_r> found, stop at any eos_tokens
+                        #         # for i in range(sos_index+1, len(v)):
+                        #         #     if v[i] in sos_syntax.values() or v[i] in eos_syntax.values():
+                        #         #         eos_index = i
+                        #     v = v[sos_index+1: eos_index]
 
 
+                        # v = self.tokenizer.convert_tokens_to_string(v)
+                        v = " ".join(v)
+                    else: 
+                        pass # v = v
+                    entry[key] = v
+
+                results.append(entry)
+
+        return results, field
+    
     def convert_batch_turn(self, 
         turn_batch, 
         pv_batch, 
@@ -1644,7 +1266,49 @@ class MultiWozReader(_ReaderBase):
             return inputs, labels, rl_labels
         else:
             return inputs, labels
+            
+    def batch_align(self,contexts,left_len,return_attn=False):
+        max_len=max([len(context) for context in contexts])
+        max_len=min(1024-left_len,max_len)
+        new_contexts=[]
+        attentions=[]
+        for id, context in enumerate(contexts):
+            if len(context)<max_len:
+                new_context=(max_len-len(context))*[cfg.pad_id]+context
+                attention=(max_len-len(context))*[0]+len(context)*[1]
+            else:
+                new_context=context[-max_len:]
+                attention=len(new_context)*[1]
+            new_contexts.append(new_context)
+            attentions.append(attention)
+        if return_attn:
+            return new_contexts, attentions
+        return new_contexts
 
+    def get_pv_batch(self, pv_batch, user=None, resp=None, bspn=None, aspn=None, side='sys'):
+        assert side in ['sys', 'user']
+        new_pv_batch=[] # pv_batch for next turn
+        if side=='sys':
+            if pv_batch is None:# first turn
+                for u, r, b in zip(user, resp, bspn): 
+                    if cfg.input_history:
+                        new_pv_batch.append(u+r)
+                    elif cfg.input_prev_resp:
+                        new_pv_batch.append(b+r)
+                    else:
+                        new_pv_batch.append(b)
+            else:
+                for hist, u, r, b in zip(pv_batch,user, resp, bspn):
+                    if cfg.input_history:
+                        new_pv_batch.append(hist+u+r)
+                    elif cfg.input_prev_resp:
+                        new_pv_batch.append(b+r)
+                    else:
+                        new_pv_batch.append(b)
+        else:# user's pv batch
+            for r, a in zip(resp, aspn):
+                new_pv_batch.append(r)
+        return new_pv_batch
 
     def convert_eval_batch_turn(self, turn_batch, pv_batch, mode='gen_bspn', bspn_gen=None, db_gen=None, posterior=False):
         eval_batch=[]
@@ -1667,173 +1331,8 @@ class MultiWozReader(_ReaderBase):
                 for hist, u, b, d, r in zip(pv_batch, turn_batch['user'], bspn_gen, db_gen, turn_batch['resp']):
                     context=hist+u+r+b+d+[self.sos_a_id] if posterior else hist+u+b+d+[self.sos_a_id]
                     eval_batch.append(context)
-        return eval_batch
-    
-    def convert_dst_eval_batch(self, turn_batch, pv_bspn):
-        eval_batch=[]
-        if pv_bspn is None:
-            for u in turn_batch['user']:
-                eval_batch.append(u+[self.sos_b_id])
-        else:
-            for b, u in zip(pv_bspn, turn_batch['user']):
-                eval_batch.append(b+u+[self.sos_b_id])
-        return eval_batch
-    
-    def convert_dm_eval_batch(self, turn_batch, db_batch, pv_aspn):
-        eval_batch=[]
-        if pv_aspn is None:
-            for u, db in zip(turn_batch['user'], db_batch):
-                eval_batch.append(u+db+[self.sos_a_id])
-            
-        else:
-            for a, u, db in zip(pv_aspn, turn_batch['user'], db_batch):
-                eval_batch.append(a+u+db+[self.sos_a_id])
-        return eval_batch
-
-    def convert_nlg_eval_batch(self, aspn_batch):
-        eval_batch=[]
-        for a in aspn_batch:
-            eval_batch.append(a+[self.sos_r_id])
-        return eval_batch
-
-
-    def convert_eval_batch_turn_us(self, turn_batch, pv_batch, user_act=None):
-        eval_batch=[]
-        if user_act is None:# generate user act (and utterance)
-            if pv_batch==None: # first turn
-                for g in turn_batch['goal']:
-                    eval_batch.append(g + [self.sos_ua_id])
-            else:
-                for g, pv in zip(turn_batch['goal'], pv_batch):
-                    eval_batch.append(pv + g + [self.sos_ua_id])
-        else:# generate user utterance
-            if pv_batch==None:
-                for g, ua in zip(turn_batch['goal'], user_act):
-                    eval_batch.append(g + ua + [self.sos_u_id])
-            else:
-                for g, pv, ua in zip(turn_batch['goal'], pv_batch, user_act):
-                    eval_batch.append(pv + g + ua + [self.sos_u_id])
-        return eval_batch
-
-
-    def convert_us_batch_session(self, dial_batch):
-        
-        inputs = {}
-        labels={}
-        contexts = []
-        label_contexts=[]
-        cell_list = ['usr_act','user','resp']
-
-        for idx, dial in enumerate(dial_batch):
-            context = []
-            label_context=[]
-            context.extend(dial['goal'])
-            label_context.extend(len(dial['goal'])*[cfg.pad_id])
-            for turn_num, turn in enumerate(dial['log']):
-                for cell in cell_list:                  
-                    context.extend(turn[cell])
-                    label_context.extend(turn[cell])           
-            contexts.append(context)
-            label_contexts.append(label_context)
-      
-        inputs['contexts'] = contexts
-        inputs['contexts_np'], inputs['lengths'] = utils.padSeqs_gpt(inputs['contexts'], cfg.pad_id)
-        labels['contexts']=label_contexts
-        labels['contexts_np'], labels['lengths']=utils.padSeqs_gpt(labels['contexts'], cfg.pad_id)
-
-        return inputs,labels
-    
-    def wrap_result_lm(self, result_dict, eos_syntax=None):
-        results = []
-        eos_syntax = ontology.eos_tokens if not eos_syntax else eos_syntax
-        sos_syntax = ontology.sos_tokens
-        # ground truth bs, as, ds.. generate response
-        field = ['dial_id', 'turn_num', 'user', 'bspn', 'bspn_gen', 'db', 'db_gen', 'aspn_gen', 'aspn', 'resp_gen', 'resp', 'dspn']
-
-        for dial_id, turns in result_dict.items():
-            #修改记录：下方的turn_num在源代码中写的是trun_num
-            entry = {'dial_id': dial_id, 'turn_num': len(turns)}
-            for f in field[2:]:
-                entry[f] = '' # ???
-            results.append(entry)
-            for turn_idx, turn in enumerate(turns):
-                entry = {'dial_id': dial_id}
-                for key in field:
-                    if key in ['dial_id']:
-                        continue
-                    v = turn.get(key, '')
-                    if key == 'turn_domain':
-                        v = ' '.join(v)
-
-                    if key in eos_syntax and v != '':
-                        # remove eos tokens
-                        v = self.tokenizer.decode(v)
-                        v = v.split()
-                        # remove eos/sos in span
-                        if eos_syntax[key] in v:
-                            v.remove(eos_syntax[key])
-                        if sos_syntax[key] in v:
-                            v.remove(sos_syntax[key])
-                        # if key != 'resp_gen':
-                        #     # remove eos/sos in span
-                        #     if eos_syntax[key] in v:
-                        #         v.remove(eos_syntax[key])
-                        #     if sos_syntax[key] in v:
-                        #         v.remove(sos_syntax[key])
-                        # else: # 'resp_gen'
-                        #     sos_index = 0
-                        #     eos_index = -1
-                        #     if sos_syntax[key] in v:
-                        #         sos_index = v.index(sos_syntax[key])
-                        #     if eos_syntax[key] in v:
-                        #         eos_index = v.index(eos_syntax[key])
-                        #     else:
-                        #         pass # take too long
-                        #         # no <eos_r> found, stop at any eos_tokens
-                        #         # for i in range(sos_index+1, len(v)):
-                        #         #     if v[i] in sos_syntax.values() or v[i] in eos_syntax.values():
-                        #         #         eos_index = i
-                        #     v = v[sos_index+1: eos_index]
-
-
-                        # v = self.tokenizer.convert_tokens_to_string(v)
-                        v = " ".join(v)
-                    else: 
-                        pass # v = v
-                    entry[key] = v
-
-                results.append(entry)
-
-        return results, field
-
-class tod_dataset(Dataset):
-    def __init__(self, data):
-        self.data=data
-    
-    def __len__(self):
-        return len(self.data)
-    
-    def __getitem__(self, index):
-        return self.data[index]
-
-def train_collate_fn(batch):
-    # item[0]: input text
-    # item[1]: target text
-    data=[item[0]+item[1] for item in batch]
-    label=[[cfg.pad_id]*len(item[0])+item[1] for item in batch]
-    data_np, _=utils.padSeqs_gpt(data, cfg.pad_id)
-    label_np, _=utils.padSeqs_gpt(label, cfg.pad_id)
-    data_tensor=torch.from_numpy(data_np).long()
-    label_tensor=torch.from_numpy(label_np).long()
-    return [data_tensor, label_tensor]
-
-def test_collate_fn(batch):
-    # prediction
-    sos_id=batch[0][1][0]
-    data=[item[0]+[sos_id] for item in batch]
-    label=[item[1] for item in batch]
-    return [data, label]
-
+        return eval_batch   
+         
 if __name__ == '__main__':
     reader = MultiWozReader()
     # for aspan in ["[general] [bye] [welcome] <eos_a>","[train] [inform] trainid destination arrive leave [offerbook] [general] [reqmore] <eos_a>",]:
@@ -1851,3 +1350,6 @@ if __name__ == '__main__':
         print(encoded)
         cons = reader.bspan_to_constraint_dict(encoded, bspn_mode='bsdx')
         print(cons)
+    
+    
+

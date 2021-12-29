@@ -68,7 +68,7 @@ def test_end2end():
     set_seed(20200202)
     #goal_list=prepare_goal_list()
     #dial_nums=len(goal_list)
-    dial_nums=1000
+    dial_nums=100
     analyzer.comprehensive_analyze(sys_agent=sys_agent, model_name='turn-level-GPT',\
         total_dialog=dial_nums, show_turns=0,save_path='gen_dials_{}.json'.format(dial_nums))
 

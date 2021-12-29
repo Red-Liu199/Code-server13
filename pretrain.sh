@@ -3,7 +3,7 @@ ratio=$2
 posterior=False
 python main_turn_level.py -mode pretrain\
     -cfg  lr=1e-4\
-    seed=11\
+    seed=121\
     gradient_accumulation_steps=4 batch_size=8\
     epoch_num=50\
     cuda_device=$1\

@@ -67,6 +67,7 @@ class _Config:
 
         self.use_true_bspn_for_ctr_eval = False
         self.use_true_domain_for_ctr_eval = True
+        self.use_true_domain_for_ctr_train = True
 
         self.post_loss_weight=0.5
         self.kl_loss_weight=0.5
@@ -227,6 +228,8 @@ class _Config:
         self.gpt_path2=''
         self.gpt_path3=''
 
+        self.jsa_ablation=False
+
     def __str__(self):
         s = ''
         for k,v in self.__dict__.items():
@@ -238,7 +241,7 @@ class _Config:
         stderr_handler = logging.StreamHandler()
         if not os.path.exists('./log'):
             os.mkdir('./log')
-        if self.save_log and mode in ['semi_ST', 'semi_VL', 'train']:
+        if self.save_log and mode in ['semi_ST', 'semi_VL', 'semi_jsa', 'train', 'pretrain']:
             if self.dataset==0:
                 #file_handler = logging.FileHandler('./log/log_{}_{}_{}_{}_sd{}.txt'.format(self.log_time, mode, '-'.join(self.exp_domains), self.exp_no, self.seed))
                 file_handler = logging.FileHandler('./log/log_{}_{}_sd{}.txt'.format(mode, self.exp_no, self.seed))
