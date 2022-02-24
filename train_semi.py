@@ -133,13 +133,24 @@ class Modal(object):
             #divide the datasets
             if not os.path.exists(cfg.divided_path):
                 train_data=self.reader.train
-                random.shuffle(train_data)
-                bound=int(len(train_data)*int(cfg.spv_proportion)/100)
-                self.pre_data=train_data[:bound]
-                self.post_data=train_data[bound:]
-                encoded_data={'pre_data':self.pre_data,'post_data':self.post_data}
-                logging.info('Divided data saved in %s'%cfg.divided_path)
-                json.dump(encoded_data, open(cfg.divided_path, 'w'), indent=2)
+                temp_path=os.path.join(cfg.data_path,'divided_data{}.json'.format(cfg.spv_proportion-5))
+                #logging.info(temp_path)
+                if os.path.exists(temp_path):
+                    encoded_data = json.loads(open(temp_path, 'r', encoding='utf-8').read())
+                    add_len=int(0.05*len(train_data))
+                    self.pre_data=encoded_data['pre_data']+encoded_data['post_data'][:add_len]
+                    self.post_data=encoded_data['post_data'][add_len:]
+                    encoded_data={'pre_data':self.pre_data,'post_data':self.post_data}
+                    logging.info('Divide data from %s, saved in %s'%(temp_path, cfg.divided_path))
+                    json.dump(encoded_data, open(cfg.divided_path, 'w'), indent=2)
+                else:
+                    random.shuffle(train_data)
+                    bound=int(len(train_data)*int(cfg.spv_proportion)/100)
+                    self.pre_data=train_data[:bound]
+                    self.post_data=train_data[bound:]
+                    encoded_data={'pre_data':self.pre_data,'post_data':self.post_data}
+                    logging.info('Divided data saved in %s'%cfg.divided_path)
+                    json.dump(encoded_data, open(cfg.divided_path, 'w'), indent=2)
             else:
                 encoded_data = json.loads(open(cfg.divided_path, 'r', encoding='utf-8').read())
                 self.pre_data=encoded_data['pre_data']

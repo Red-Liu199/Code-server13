@@ -4,9 +4,9 @@ python pretrain.py -mode train\
     -cfg  lr=1e-4\
     gradient_accumulation_steps=4 batch_size=8\
     epoch_num=40\
-    exp_no=DM\
+    exp_no=DST-1-5\
     cuda_device=$1\
     only_target_loss=True\
     loss_reg=True\
     train_modular=True\
-    modular=dm
+    modular=dst

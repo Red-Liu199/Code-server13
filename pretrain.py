@@ -73,10 +73,10 @@ class Modal(object):
             self.get_special_ids()
             self.dst_model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path1)
             self.dm_model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path2)
-            self.nlg_model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path3)
+            #self.nlg_model=GPT2LMHeadModel.from_pretrained(cfg.gpt_path3)
             self.dst_model.to(self.device1)
             self.dm_model.to(self.device1)
-            self.nlg_model.to(self.device1)
+            #self.nlg_model.to(self.device1)
         self.evaluator = MultiWozEvaluator(self.reader)
         self.std_evaluator=Evaluator(bleu=1, success=1, richness=0)
         if cfg.save_log:
@@ -684,7 +684,7 @@ class Modal(object):
         batches=self.reader.get_batches('test')
         self.dst_model.eval()
         self.dm_model.eval()
-        self.nlg_model.eval()
+        #self.nlg_model.eval()
         result_collection={}
         st=time.time()
         with torch.no_grad():
@@ -693,25 +693,25 @@ class Modal(object):
                 batch_size=len(batch)
                 batch=self.reader.transpose_batch(batch)
                 pv_bspn_ids=None
-                pv_aspn_ids=None
+                pv_resp_ids=None
                 pv_bspn=None
                 self.turn_domain_batch=['' for _ in range(batch_size)]
                 for turn_num, turn_batch in enumerate(batch):
-                    contexts=self.reader.convert_dst_eval_batch(turn_batch, pv_bspn=pv_bspn_ids)
+                    contexts=self.reader.convert_dst_eval_batch(turn_batch, pv_bspn=pv_bspn_ids, pv_resp=pv_resp_ids)
                     gen_batch_ids=self.generate_batch(self.dst_model, contexts, max_len=60, eos_id=self.eos_b_id)
                     gen_bspn, gen_bspn_ids=self.convert_batch_ids_to_tokens(self.tokenizer, gen_batch_ids, self.sos_b_id, self.eos_b_id, return_ids=True)
                     db_batch, db_batch_ids=self.get_db_batch(gen_bspn, pv_bspn, return_ids=True)
 
-                    contexts=self.reader.convert_dm_eval_batch(turn_batch, db_batch_ids, pv_aspn_ids)
+                    contexts=self.reader.convert_dm_eval_batch(turn_batch, gen_bspn_ids, db_batch_ids, pv_bspn_ids, pv_resp_ids)
                     gen_batch_ids=self.generate_batch(self.dm_model, contexts, max_len=20, eos_id=self.eos_a_id)
                     gen_aspn, gen_aspn_ids=self.convert_batch_ids_to_tokens(self.tokenizer, gen_batch_ids, self.sos_a_id, self.eos_a_id, return_ids=True)
                     
-                    contexts=self.reader.convert_nlg_eval_batch(gen_aspn_ids)
-                    gen_batch_ids=self.generate_batch(self.nlg_model, contexts, max_len=60, eos_id=self.eos_r_id)
+                    contexts=self.reader.convert_nlg_eval_batch(turn_batch, gen_bspn_ids, db_batch_ids, gen_aspn_ids, pv_bspn_ids, pv_resp_ids)
+                    gen_batch_ids=self.generate_batch(self.dm_model, contexts, max_len=60, eos_id=self.eos_r_id)
                     gen_resp, gen_resp_ids=self.convert_batch_ids_to_tokens(self.tokenizer, gen_batch_ids, self.sos_r_id, self.eos_r_id, return_ids=True)
 
                     pv_bspn_ids=gen_bspn_ids
-                    pv_aspn_ids=gen_aspn_ids
+                    pv_resp_ids=gen_resp_ids
                     pv_bspn=gen_bspn
                     turn_batch['bspn_gen']=gen_bspn_ids
                     turn_batch['aspn_gen']=gen_aspn_ids
@@ -729,6 +729,15 @@ class Modal(object):
         bleu, success, match = self.evaluator.validation_metric(results)
         score = 0.5 * (success + match) + bleu
         logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+        input_data=prepare_for_std_eval(data=results)
+        std_metrics = self.std_evaluator.evaluate(input_data)
+        bleu=std_metrics['bleu']['damd']
+        match=std_metrics['success']['inform']['total']
+        success=std_metrics['success']['success']['total']
+        score = 0.5 * (success + match) + bleu
+        if cfg.mode=='test':
+            logging.info(std_metrics)
+        logging.info('[Std] validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
         json.dump(results, open(os.path.join(cfg.gpt_path1, 'result.json'), 'w'), indent=2)
 
 

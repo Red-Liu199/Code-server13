@@ -49,6 +49,7 @@ class _Config:
         self.VL_with_kl=True 
         self.PrioriModel_path='to be generated'
         self.PosteriorModel_path='to be generated'
+        self.VL_ablation=False
         #STtrain:
         self.fix_ST=True # whether add straight through trick
         self.ST_resp_only=True #whether calculate cross-entropy on response only
@@ -74,7 +75,7 @@ class _Config:
         self.debugging=False
         
 
-        self.loss_reg=False
+        self.loss_reg=True
         self.divided_path='to be generated'
         self.gradient_checkpoint=False
         self.fix_loss=False
@@ -147,6 +148,9 @@ class _Config:
         #parameters for rl training
         self.rl_train=False
         self.delex_resp=True
+        self.on_policy=True
+        self.fix_DST=False # use a fixed DST model
+        self.DST_path=''
 
         # reward value
         self.resp_punish=-1

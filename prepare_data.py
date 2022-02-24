@@ -217,17 +217,18 @@ def prepare_modular_data():
             nlg_sample = [turn['aspn'], turn['resp']]
             if turn_id==0:
                 dst_sample=[turn['user'], turn['bspn']]
-                #dm_sample=[turn['user']+turn['bspn']+turn['db'], turn['aspn']]
-                dm_sample=[turn['user']+turn['db'], turn['aspn']]
+                dm_sample=[turn['user']+turn['bspn']+turn['db'], turn['aspn']+turn['resp']]
+                #dm_sample=[turn['user']+turn['db'], turn['aspn']]
             else:
                 pv_turn=dial[turn_id-1]
-                dst_sample=[pv_turn['bspn']+turn['user'], turn['bspn']]
-                #dm_sample=[pv_turn['resp']+turn['user']+turn['bspn']+turn['db'], turn['aspn']]
-                dm_sample=[pv_turn['aspn']+turn['user']+turn['db'], turn['aspn']]
+                dst_sample=[pv_turn['bspn']+pv_turn['resp']+turn['user'], turn['bspn']]
+                #dst_sample=[pv_turn['bspn']+turn['user'], turn['bspn']]
+                dm_sample=[pv_turn['bspn']+pv_turn['resp']+turn['user']+turn['bspn']+turn['db'], turn['aspn']+turn['resp']]
+                #dm_sample=[pv_turn['aspn']+turn['user']+turn['db'], turn['aspn']]
             dst_data[set].append(dst_sample)
             nlg_data[set].append(nlg_sample)
             dm_data[set].append(dm_sample)
-    #json.dump(dst_data,open('data/multi-woz-2.1-processed/data_for_dst.json', 'w'), indent=2)
+    json.dump(dst_data,open('data/multi-woz-2.1-processed/data_for_dst.json', 'w'), indent=2)
     json.dump(dm_data,open('data/multi-woz-2.1-processed/data_for_dm.json', 'w'), indent=2)
     #json.dump(nlg_data,open('data/multi-woz-2.1-processed/data_for_nlg.json', 'w'), indent=2)
 

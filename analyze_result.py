@@ -1,13 +1,24 @@
+from re import match
+from typing import Sequence
 from config import global_config as cfg
 from eval import MultiWozEvaluator
 from reader import MultiWozReader
-from transformers import GPT2Tokenizer
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
 import json, random
 import ontology
+import torch
+import numpy as np
+from mwzeval.metrics import Evaluator
+from matplotlib import pyplot as plt
+from matplotlib import cm
+from matplotlib import axes
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from significance_test import matched_pair
 
 tokenizer=GPT2Tokenizer.from_pretrained('experiments_21/turn-level-DS/best_score_model')
 reader = MultiWozReader(tokenizer)
 evaluator = MultiWozEvaluator(reader)
+std_evaluator=Evaluator(bleu=1, success=1, richness=0)
 
 def compare_offline_result(path1, path2, show_num=10):
     succ1_unsuc2=[]
@@ -59,8 +70,6 @@ def compare_offline_result(path1, path2, show_num=10):
         examples.append(dialog)
     json.dump(examples, open('analysis/examples.json', 'w'), indent=2)
             
-
-
 def compare_online_result(path1, path2):
     succ1_unsuc2=[]
     succ2_unsuc1=[]
@@ -115,6 +124,11 @@ def group_act(act):
             act[domain][intent]=set(sv)
     return act
 
+def group_state(state):
+    for domain, sv in state.items():
+        state[domain]=set(sv)
+    return state
+
 def find_unseen_usr_act(path1=None, path2=None):
     data=json.load(open('data/multi-woz-2.1-processed/data_for_us.json', 'r', encoding='utf-8'))
     train_act_pool=[]
@@ -162,10 +176,55 @@ def find_unseen_usr_act(path1=None, path2=None):
         print('Unseen acts in path2:', len(unseen_act_pool2))
     return unseen_dials
 
+def count_act(data):
+    act_pool=[]
+    for turn in data:
+        if turn['user']=='':
+            continue
+        else:
+            sys_act=reader.aspan_to_act_dict(turn['aspn_gen'], 'sys')
+            sys_act=group_act(sys_act)
+            if sys_act not in act_pool:
+                act_pool.append(sys_act)
+    print('Act num:', len(act_pool))
+
+def count_online(data):
+    user_act_pool=[]
+    sys_act_pool=[]
+    for dial in data:
+        for turn in dial:
+            user_act=reader.aspan_to_act_dict(turn['usr_act'], 'user')
+            user_act=group_act(user_act)
+            if user_act not in user_act_pool:
+                user_act_pool.append(user_act)
+            sys_act=reader.aspan_to_act_dict(turn['aspn'], 'sys')
+            sys_act=group_act(sys_act)
+            if sys_act not in sys_act_pool:
+                sys_act_pool.append(sys_act)
+    print('Total sys act:', len(sys_act_pool), 'total user acts:', len(user_act_pool))
+
+def count_state(data):
+    state_pool=[]
+    act_pool=[]
+    for turn in data:
+        if turn['user']=='':
+            continue
+        state=reader.bspan_to_constraint_dict(turn['bspn_gen'])
+        state=group_state(state)
+        act=reader.aspan_to_act_dict(turn['aspn_gen'], 'sys')
+        act=group_act(act)
+        if state not in state_pool:
+            state_pool.append(state)
+            act_pool.append([act])
+        elif act not in act_pool[state_pool.index(state)]:
+            act_pool[state_pool.index(state)].append(act)
+    print('Total states:',len(state_pool), 'Average actions per state:', np.mean([len(item) for item in act_pool]))
+
 def find_unseen_sys_act():
     data=json.load(open('data/multi-woz-2.1-processed/data_for_us.json', 'r', encoding='utf-8'))
     train_act_pool=[]
     unseen_act_pool=[]
+    test_act_pool=[]
     unseen_dials={}
     for dial_id, dial in data.items():
         if dial_id in reader.train_list:
@@ -180,12 +239,14 @@ def find_unseen_sys_act():
             for turn_id, turn in enumerate(dial):
                 sys_act=reader.aspan_to_act_dict(turn['sys_act'], 'sys')
                 sys_act=group_act(sys_act)
+                if sys_act not in test_act_pool:
+                    test_act_pool.append(sys_act)
                 if sys_act not in train_act_pool:
                     unseen_act_pool.append(sys_act)
                     unseen_turns.append(turn_id)
             if len(unseen_turns)>0:
                 unseen_dials[dial_id]=unseen_turns
-    print('Total training acts:', len(train_act_pool), 'Unseen acts:', len(unseen_act_pool))
+    print('Total training acts:', len(train_act_pool), 'test acts:',len(test_act_pool),'Unseen acts:', len(unseen_act_pool))
     print('Unseen dials:',len(unseen_dials))
     json.dump(unseen_dials, open('analysis/unseen_turns.json', 'w'), indent=2)
 
@@ -270,9 +331,387 @@ def prepare_for_std_eval(path=None, data=None):
         json.dump(new_data, open(new_path, 'w'), indent=2)
     return new_data
 
+def get_attentions(model_path, mode='bspn', encode_key=['user', 'bspn', 'db', 'aspn', 'resp'], turn_th=4):
+    tok=GPT2Tokenizer.from_pretrained(model_path)
+    model=GPT2LMHeadModel.from_pretrained(model_path)
+    model.eval()
+    data=json.load(open('data/multi-woz-2.1-processed/data_for_rl.json', 'r', encoding='utf-8'))
+    key_pool=['user', 'bspn', 'db', 'aspn', 'resp']
+    num=len(encode_key)*(turn_th-1)+key_pool.index(mode)
+    attention_list=[]
+    count=0
+    for dial_id, dial in data.items():
+        if dial_id not in reader.test_list:
+            continue
+        if len(dial['log'])<turn_th:
+            continue
+        for turn in dial['log']:
+            for key, sent in turn.items():
+                if key in key_pool:
+                    turn[key]=tok.encode(sent)
+        sequence=[]
+        st_idx_list=[]
+        ed_idx_list=[]
+        flag=0
+        for id, turn in enumerate(dial['log']):
+            if id<turn_th-1:
+                for key in encode_key:
+                    id1=len(sequence)+1
+                    id2=len(sequence)+len(turn[key])-1
+                    sequence+=turn[key]
+                    st_idx_list.append(id1)
+                    ed_idx_list.append(id2)
+            elif id==turn_th-1:
+                for key in key_pool:
+                    id1=len(sequence)+1
+                    id2=len(sequence)+len(turn[key])-1
+                    sequence+=turn[key]
+                    if key==mode:
+                        st_idx=id1
+                        ed_idx=id2
+                        flag=1
+                        break
+                    st_idx_list.append(id1)
+                    ed_idx_list.append(id2)
+            if flag:
+                break
+        assert len(st_idx_list)==num
+        if len(sequence)>1024:
+            continue
+        with torch.no_grad():
+            outputs=model.forward(torch.tensor([sequence]), return_dict=True, output_attentions=True)
+        attentions=outputs.attentions[-1] #last layer
+        #ed_idx=min(st_idx+max_len, ed_idx)
+        attention=torch.mean(attentions[0, :, st_idx:ed_idx,], dim=0) # T_b, T
+        avg1=torch.mean(attention, dim=0) #T
+        entry=[]
+        for id1, id2 in zip(st_idx_list, ed_idx_list):
+            avg2=avg1[id1:id2].mean().item()
+            if np.isnan(avg2):
+                avg2=0
+            entry.append(avg2)
+        attention_list.append(entry)
+        count+=1
+
+        '''
+        attention=attention[:,1:st_idx]
+        attention/=attention.max()
+        plt.figure()
+        plt.imshow(attention.numpy(), cmap=plt.cm.hot)
+        plt.xlabel('Previous information')
+        plt.ylabel('Belief state')
+        plt.colorbar()
+        #plt.xticks(np.arange(len(gamma_range)), gamma_range, rotation=45)
+        #plt.yticks(np.arange(ed_idx-st_idx-1))
+        plt.title('Attentions')
+        plt.savefig('analysis/attention.png')
+        #plt.show()
+        break
+        '''
+    print('Count dials:', count)
+    print(len(attention_list))
+    print(list(np.mean(attention_list, axis=0)))
+    print(list(np.var(attention_list, axis=0)))
+
+def get_attentions1(model_path, mode='bspn', encode_key=['bspn','resp'], turn_th=4):
+    tok=GPT2Tokenizer.from_pretrained(model_path)
+    model=GPT2LMHeadModel.from_pretrained(model_path)
+    model.eval()
+    data=json.load(open('data/multi-woz-2.1-processed/data_for_rl.json', 'r', encoding='utf-8'))
+    key_pool=['user', 'bspn', 'db', 'aspn', 'resp']
+    num=len(encode_key)+key_pool.index(mode)
+    attention_list=[]
+    count=0
+    for dial_id, dial in data.items():
+        if dial_id not in reader.test_list:
+            continue
+        if len(dial['log'])<turn_th:
+            continue
+        for turn in dial['log']:
+            for key, sent in turn.items():
+                if key in key_pool:
+                    turn[key]=tok.encode(sent)
+        sequence=[]
+        st_idx_list=[]
+        ed_idx_list=[]
+        flag=0
+        for id, turn in enumerate(dial['log']):
+            if id==turn_th-2:
+                for key in encode_key:
+                    id1=len(sequence)+1
+                    id2=len(sequence)+len(turn[key])-1
+                    sequence+=turn[key]
+                    st_idx_list.append(id1)
+                    ed_idx_list.append(id2)
+            elif id==turn_th-1:
+                for key in key_pool:
+                    id1=len(sequence)+1
+                    id2=len(sequence)+len(turn[key])-1
+                    sequence+=turn[key]
+                    if key==mode:
+                        st_idx=id1
+                        ed_idx=id2
+                        flag=1
+                        break
+                    st_idx_list.append(id1)
+                    ed_idx_list.append(id2)
+            if flag:
+                break
+        assert len(st_idx_list)==num
+        if len(sequence)>1024:
+            continue
+        with torch.no_grad():
+            outputs=model.forward(torch.tensor([sequence]), return_dict=True, output_attentions=True)
+        attentions=outputs.attentions[-1] #last layer
+        #ed_idx=min(st_idx+max_len, ed_idx)
+        attention=torch.mean(attentions[0, :, st_idx:ed_idx,], dim=0) # T_b, T
+        avg1=torch.mean(attention, dim=0) #T
+        entry=[]
+        for id1, id2 in zip(st_idx_list, ed_idx_list):
+            avg2=avg1[id1:id2].mean().item()
+            if np.isnan(avg2):
+                avg2=0
+            entry.append(avg2)
+        attention_list.append(entry)
+        count+=1
+    print('Count dials:', count)
+    print(len(attention_list))
+    print(list(np.mean(attention_list, axis=0)))
+    print(list(np.var(attention_list, axis=0)))
+
+def find_attention_case(model_path, mode='bspn', encode_key=['user', 'bspn', 'db', 'aspn', 'resp'], turn_th=4):
+    tok=GPT2Tokenizer.from_pretrained(model_path)
+    model=GPT2LMHeadModel.from_pretrained(model_path)
+    model.eval()
+    data=json.load(open('data/multi-woz-2.1-processed/data_for_rl.json', 'r', encoding='utf-8'))
+    key_pool=['user', 'bspn', 'db', 'aspn', 'resp']
+    num=len(encode_key)*(turn_th-1)+key_pool.index(mode)
+    attention_list=[]
+    count=0
+    for dial_id, dial in data.items():
+        if dial_id not in reader.test_list:
+            continue
+        if len(dial['log'])<turn_th:
+            continue
+        for turn in dial['log']:
+            for key, sent in turn.items():
+                if key in key_pool:
+                    turn[key]=reader.modified_encode(sent, tok)
+        sequence=[]
+        st_idx_list=[]
+        ed_idx_list=[]
+        flag=0
+        for id, turn in enumerate(dial['log']):
+            if id<turn_th-1:
+                for key in encode_key:
+                    id1=len(sequence)+1
+                    id2=len(sequence)+len(turn[key])-1
+                    sequence+=turn[key]                  
+                    st_idx_list.append(id1)
+                    ed_idx_list.append(id2)
+            elif id==turn_th-1:
+                for key in key_pool:
+                    id1=len(sequence)+1
+                    id2=len(sequence)+len(turn[key])-1
+                    sequence+=turn[key]
+                    if key==mode:
+                        st_idx=id1
+                        ed_idx=id2
+                        flag=1
+                        break
+                    #st_idx_list.append(id1)
+                    #ed_idx_list.append(id2)
+            if flag:
+                break
+        print('Previous variables:', len(st_idx_list))
+        if len(sequence)>1024:
+            continue
+        with torch.no_grad():
+            outputs=model.forward(torch.tensor([sequence]), return_dict=True, output_attentions=True)
+        attentions=outputs.attentions[-1] #last layer
+        #ed_idx=min(st_idx+max_len, ed_idx)
+        attentions=torch.mean(attentions[0, :, st_idx:ed_idx,], dim=0) # T_b, T
+        bs=tok.convert_ids_to_tokens(sequence[st_idx:ed_idx])
+        bs=[item.strip('Ġ') for item in bs]
+        for i, (id1, id2) in enumerate(zip(st_idx_list, ed_idx_list)):
+            if id1==id2:
+                continue
+            sos_id=['<sos_u>'] if i%2==0 else ['<sos_b>']
+            eos_id=['<eos_u>'] if i%2==0 else ['<eos_b>']
+            temp=torch.zeros(attentions.size(0), 1)
+            if i==0:
+                attention1=torch.cat([temp, attentions[:,id1+1:id2+1], temp],dim=1)
+                pv_bs1=sos_id+tok.convert_ids_to_tokens(sequence[id1:id2])+eos_id
+            elif i==1:
+                attention2=torch.cat([temp, attentions[:,id1+1:id2+1], temp],dim=1)
+                pv_bs2=sos_id+tok.convert_ids_to_tokens(sequence[id1:id2])+eos_id
+            elif i%2==0:
+                attention1=torch.cat([attention1, temp, attentions[:,id1+1:id2+1], temp], dim=1)
+                pv_bs1+=sos_id+tok.convert_ids_to_tokens(sequence[id1:id2])+eos_id
+            else:
+                attention2=torch.cat([attention2, temp, attentions[:,id1+1:id2+1], temp], dim=1)
+                pv_bs2+=sos_id+tok.convert_ids_to_tokens(sequence[id1:id2])+eos_id
+        pv_bs1=[item.strip('Ġ') for item in pv_bs1]
+        pv_bs2=[item.strip('Ġ') for item in pv_bs2]
+        plt.figure()
+        ax=plt.gca()
+        im=ax.imshow(attention1.numpy(), cmap=plt.cm.hot)
+        # recttuple (left, bottom, right, top) default: (0, 0, 1, 1)
+        # 0: most left or most bottom
+        # 1: most right or most top
+        plt.tight_layout(rect=(0.1, 0.1, 0.9, 1))
+        plt.xticks(np.arange(len(pv_bs1)), pv_bs1, rotation=90, fontsize=7)
+        plt.yticks(np.arange(len(bs)),labels=bs, fontsize=8)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        plt.colorbar(im, cax=cax)
+        #plt.title('Attentions')
+        plt.savefig('analysis/attention_u.png')
+
+        plt.figure()
+        ax=plt.gca()
+        im=ax.imshow(attention2.numpy(), cmap=plt.cm.hot)
+        plt.tight_layout(rect=(0.1, 0.1, 0.9, 1))
+        plt.xticks(np.arange(len(pv_bs2)), pv_bs2, rotation=90, fontsize=7)
+        plt.yticks(np.arange(len(bs)),labels=bs, fontsize=8)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        plt.colorbar(im, cax=cax)
+        #plt.title('Attentions')
+        plt.savefig('analysis/attention_b.png')
+        '''
+        for i, (id1, id2) in enumerate(zip(st_idx_list, ed_idx_list)):
+            if id1==id2:
+                continue
+            attention=attentions[:,id1+1:id2+1]
+            pv_bs=tok.convert_ids_to_tokens(sequence[id1:id2])
+            pv_bs=[item.strip('Ġ') for item in pv_bs]
+            print(pv_bs)
+            #attention/=attention.max()
+            plt.figure()
+            plt.imshow(attention.numpy(), cmap=plt.cm.hot)
+            #plt.xlabel('${b_%d}$'%(i+1))
+            #plt.ylabel('${b_%d}$'%(i+2))
+            plt.colorbar()
+            plt.tight_layout(rect=(0.25, 0.25, 1, 1))
+            plt.xticks(np.arange(len(pv_bs)), pv_bs, rotation=90)
+            plt.yticks(np.arange(len(bs)),labels=bs)
+            #plt.title('Attentions')
+            plt.savefig('analysis/attention_%d.png'%(i+1))
+        '''
+        t=1
+        break
+
+def length_statistics():
+    data=json.load(open('data/multi-woz-2.1-processed/new_db_se_blank_encoded.data.json', 'r', encoding='utf-8'))
+    #session-level
+    total=0
+    exceed=0
+    mean_len, max_len=0, 0
+    len_list=[]
+    for dial in data['train']:
+        length=0
+        total+=1
+        for turn in dial:
+            length+=len(turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+        if length>1024:
+            exceed+=1
+            print(length)
+        len_list.append(length)
+        mean_len+=length/len(data['train'])
+        if length>max_len:
+            max_len=length
+    print('Total training sequences:', total, 'sequences exceeding limit:', exceed)
+    print('Mean length:{}, max length:{}'.format(mean_len, max_len))
+    print(np.mean(len_list), np.sqrt(np.var(len_list)))
+    #turn-level
+    total=0
+    exceed=0
+    mean_len, max_len=0, 0
+    len_list=[]
+    total_turn=sum([len(dial) for dial in data['train']])
+    for dial in data['train']:
+        total+=1
+        history_len=0
+        for turn in dial:
+            total+=1
+            length = history_len+len(turn['user']+turn['bspn']+turn['db']+turn['aspn']+turn['resp'])
+            #history_len+=len(turn['user']+turn['resp'])
+            history_len=len(turn['bspn']+turn['resp'])
+            if length>1024:
+                exceed+=1
+            len_list.append(length)
+            mean_len+=length/total_turn
+            if length>max_len:
+                max_len=length
+    print('Total training sequences:', total, 'sequences exceeding limit:', exceed)
+    print('Mean length:{}, max length:{}'.format(mean_len, max_len))
+    print(np.mean(len_list), np.sqrt(np.var(len_list)))
+
+def get_metrics_list(path, prepared=False, dial_order=None):
+    results=json.load(open(path, 'r'))
+    input_data=prepare_for_std_eval(data=results) if not prepared else results
+    if dial_order:
+        new_data={}
+        for dial_id in dial_order:
+            if dial_id not in input_data:
+                print('No dial id:', dial_id)
+                continue
+            new_data[dial_id]=input_data[dial_id]
+        input_data=new_data
+    _, match_list, success_list, bleu_list = std_evaluator.evaluate(input_data, return_all=True)
+    return match_list, success_list, bleu_list, list(input_data.keys())
+
+def compare_list(list1, list2):
+    c1=0
+    c2=0
+    for t1, t2 in zip(list1, list2):
+        if t1 and not t2:
+            c1+=1
+        elif not t1 and t2:
+            c2+=1
+    print(c1,c2)
+
+
 if __name__=='__main__':
-    path1='/home/liuhong/myworkspace/experiments_21/all_turn-level-DS-11-26_sd11_lr0.0001_bs8_ga4/best_score_model/result.json'
-    prepare_for_std_eval(path1)
+    '''
+    path='/home/liuhong/myworkspace/experiments_21/RL-DS-baseline/best_score_model/result.json'
+    data1=json.load(open(path, 'r', encoding='utf-8'))
+    count_act(data1)
+    count_state(data1)
+    path='/home/liuhong/myworkspace/RL_exp/RL-1-10-beam-1/best_DS/result.json'
+    data2=json.load(open(path, 'r', encoding='utf-8'))
+    count_act(data2)
+    count_state(data2)
+    
+    path='/home/liuhong/myworkspace/experiments_21/RL-DS-baseline/best_score_model/validate_result.json'
+    data=json.load(open(path, 'r', encoding='utf-8'))
+    count_online(data)
+    path='/home/liuhong/myworkspace/RL_exp/RL-1-10-beam-1/best_DS/validate_result.json'
+    data=json.load(open(path, 'r', encoding='utf-8'))
+    count_online(data)
+    
+    match1, success1, bleu1, dial_order=get_metrics_list('experiments_21/RL-DS-baseline/best_score_model/result.json')
+    match2, success2, bleu2, dial_order=get_metrics_list('RL_exp/RL-1-5-only_aspn/best_DS/result.json')
+    #match2, success2, bleu2, dial_order=get_metrics_list('RL_exp/RL-12-30/best_DS/result.json')
+    match3, success3, bleu3, dial_order=get_metrics_list('/home/liuhong/MultiWOZ_Evaluation-master/predictions/ubar.json', prepared=True, dial_order=dial_order)
+    print('Match pair test on Inform')
+    print('SL vs UBAR:{:.3f}, RL vs UBAR:{:.3f}, RL vs SL:{:.3f}'.format(
+        matched_pair(match1, match3), matched_pair(match2, match3), matched_pair(match2, match1)))
+    print('Match pair test on Success')
+    print('SL vs UBAR:{:.3f}, RL vs UBAR:{:.3f}, RL vs SL:{:.3f}'.format(
+        matched_pair(success1, success3), matched_pair(success2, success3), matched_pair(success2, success1)))
+    print('Match pair test on BLEU')
+    print('SL vs UBAR:{:.3f}, RL vs UBAR:{:.3f}, RL vs SL:{:.3f}'.format(
+        matched_pair(bleu1, bleu3), matched_pair(bleu2, bleu3), matched_pair(bleu2, bleu1)))
+    '''
+    #length_statistics()
+    #find_unseen_sys_act()
+    #find_attention_case('experiments_21/all_UBAR-wsl_sd11_lr0.0001_bs2_ga16/best_score_model', mode='bspn', turn_th=4, encode_key=['user', 'bspn'])
+    #get_attentions1('experiments_21/turn-level-DS/best_score_model', encode_key=['bspn', 'resp'], mode='aspn', turn_th=4)
+    #get_attentions('experiments_21/all_HRU-otl_sd11_lr0.0001_bs8_ga4/best_score_model', encode_key=['user', 'resp'], turn_th=5)
+    path='experiments_21/RL-DS-baseline/best_score_model/result.json'
+    prepare_for_std_eval(path)
     #path2='RL_exp/rl-10-19-use-scheduler/best_DS/result.json'
     #unseen_turns=find_unseen_sys_act()
     #calculate_unseen_acc(unseen_turns, path1, path2)

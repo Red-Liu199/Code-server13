@@ -101,13 +101,13 @@ def preprocess_db(db_paths): # apply clean_slot_values to all dbs
 
 # 2.1
 class DataPreprocessor(object):
+
     def __init__(self):
         self.nlp = spacy.load('en_core_web_sm')
         self.db = MultiWozDB(cfg.dbs) # load all processed dbs
         # data_path = 'data/multi-woz/annotated_user_da_with_span_full.json'
         data_path = 'data/MultiWOZ_2.1/data.json'
-        archive = zipfile.ZipFile(data_path + '.zip', 'r')
-        self.convlab_data = json.loads(archive.open(data_path.split('/')[-1], 'r').read().lower())
+        self.convlab_data = json.loads(open(data_path, 'r').read().lower())
         # self.delex_sg_valdict_path = 'data/multi-woz-processed/delex_single_valdict.json'
         # self.delex_mt_valdict_path = 'data/multi-woz-processed/delex_multi_valdict.json'
         # self.ambiguous_val_path = 'data/multi-woz-processed/ambiguous_values.json'
@@ -485,6 +485,28 @@ class DataPreprocessor(object):
         with open('data/multi-woz-2.1-analysis/dialog_act_type.json', 'w') as f:
             json.dump(self.unique_da, f, indent=2)
         return data
+    
+    def check(self, data):
+        from reader import MultiWozReader
+        from transformers import GPT2Tokenizer
+        tokenizer=GPT2Tokenizer.from_pretrained('best_model')
+        reader = MultiWozReader(tokenizer)
+        count1, count2=0, 0
+        for dial in data.values():
+            for turn in dial['log']:
+                cons, turn_domain=turn['constraint'], turn['turn_domain'].split()
+                cons=reader.bspan_to_constraint_dict(cons)
+                matnums = self.db.get_match_num(cons)
+                match_dom = turn_domain[0] if len(turn_domain) == 1 else turn_domain[1]
+                match_dom=match_dom[1:-1] if match_dom.startswith('[') else match_dom
+                match = matnums[match_dom]
+                if match!=turn['match']:
+                    count1+=1
+                dbvec = self.db.addDBPointer(match_dom, match)
+                pointer = ','.join([str(d) for d in dbvec])
+                if pointer!=turn['pointer'][:11]:
+                    count2+=1
+        print(count1, count2)
 
 
 if __name__=='__main__':
@@ -502,9 +524,11 @@ if __name__=='__main__':
     if not os.path.exists('data/multi-woz-2.1-processed'):
         os.mkdir('data/multi-woz-2.1-processed')
     dh = DataPreprocessor()
-    data = dh.preprocess_main()
+    #data = dh.preprocess_main()
+    data=json.load(open('data/multi-woz-2.1-processed/data_for_damd_fix.json', 'r'))
+    dh.check(data)
     
 
-    with open('data/multi-woz-2.1-processed/data_for_damd.json', 'w') as f:
-        json.dump(data, f, indent=2)
+    #with open('data/multi-woz-2.1-processed/data_for_damd.json', 'w') as f:
+     #   json.dump(data, f, indent=2)
 
