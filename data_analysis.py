@@ -1,6 +1,6 @@
 import os, json, copy, re, zipfile
 from collections import OrderedDict
-from ontology import all_domains
+from ontology import all_domains, normlize_slot_names
 
 
 # 2.0
@@ -148,6 +148,39 @@ def analysis():
     with open(save_path_exp + 'domain_files.json', 'w') as sf:
         json.dump(dom_fnlist, sf, indent=2)
 
+def sorting_ontology():
+    path='data/MultiWOZ_2.1/ontology.json'
+    onto=json.load(open(path, 'r'))
+    ontology={}
+    for tuple, values in onto.items():
+        tuple=tuple.split('-')
+        domain=tuple[0].lower()
+        if domain=='bus':
+            continue
+        slot=normlize_slot_names.get(tuple[2].lower(), tuple[2].lower())
+        if domain not in ontology:
+            ontology[domain]={slot:[]}
+        else:
+            ontology[domain][slot]=[]
+        for value in values:
+            if '|' in value:
+                for v in value.split('|'):
+                    if v not in ontology[domain][slot]:
+                        ontology[domain][slot].append(v)
+            elif '>' in value:
+                for v in value.split('>'):
+                    if v not in ontology[domain][slot]:
+                        ontology[domain][slot].append(v)
+            elif '<' in value:
+                for v in value.split('<'):
+                    if v not in ontology[domain][slot]:
+                        ontology[domain][slot].append(v)
+            else:
+                if value not in ontology[domain][slot]:
+                    ontology[domain][slot].append(value)
+    json.dump(ontology, open('data/multi-woz-2.1-processed/ontology_processed.json', 'w'), indent=2)
+
 
 if __name__ == '__main__':
-    analysis()
+    #analysis()
+    sorting_ontology()

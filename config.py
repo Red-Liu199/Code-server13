@@ -60,11 +60,6 @@ class _Config:
         self.val_set='test'
         self.col_samples=True #collect wrong predictions samples
         self.use_existing_result=True
-        #additional data setting
-        self.data_aug=False
-        self.only_SGD=False
-        self.only_TM=False
-        self.len_limit=True
 
         self.use_true_bspn_for_ctr_eval = False
         self.use_true_domain_for_ctr_eval = True
@@ -186,6 +181,8 @@ class _Config:
         self.rl_with_us=True # whether or not interact with user simulator 
         self.train_us=False # setting when pre-training user simulator 
         self.train_sys=False
+        self.user_nlu=False # add NLU module of user simulator
+        self.strict_eval=False
         
         self.joint_train=True # train DS and US together in RL exp
         self.joint_train_us=True
@@ -223,7 +220,8 @@ class _Config:
 
         self.eval_as_simpletod=True
         self.beam_search=False
-        self.beam_size=5
+        self.beam_size_u=3
+        self.beam_size_s=8
 
         self.train_modular=False
         self.modular='dst'
@@ -233,6 +231,7 @@ class _Config:
         self.gpt_path3=''
 
         self.jsa_ablation=False
+        self.save_prob=False
 
     def __str__(self):
         s = ''

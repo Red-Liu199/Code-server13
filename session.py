@@ -1,3 +1,4 @@
+from matplotlib import use
 import torch
 import random
 import time
@@ -52,7 +53,8 @@ class turn_level_session(object):
         self.evaluator=MultiWozEvaluator(self.reader)
         self.get_special_ids()
         self.end_tokens=set(['[general]', '[bye]', '[welcome]', '[thank]', '[reqmore]', '<sos_a>', '<eos_a>', '<sos_ua>', '<eos_ua>'])
-        self.global_output=2
+        self.global_output1=2
+        self.global_output2=2
         # tensorboard
         if cfg.save_log:
             log_path='./log_rl/log_{}'.format(cfg.exp_no)
@@ -86,8 +88,8 @@ class turn_level_session(object):
         # If goal is None, sample a goal from training set
         if goal is None:
             dial_id=random.sample(self.reader.train_list, 1)[0]
-            init_goal=self.reader.data[dial_id]['goal']
-            goal=self.reader.goal_norm(init_goal)
+            init_goal=self.reader.aspan_to_act_dict(self.reader.data[dial_id][0]['goal'], side='user')
+            goal=init_goal
         self.turn_domain=''
         self.goal_list=[]
         for i in range(max_turns):
@@ -99,12 +101,12 @@ class turn_level_session(object):
             else:
                 pv_constraint=self.reader.bspan_to_constraint_dict(pv_bspan)
                 pv_user_act_dict=self.reader.aspan_to_act_dict(pv_user_act, side='user')
-                goal=self.reader.update_goal(goal,pv_user_act_dict,pv_constraint)# update the goal
+                goal=self.reader.update_goal(goal, pv_user_act_dict)# update the goal
                 gpan='<sos_g> '+self.reader.goal_to_gpan(goal)+' <eos_g>'
                 user_act, user = self.get_user_utterance(gpan, pv_resp=pv_resp)
                 bspn, db, aspn, resp = self.get_sys_response(user, pv_bspan, pv_resp)
             self.goal_list.append(goal)
-            turn['gpan'], turn['usr_act'], turn['user'], turn['bspn'], turn['db'], \
+            turn['goal'], turn['usr_act'], turn['user'], turn['bspn'], turn['db'], \
                 turn['aspn'], turn['resp'] = gpan, user_act, user, bspn, db, aspn, resp
             gen_dial.append(turn)
             pv_resp=resp
@@ -214,7 +216,7 @@ class turn_level_session(object):
                 self.tb_writer.add_scalar('Avg_turns', avg_turn, epoch)
                 self.tb_writer.add_scalar('Match', match, epoch)
                 self.tb_writer.add_scalar('Success', success, epoch)
-
+        self.save_model(self.DS, self.US, last_model=True)
 
     def run_RL_epoch(self):
         avg_US_reward=0
@@ -252,7 +254,7 @@ class turn_level_session(object):
                 else:
                     # sample batches from dataset
                     dial_id_batch=random.sample(self.reader.train_list, cfg.interaction_batch_size)
-                    gen_batch=[self.reader.data[dial_id]['log'] for dial_id in dial_id_batch]
+                    gen_batch=[self.reader.data[dial_id] for dial_id in dial_id_batch]
                     US_reward_batch=[[1]*len(dial) for dial in gen_batch]
                     DS_reward_batch=[[1]*len(dial) for dial in gen_batch]
                 if cfg.on_policy: #need to change mode from eval to train
@@ -268,10 +270,9 @@ class turn_level_session(object):
                     ds_turn_batches, ds_label_batches, ds_reward_batches = self.reader.transpose_ds_turn_batch(
                         gen_batch_ids, DS_reward_batch)
                     for i, (turn_batch, label_batch, reward_batch) in enumerate(zip(ds_turn_batches, ds_label_batches, ds_reward_batches)):
-                        if self.global_output>0:
-                            pass
-                            #logging.info(self.DS_tok.decode(list(turn_batch[0])))
-                            #self.global_output-=1
+                        if self.global_output1>0:
+                            logging.info(self.DS_tok.decode(list(turn_batch[0])))
+                            self.global_output1-=1
                         input_tensor = torch.from_numpy(turn_batch).long().to(self.DS.device)
                         label_tensor = torch.from_numpy(label_batch).long().to(self.DS.device)
                         outputs=self.DS(input_tensor) if cfg.on_policy else self.DS_off(input_tensor)
@@ -309,15 +310,14 @@ class turn_level_session(object):
                     us_turn_batches, us_label_batches, us_reward_batches = self.reader.transpose_us_turn_batch(
                         gen_batch_ids, US_reward_batch, self.US_tok)
                     for i, (turn_batch, label_batch, reward_batch) in enumerate(zip(us_turn_batches, us_label_batches, us_reward_batches)):
-                        if self.global_output>0:
-                            pass
-                            #logging.info(self.US_tok.decode(list(turn_batch[0])))
-                            #self.global_output-=1
+                        if self.global_output2>0:
+                            logging.info(self.US_tok.decode(list(turn_batch[0])))
+                            self.global_output2-=1
                         input_tensor = torch.from_numpy(turn_batch).long().to(self.US.device)
                         label_tensor = torch.from_numpy(label_batch).long().to(self.US.device)
                         outputs=self.US(input_tensor) if cfg.on_policy else self.US_off(input_tensor)
                         if cfg.add_rl_baseline:
-                            if cfg.simple_training:
+                            if cfg.simple_training or cfg.user_nlu:
                                 loss=self.calculate_loss(outputs, input_tensor, reward_batch, base=self.avg_us_reward)
                             else:
                                 loss=self.calculate_loss(outputs, label_tensor, reward_batch, base=self.avg_us_reward)
@@ -326,7 +326,10 @@ class turn_level_session(object):
                             self.avg_us_reward/=self.total_us_turn
                             self.tb_writer.add_scalar('total_avg_us_reward', self.avg_us_reward, self.US_training_steps)
                         else:
-                            if cfg.simple_training:
+                            if cfg.simple_training or cfg.user_nlu:
+                                # we train the US with the whole sequence as target on two conditions
+                                # 1) simple training
+                                # 2) the US has an NLU module so that the previous aspn also becomes target 
                                 loss=self.calculate_loss(outputs, input_tensor, reward_batch)
                             else:
                                 loss=self.calculate_loss(outputs, label_tensor, reward_batch)
@@ -347,7 +350,6 @@ class turn_level_session(object):
 
         avg_DS_reward/=cfg.rl_dial_per_epoch
         avg_US_reward/=cfg.rl_dial_per_epoch
-        #self.global_output=1
         return avg_DS_reward, avg_US_reward
     
     def evaluation(self):
@@ -413,13 +415,19 @@ class turn_level_session(object):
             json.dump(all_dials, open(os.path.join(cfg.exp_path, 'validate_result.json'), 'w'), indent=2)
         return avg_DS_reward, avg_US_reward, avg_turn, success, match
 
-    def save_model(self, DS, US):
-        if cfg.joint_train_ds:
-            DS.save_pretrained(os.path.join(cfg.exp_path,'best_DS'))
-            self.DS_tok.save_pretrained(os.path.join(cfg.exp_path,'best_DS'))
-        if cfg.joint_train_us:
-            US.save_pretrained(os.path.join(cfg.exp_path,'best_US'))
-            self.US_tok.save_pretrained(os.path.join(cfg.exp_path,'best_US'))
+    def save_model(self, DS, US, last_model=False):
+        if last_model:
+            DS.save_pretrained(os.path.join(cfg.exp_path,'last_epoch_DS'))
+            self.DS_tok.save_pretrained(os.path.join(cfg.exp_path,'last_epoch_DS'))
+            US.save_pretrained(os.path.join(cfg.exp_path,'last_epoch_US'))
+            self.US_tok.save_pretrained(os.path.join(cfg.exp_path,'last_epoch_US'))
+        else:
+            if cfg.joint_train_ds:
+                DS.save_pretrained(os.path.join(cfg.exp_path,'best_DS'))
+                self.DS_tok.save_pretrained(os.path.join(cfg.exp_path,'best_DS'))
+            if cfg.joint_train_us:
+                US.save_pretrained(os.path.join(cfg.exp_path,'best_US'))
+                self.US_tok.save_pretrained(os.path.join(cfg.exp_path,'best_US'))
 
     def get_optimizers(self, num_dials, model):
         no_decay = ["bias", "LayerNorm.weight"]
@@ -643,6 +651,7 @@ class turn_level_session(object):
         end_batch=[0 for _ in range(batch_size)]
         gpan_batch=[]
         goal_batch=[]# current goal batch
+        final_goal_batch=[]
         bs_max_len=50
         act_max_len=20
         resp_max_len=60
@@ -652,17 +661,18 @@ class turn_level_session(object):
         if init_goal_batch is None:
             init_goal_batch=[]
             for batch_id, dial_id in enumerate(dial_id_batch):
-                
-                init_goal_batch.append(self.reader.data[dial_id]['goal'])
-                goal=self.reader.goal_norm(self.reader.data[dial_id]['goal'])
+                goal=self.reader.aspan_to_act_dict(self.reader.data[dial_id][0]['goal'], side='user')
+                init_goal_batch.append(goal)
                 goal_batch.append(goal)
+                final_goal_batch.append(goal)
                 self.goal_list_batch[batch_id].append(goal)
                 gpan='<sos_g> '+self.reader.goal_to_gpan(goal)+' <eos_g>'
                 gpan_batch.append(gpan)
         else:
             for batch_id, init_goal in enumerate(init_goal_batch):
-                goal=self.reader.goal_norm(init_goal)
+                goal=init_goal
                 goal_batch.append(goal)
+                final_goal_batch.append(goal)
                 self.goal_list_batch[batch_id].append(goal)
                 gpan='<sos_g> '+self.reader.goal_to_gpan(goal)+' <eos_g>'
                 gpan_batch.append(gpan)
@@ -673,39 +683,42 @@ class turn_level_session(object):
         for i in range(max_turns):
 
             if i>0: # update goals
-                #generate pv_aspn batch
-                #contexts=self.get_us_contexts(pv_resp_batch)
-                #contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
-                #pv_aspn_batch_ids=self.generate_batch(self.US, contexts_ids, act_max_len, self.US_tok.convert_tokens_to_ids('<eos_a>'))
-                #pv_aspn_batch=self.convert_batch_ids_to_tokens(self.US_tok, pv_aspn_batch_ids, self.US_tok.convert_tokens_to_ids('<sos_a>'), 
-                 #   self.US_tok.convert_tokens_to_ids('<eos_a>'))
+                if cfg.user_nlu:
+                    #generate pv_aspn batch
+                    contexts=self.get_us_contexts(pv_resp_batch, user_nlu=True)
+                    contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
+                    pv_aspn_batch_ids=self.generate_batch(self.US, contexts_ids, act_max_len, self.US_tok.convert_tokens_to_ids('<eos_a>'))
+                    pv_aspn_batch=self.convert_batch_ids_to_tokens(self.US_tok, pv_aspn_batch_ids, self.US_tok.convert_tokens_to_ids('<sos_a>'), 
+                       self.US_tok.convert_tokens_to_ids('<eos_a>'))
                 for batch_id, goal in enumerate(goal_batch):
                     pv_user_act_dict=self.reader.aspan_to_act_dict(pv_user_act_batch[batch_id], side='user')
-                    pv_sys_act=self.reader.aspan_to_act_dict(pv_aspn_batch[batch_id], side='sys')
-                    goal=self.reader.update_goal(goal,pv_user_act_dict,sys_act=pv_sys_act)
+                    pv_sys_act=self.reader.aspan_to_act_dict(pv_aspn_batch[batch_id], side='sys') if cfg.user_nlu else None
+                    goal, final_goal=self.reader.update_goal(goal,pv_user_act_dict, pv_sys_act)
                     goal_batch[batch_id]=goal
+                    final_goal_batch[batch_id]=goal
                     self.goal_list_batch[batch_id].append(goal)
                     gpan_batch[batch_id]='<sos_g> '+self.reader.goal_to_gpan(goal)+' <eos_g>'
             # generate user act batch
-            contexts=self.get_us_contexts(pv_resp_batch, gpan_batch)
+            contexts=self.get_us_contexts(pv_resp_batch, gpan_batch, pv_aspn_batch=pv_aspn_batch)
             contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
-            if cfg.beam_search and False:
-                beam_ids, beam_probs=self.generate_batch(US, contexts_ids, act_max_len, self.eos_ua_id, beam=cfg.beam_size)
+            if cfg.beam_search:
+                beam_ids, beam_probs=self.generate_batch(US, contexts_ids, act_max_len, self.eos_ua_id, beam=cfg.beam_size_u)
                 user_act_batch=[]
                 user_act_beam_batch=[]
                 sampled_ids=torch.multinomial(beam_probs, 1) #B, 1
                 for b, temp_ids in enumerate(beam_ids):
                     beam_batch=self.convert_batch_ids_to_tokens(self.US_tok, temp_ids, self.sos_ua_id, self.eos_ua_id)
-                    pv_aspn=pv_aspn_batch[b] if pv_aspn_batch else None
                     user_act_batch.append(beam_batch[sampled_ids[b, 0]])
-                    #user_act_batch.append(self.find_best_usr_act(beam_batch, goal_batch[b], pv_aspn))
                     user_act_beam_batch.append(beam_batch)
             else:
                 user_act_batch_ids=self.generate_batch(US, contexts_ids, act_max_len, self.eos_ua_id)
                 user_act_batch=self.convert_batch_ids_to_tokens(self.US_tok, user_act_batch_ids, 
                     self.sos_ua_id, self.eos_ua_id)
+            for temp in user_act_batch:
+                if '<eos_a> <sos_g>' in temp:
+                    t=1
             # generate user batch
-            contexts=self.get_us_contexts(pv_resp_batch, gpan_batch, user_act_batch)
+            contexts=self.get_us_contexts(pv_resp_batch, gpan_batch, user_act_batch, pv_aspn_batch=pv_aspn_batch)
             contexts_ids=self.convert_batch_tokens_to_ids(self.US_tok, contexts)
             user_batch_ids=self.generate_batch(US, contexts_ids, resp_max_len, self.eos_u_id)
             user_batch=self.convert_batch_ids_to_tokens(self.US_tok, user_batch_ids, 
@@ -724,7 +737,7 @@ class turn_level_session(object):
             contexts=self.get_ds_contexts(user_batch, pv_bspn_batch, pv_resp_batch, bspn_batch, db_batch)
             contexts_ids=self.convert_batch_tokens_to_ids(self.DS_tok, contexts)
             if cfg.beam_search:
-                beam_ids, beam_probs=self.generate_batch(DS, contexts_ids, act_max_len, self.eos_a_id, beam=cfg.beam_size)
+                beam_ids, beam_probs=self.generate_batch(DS, contexts_ids, act_max_len, self.eos_a_id, beam=cfg.beam_size_s)
                 aspn_batch=[]
                 aspn_beam_batch=[]
                 sampled_ids=torch.multinomial(beam_probs, 1)
@@ -747,7 +760,6 @@ class turn_level_session(object):
             # before next turn
             pv_bspn_batch=bspn_batch
             pv_resp_batch=resp_batch
-            pv_aspn_batch=aspn_batch
             pv_user_act_batch=user_act_batch
 
             # collect dialogs and judge stop
@@ -757,9 +769,9 @@ class turn_level_session(object):
                 goal=goal_batch[batch_id]
                 if not end_batch[batch_id]:
                     turn={}
-                    #if i>0:
-                     #   turn['pv_aspn']=pv_aspn_batch[batch_id]
-                    turn['gpan']=gpan_batch[batch_id]
+                    if i>0 and cfg.user_nlu:
+                        turn['pv_aspn']=pv_aspn_batch[batch_id]
+                    turn['goal']=gpan_batch[batch_id]
                     turn['usr_act']=user_act_batch[batch_id]
                     turn['user']=user_batch[batch_id]
                     turn['bspn']=bspn_batch[batch_id]
@@ -767,12 +779,12 @@ class turn_level_session(object):
                     turn['aspn']=aspn_batch[batch_id]
                     turn['resp']=resp_batch[batch_id]
                     if cfg.beam_search:
-                        #turn['usr_act_beam']=user_act_beam_batch[batch_id]
+                        turn['usr_act_beam']=user_act_beam_batch[batch_id]
                         turn['aspn_beam']=aspn_beam_batch[batch_id]
                     gen_batch[batch_id].append(turn)
                 if (set(user_act.split()).issubset(self.end_tokens) and set(aspn.split()).issubset(self.end_tokens)) or goal=={}:
                     end_batch[batch_id]=1
-                if i>0 and gen_batch[batch_id][-1]==gen_batch[batch_id][-2]:
+                if len(gen_batch[batch_id])>2 and gen_batch[batch_id][-1]==gen_batch[batch_id][-2]:
                     end_batch[batch_id]=1
             if all(end_batch):
                 break
@@ -784,8 +796,8 @@ class turn_level_session(object):
             total_comp=0
             US_rewards=np.zeros(7)
             DS_rewards=np.zeros(6)
-            for init_goal, goal_list, gen_dial in zip(init_goal_batch, self.goal_list_batch, gen_batch):
-                DS_reward_list, DS_reward = self.get_DS_reward(gen_dial, init_goal, return_avg_reward=True)
+            for final_goal, goal_list, gen_dial in zip(final_goal_batch, self.goal_list_batch, gen_batch):
+                DS_reward_list, DS_reward = self.get_DS_reward(gen_dial, final_goal, return_avg_reward=True)
                 success=1 if DS_reward[3]==10 else 0
                 match=1 if DS_reward[3]>=7.5 else 0
                 US_reward_list, US_reward = self.get_US_reward(gen_dial, goal_list, return_avg_reward=True, success=success)
@@ -910,36 +922,51 @@ class turn_level_session(object):
         else:
             for i, tup in enumerate(beam_result):
                 beam_list=sorted(tup, key=lambda item:item[1], reverse=True)
-                if len(beam_list)<cfg.beam_size:
+                if len(beam_list)<beam:
                     # add some items with prob=0
-                    add=[(beam_list[-1][0], -float('inf'))]*(cfg.beam_size-len(beam_list))
+                    add=[(beam_list[-1][0], -float('inf'))]*(beam-len(beam_list))
                     beam_list.extend(add)
                 beam_result[i]=[item[0] for item in beam_list[:beam]]
-                prob=F.softmax(torch.tensor([item[1] for item in beam_list[:beam]]).float())
+                prob=F.softmax(torch.tensor([item[1] for item in beam_list[:beam]]).float(), -1)
                 beam_probs.append(prob)
             beam_probs=torch.stack(beam_probs) # B, beam
             return beam_result, beam_probs
     
-    def get_us_contexts(self, pv_resp_batch=None, gpan_batch=None, user_act_batch=None):
+    def get_us_contexts(self, pv_resp_batch=None, gpan_batch=None, user_act_batch=None, user_nlu=False, pv_aspn_batch=None):
         contexts=[]
-        if pv_resp_batch==None:# first turn
-            if user_act_batch is None:
-                for gpan in gpan_batch:
-                    context = gpan + '<sos_ua>'
-                    contexts.append(context)
-            else:
-                for gpan, ua in zip(gpan_batch, user_act_batch):
-                    context = gpan + ua + '<sos_u>'
-                    contexts.append(context)
+        if user_nlu:# pv_resp_batch is not None
+            for pv_r in pv_resp_batch:
+                context = pv_r + '<sos_a>'
+                contexts.append(context)
         else:
-            if user_act_batch is None:
-                for gpan, pv_r in zip(gpan_batch, pv_resp_batch):
-                    context = pv_r + gpan + '<sos_ua>'
-                    contexts.append(context)
+            if pv_resp_batch==None:# first turn
+                if user_act_batch is None:
+                    for gpan in gpan_batch:
+                        context = gpan + '<sos_ua>'
+                        contexts.append(context)
+                else:
+                    for gpan, ua in zip(gpan_batch, user_act_batch):
+                        context = gpan + ua + '<sos_u>'
+                        contexts.append(context)
             else:
-                for gpan, pv_r, ua in zip(gpan_batch, pv_resp_batch, user_act_batch):
-                    context = pv_r + gpan + ua + '<sos_u>'
-                    contexts.append(context)
+                if pv_aspn_batch: # nlu included 
+                    if user_act_batch is None:
+                        for gpan, pv_r, pv_a in zip(gpan_batch, pv_resp_batch, pv_aspn_batch):
+                            context = pv_r + pv_a + gpan + '<sos_ua>'
+                            contexts.append(context)
+                    else:
+                        for gpan, pv_r, pv_a, ua in zip(gpan_batch, pv_resp_batch, pv_aspn_batch, user_act_batch):
+                            context = pv_r + pv_a + gpan + ua + '<sos_u>'
+                            contexts.append(context)
+                else:
+                    if user_act_batch is None:
+                        for gpan, pv_r in zip(gpan_batch, pv_resp_batch):
+                            context = pv_r + gpan + '<sos_ua>'
+                            contexts.append(context)
+                    else:
+                        for gpan, pv_r, ua in zip(gpan_batch, pv_resp_batch, user_act_batch):
+                            context = pv_r + gpan + ua + '<sos_u>'
+                            contexts.append(context)
         return contexts
     
     def get_ds_contexts(self, user_batch, pv_bspn_batch=None, pv_resp_batch=None, bspn_batch=None, 
@@ -1101,7 +1128,7 @@ class turn_level_session(object):
             return rewards, np.array([avg_reward, avg_reqt_reward, avg_goal_reward, avg_repeat_reward, goal_comp_reward, turn_num, token_reward])
         return rewards
 
-    def get_DS_reward(self, dial, init_goal, return_avg_reward=False):
+    def get_DS_reward(self, dial, goal, return_avg_reward=False):
         turn_num=len(dial)
         rewards=[]
         avg_reward=0
@@ -1109,7 +1136,7 @@ class turn_level_session(object):
         avg_repeat_reward=0
         avg_token_reward=0
         sys_act_list=[]
-        success, match=self.get_metrics(init_goal, dial)
+        success, match=self.get_metrics(goal, dial)
         if success==1:
             global_reward=10-turn_num
         else:
@@ -1177,10 +1204,13 @@ class turn_level_session(object):
             for domain in final_goal:
                 for intent, sv in final_goal[domain].items():
                     incomp_slot_num+=len(sv)
-        comp_rate=(total_slot_num-incomp_slot_num)/total_slot_num
+        if total_slot_num==0:
+            comp_rate=1
+        else:
+            comp_rate=(total_slot_num-incomp_slot_num)/total_slot_num
         return comp_rate
 
-    def get_metrics(self, init_goal, dial):
+    def get_metrics(self, final_goal, dial):
         reqs = {}
         goal = {}
         counts = {}
@@ -1188,8 +1218,8 @@ class turn_level_session(object):
             counts[req+'_total'] = 0
             counts[req+'_offer'] = 0
         for domain in ontology.all_domains:
-            if init_goal.get(domain):
-                true_goal = init_goal
+            if final_goal.get(domain):
+                true_goal = final_goal
                 goal = self.evaluator._parseGoal(goal, true_goal, domain)
         for domain in goal.keys():
             reqs[domain] = goal[domain]['requestable']
@@ -1206,6 +1236,9 @@ class turn_level_session(object):
             else:
                 sent_ids[-1]=eos_id
             sent_ids=[sos_id]+sent_ids
+            if sent_ids.count(sos_id)>1:# more than 1 start token
+                last=sent_ids[::-1].index(sos_id)+1
+                sent_ids=sent_ids[-last:]
             outputs.append(tokenizer.decode(sent_ids))
         return outputs
 

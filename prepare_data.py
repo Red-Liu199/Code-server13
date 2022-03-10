@@ -1,11 +1,12 @@
 import json
+from textwrap import indent
 slot_list_act=[]
 intent_list=[]
 from reader import MultiWozReader
 from transformers import GPT2Tokenizer
 import json
 import ontology
-tokenizer=GPT2Tokenizer.from_pretrained('experiments_21/turn-level-DS/best_score_model')
+tokenizer=GPT2Tokenizer.from_pretrained('experiments_21/turn-level-DS-100/best_score_model')
 reader = MultiWozReader(tokenizer)
 
 def act_dict_to_aspn(act):
@@ -178,6 +179,21 @@ def prepare_us_data():
 
     json.dump(new_data, open(save_path, 'w'), indent=2)
 
+def get_goal_label():
+    data=json.load(open('data/multi-woz-2.1-processed/data_for_us0.json', 'r'))
+    total, change = 0, 0
+    for dial_id, dial in data.items():
+        pv_goal={}
+        for turn in dial[::-1]:
+            total+=1
+            goal=reader.accumulate_goal(pv_goal, reader.aspan_to_act_dict(turn['usr_act'],side='user'))
+            if goal!=reader.aspan_to_act_dict(turn['goal'], side='user'):
+                change+=1
+            turn['goal']=reader.goal_to_gpan(goal)
+            pv_goal=goal
+    print('Total:', total, 'change:', change)
+    json.dump(data, open('data/multi-woz-2.1-processed/data_for_us.json', 'w'), indent=2)
+
 def temp():
     path='data/multi-woz-2.1-processed/data_for_us.json'
     path1='data/multi-woz-2.1-processed/data_for_damd_fix.json'
@@ -232,10 +248,26 @@ def prepare_modular_data():
     json.dump(dm_data,open('data/multi-woz-2.1-processed/data_for_dm.json', 'w'), indent=2)
     #json.dump(nlg_data,open('data/multi-woz-2.1-processed/data_for_nlg.json', 'w'), indent=2)
 
+def prepare_rl_data():
+    data1=json.load(open('data/multi-woz-2.1-processed/data_for_us.json', 'r'))
+    data2=json.load(open('data/multi-woz-2.1-processed/data_for_rl0.json', 'r'))
+    for dial_id, dial in data1.items():
+        for i, turn in enumerate(dial):
+            turn['goal']='<sos_g> '+turn['goal']+' <eos_g>'
+            turn['usr_act']='<sos_ua> '+turn['usr_act']+' <eos_ua>'
+            turn['user']='<sos_u> '+turn['user']+' <eos_u>'
+            turn['aspn']=data2[dial_id]['log'][i]['aspn']
+            turn['bspn']=data2[dial_id]['log'][i]['bspn']
+            turn['db']=data2[dial_id]['log'][i]['db']
+            turn['resp']=data2[dial_id]['log'][i]['resp']
+            turn.pop('constraint')
+            turn.pop('sys_act')
+    json.dump(data1, open('data/multi-woz-2.1-processed/data_for_rl.json', 'w'), indent=2)
 
 if __name__ == "__main__":
     #prepare_us_data()
     #temp()
-    prepare_modular_data()
+    #prepare_modular_data()
+    prepare_rl_data()
     
     

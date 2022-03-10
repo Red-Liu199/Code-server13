@@ -137,8 +137,11 @@ class Modal(object):
             #divide the datasets
             if not os.path.exists(cfg.divided_path):
                 train_data=self.reader.train
-                temp_path=os.path.join(cfg.data_path,'divided_data{}.json'.format(cfg.spv_proportion-5))
-                logging.info(temp_path)
+                if cfg.train_us:
+                    temp_path=os.path.join(cfg.data_path,'divided_us_data{}.json'.format(cfg.spv_proportion-5))
+                else:
+                    temp_path=os.path.join(cfg.data_path,'divided_data{}.json'.format(cfg.spv_proportion-5))
+                #logging.info(temp_path)
                 if os.path.exists(temp_path):
                     encoded_data = json.loads(open(temp_path, 'r', encoding='utf-8').read())
                     add_len=int(0.05*len(train_data))
@@ -157,6 +160,7 @@ class Modal(object):
                     json.dump(encoded_data, open(cfg.divided_path, 'w'), indent=2)
             else:
                 encoded_data = json.loads(open(cfg.divided_path, 'r', encoding='utf-8').read())
+                logging.info('Reading data from {}'.format(cfg.divided_path))
                 self.pre_data=encoded_data['pre_data']
                 num_dials=len(self.pre_data)
             all_batches = self.reader.get_batches('train',data=self.pre_data)
@@ -465,6 +469,200 @@ class Modal(object):
             logging.info('------Running ablation experiments of semi-VL------')
         else:
             logging.info('------Running variational learning------')
+        data=json.loads(open(cfg.divided_path, 'r', encoding='utf-8').read())
+        data_lab=data['pre_data']
+        data_unl=data['post_data']
+        logging.info('Labeled dials:{}, unlabeled dials:{}'.format(len(data_lab),len(data_unl)))
+        num_dials=len(data_lab)+len(data_unl)
+        
+        cfg.batch_size=cfg.batch_size*cfg.gradient_accumulation_steps
+        batches_lab=self.reader.get_batches('train',data=data_lab)
+        label_turns=self.reader.set_stats['train']['num_turns']
+        batches_unl=self.reader.get_batches('train',data=data_unl)
+        unlabel_turns=self.reader.set_stats['train']['num_turns']
+        all_batches=[]
+        data_repeate=3 if cfg.spv_proportion<=15 else 1
+        label_turns*=data_repeate
+        num_turns=label_turns+unlabel_turns
+        for _ in range(data_repeate-1):
+            num_dials+=len(data_lab)
+
+        if cfg.debugging:
+            batches_lab=[]
+            #batches_unl=[]
+            batches_unl=batches_unl[:len(batches_unl)//15]
+
+        for _ in range(data_repeate):
+            for batch in batches_lab:
+                all_batches.append({'batch':self.reader.transpose_batch(batch),'supervised':True})
+        for batch in batches_unl:
+            all_batches.append({'batch':self.reader.transpose_batch(batch),'supervised':False})
+        batch_num=sum([len(item['batch']) for item in all_batches])
+        logging.info('Total turns:{}, steps:{}'.format(num_turns, batch_num))
+        # cleare memory
+        batches_lab=[]
+        batches_unl=[]
+        optimizer1, scheduler1 = self.get_sep_optimizers(num_turns,self.PrioriModel, num_batches=batch_num)
+        optimizer2, scheduler2 = self.get_sep_optimizers(num_turns,self.PosteriorModel, num_batches=batch_num)
+
+        # log info
+        logging.info("  Num Epochs = %d", cfg.epoch_num)
+        logging.info("  Batch size  = %d", cfg.batch_size)
+        logging.info('  Num Batches = %d', len(all_batches))
+        log_inputs = 3
+        global_step = 0
+        max_score=0
+        early_stop_count=cfg.early_stop_count
+        if cfg.use_scheduler:
+            warmup_epochs=cfg.warmup_steps*cfg.batch_size//num_dials if cfg.warmup_steps>=0 else int(cfg.epoch_num*cfg.warmup_ratio)
+            logging.info('Warmup epochs:{}'.format(warmup_epochs))
+        weight_decay_count=cfg.weight_decay_count
+        lr=cfg.lr
+        for epoch in range(cfg.epoch_num):
+            epoch_step = 0
+            tr_loss, sup_loss, uns_loss = 0.0, 0.0, 0.0
+            sup_step, uns_step=0, 0
+            btm = time.time()
+            self.PrioriModel.zero_grad()
+            self.PosteriorModel.zero_grad()
+            random.shuffle(all_batches)
+
+            for batch_idx, dial_batch_dict in enumerate(all_batches):
+                pv_batch=None
+                pv_bspn_batch=None
+                turn_domain_batch=[[] for _ in range(len(dial_batch_dict['batch'][0]['dial_id']))]
+                for turn_num, turn_batch in enumerate(dial_batch_dict['batch']):
+                    if dial_batch_dict['supervised']==False: # use the inference model to generate pseudo labels
+                        turn_batch, next_pv_batch, pv_bspn_batch, turn_domain_batch=self.gen_hidden_state(turn_batch,
+                            pv_batch, posterior=True, pv_bspn_batch=pv_bspn_batch, turn_domain_batch=turn_domain_batch)
+                    else:
+                        next_pv_batch=self.reader.get_pv_batch(pv_batch, user=turn_batch['user'], 
+                            resp=turn_batch['resp'], bspn=turn_batch['bspn'])
+                    first_turn = (turn_num == 0)
+                    mini_batches, mini_pv_batches=self.reader.split_turn_batch(turn_batch, cfg.origin_batch_size, other_batch=pv_batch)
+                    for i, batch in enumerate(mini_batches):
+                        mini_pv_batch=None if turn_num==0 else mini_pv_batches[i]
+                        if not dial_batch_dict['supervised'] and not cfg.VL_ablation:
+                            # if the batch is not unsupervised, then we conduct unsupervised VL method
+                            # ablation study: treat all batches, whether labeled or pseudo labeled, as supervised batches
+                            inputs_prior, labels_prior = self.reader.convert_batch_turn(batch, mini_pv_batch, first_turn, posterior=False)
+                            inputs_posterior, labels_posterior = self.reader.convert_batch_turn(batch, mini_pv_batch, first_turn, posterior=True)
+                            self.PrioriModel.train()
+                            self.PosteriorModel.train()
+                            if log_inputs > 0 and cfg.example_log:  # log inputs for the very first two turns
+                                logging.info('Prior examples:\n{}'.format(self.tokenizer.decode(inputs_prior['contexts'][0])))
+                                logging.info("Posterior examples:\n{}".format(self.tokenizer.decode(inputs_posterior['contexts'][0])))
+                                log_inputs -= 1
+
+                            # to tensor
+                            inputs_prior = self.add_torch_input(inputs_prior)#B,T
+                            inputs_posterior = self.add_torch_input(inputs_posterior,posterior=True)
+                            labels_prior=self.add_torch_input(labels_prior)#B,T
+                            labels_posterior=self.add_torch_input(labels_posterior,posterior=True)
+                            # loss
+                            outputs_prior=self.PrioriModel(inputs_prior['contexts_tensor'])
+                            outputs_posterior=self.PosteriorModel(inputs_posterior['contexts_tensor'])#B,T,V
+                            logits_pri=outputs_prior[0]
+                            logits_post=outputs_posterior[0]
+                            #straight through trick
+                            ST_inputs_prior, resp_label=self.get_ST_input(inputs_prior['contexts_tensor'],\
+                                    logits_post,labels_prior['contexts_tensor'],labels_posterior['contexts_tensor'])
+                            loss_kl=self.get_kl_loss(logits_pri,logits_post.to(self.device1),\
+                                    labels_prior['contexts_tensor'],labels_posterior['contexts_tensor'].to(self.device1))
+                            
+                            embed_prior=ST_inputs_prior.matmul(self.PrioriModel.get_input_embeddings().weight)#multiple the input embedding
+                            outputs1=self.PrioriModel(inputs_embeds=embed_prior)
+                            loss_ce=self.calculate_loss_and_accuracy(outputs1, resp_label)
+                            loss=loss_ce+cfg.kl_loss_weight*loss_kl
+                            if cfg.loss_reg:
+                                loss=loss/cfg.gradient_accumulation_steps
+                            loss.backward()
+                            tr_loss+=loss.item()
+                            uns_loss+=loss.item()
+                            uns_step+=1
+                            torch.nn.utils.clip_grad_norm_(self.PrioriModel.parameters(), 5.0)
+                            torch.nn.utils.clip_grad_norm_(self.PosteriorModel.parameters(), 5.0)
+                        else:# supervised training
+                            inputs_prior, labels_prior = self.reader.convert_batch_turn(batch, mini_pv_batch, first_turn, posterior=False)
+                            inputs_posterior, labels_posterior = self.reader.convert_batch_turn(batch, mini_pv_batch, first_turn, posterior=True)
+                            if log_inputs > 0 and cfg.example_log and not dial_batch_dict['supervised']: 
+                                logging.info('Prior examples:\n{}'.format(self.tokenizer.decode(inputs_prior['contexts'][0])))
+                                logging.info("Posterior examples:\n{}".format(self.tokenizer.decode(inputs_posterior['contexts'][0])))
+                                log_inputs -= 1
+                            inputs_prior = self.add_torch_input(inputs_prior)#B,T
+                            labels_prior=self.add_torch_input(labels_prior)#B,T
+                            inputs_posterior=self.add_torch_input(inputs_posterior,posterior=True)
+                            labels_posterior=self.add_torch_input(labels_posterior,posterior=True)
+
+                            outputs1 = self.PrioriModel(inputs_prior['contexts_tensor'])
+                            loss_pri=self.calculate_loss_and_accuracy(outputs1,labels_prior['contexts_tensor'])
+                            outputs2=self.PosteriorModel(inputs_posterior['contexts_tensor'])
+                            loss_pos=self.calculate_loss_and_accuracy(outputs2,labels_posterior['contexts_tensor'])
+
+                            if cfg.loss_reg:
+                                loss_pri=loss_pri/cfg.gradient_accumulation_steps
+                                loss_pos=loss_pos/cfg.gradient_accumulation_steps
+                            loss=loss_pri+loss_pos.to(self.device1)
+                            loss.backward()
+                            tr_loss+=loss.item()
+                            sup_loss+=loss.item()
+                            sup_step+=1
+                            torch.nn.utils.clip_grad_norm_(self.PrioriModel.parameters(), 5.0)
+                            torch.nn.utils.clip_grad_norm_(self.PosteriorModel.parameters(), 5.0)
+                    epoch_step+=1
+                    optimizer1.step()
+                    optimizer1.zero_grad()
+                    optimizer2.step()
+                    optimizer2.zero_grad()
+                    global_step+=1
+                    if cfg.use_scheduler:
+                        scheduler1.step()
+                        scheduler2.step()
+                    if self.tb_writer:
+                        self.tb_writer.add_scalar('lr1', optimizer1.param_groups[0]["lr"],global_step)
+                        self.tb_writer.add_scalar('lr2', optimizer2.param_groups[0]["lr"],global_step)
+                        self.tb_writer.add_scalar('loss', loss.item(), global_step)
+                    pv_batch=next_pv_batch
+            
+            logging.info('Epoch: {}, Train epoch time: {:.2f} min, loss:{:.3f}, avg_sup_loss:{:.3f}, avg_uns_loss:{:.3f}'.format(epoch, 
+                (time.time()-btm)/60, tr_loss/epoch_step, sup_loss/(sup_step+1e-10), uns_loss/(uns_step+1e-10)))
+            eval_result=self.validate_fast(data='dev')
+            if self.tb_writer:
+                self.tb_writer.add_scalar('joint_goal',eval_result['joint_acc'],epoch)
+                self.tb_writer.add_scalar('match',eval_result['match'],epoch)
+                self.tb_writer.add_scalar('success',eval_result['success'],epoch)
+                self.tb_writer.add_scalar('bleu',eval_result['bleu'],epoch)
+                self.tb_writer.add_scalar('combined_score',eval_result['score'],epoch)
+            
+            if eval_result['score']>max_score:
+                max_score=eval_result['score']
+                self.save_model(path='best_score_model')
+                early_stop_count=cfg.early_stop_count
+            else:
+                weight_decay_count-=1
+                if weight_decay_count==0 and not cfg.use_scheduler:
+                    lr=lr*cfg.lr_decay
+                    for group in optimizer1.param_groups:
+                        group['lr'] = lr
+                    for group in optimizer2.param_groups:
+                        group['lr'] = lr
+                    logging.info("learning rate decay to {}".format(lr))
+                    weight_decay_count = cfg.weight_decay_count
+                if epoch>=warmup_epochs:
+                    early_stop_count-=1
+                    logging.info('early stop count:%d'%early_stop_count)
+            if lr<1e-9 and not cfg.use_scheduler:
+                logging.info('learning rate too small, break')
+                break
+            if early_stop_count==0 and cfg.early_stop:
+                logging.info('early stopped')
+                break
+    
+    def semi_VL_US(self):
+        if cfg.VL_ablation:
+            logging.info('------Running ablation experiments of semi-VL------')
+        else:
+            logging.info('------Running variational learning for user simulator------')
         data=json.loads(open(cfg.divided_path, 'r', encoding='utf-8').read())
         data_lab=data['pre_data']
         data_unl=data['post_data']
@@ -1124,35 +1322,55 @@ class Modal(object):
             return contexts
 
 
-    def get_bspn(self,bs_tensor, return_db=False, turn_domain=None):
+    def get_bspn(self,bs_tensor, return_db=False, turn_domain=None, bs_prob=None):
         # return_db: return db results of bspn
         # turn_domain: a list of domain
         if not isinstance(bs_tensor,list):
             bs_batch=bs_tensor.cpu().tolist()
+            if bs_prob:
+                bs_prob=bs_prob.cpu().tolist()
         else:
             bs_batch=bs_tensor
         bs_gen=[]
         db_gen=[]
+        bp_gen=[]
         eos_b_id=self.eos_b_id
         sos_b_id=self.sos_b_id
         for i,bs in enumerate(bs_batch):
+            if bs_prob:
+                prob=bs_prob[i]
             if eos_b_id in bs:
-                bs=[sos_b_id]+bs[:bs.index(eos_b_id)+1]
+                idx=bs.index(eos_b_id)+1
+                bs=[sos_b_id]+bs[:idx]
+                if bs_prob:
+                    prob=[0]+prob[:idx]
             else:
                 bs[-1]=eos_b_id
                 bs=[sos_b_id]+bs
+                if bs_prob:
+                    prob[-1]=1
+                    prob=[0]+prob
             if bs.count(sos_b_id)>1:
                 last=bs[::-1].index(sos_b_id)+1
                 bs=bs[-last:]
-
+                if bs_prob:
+                    prob=prob[-last:]
             bs_gen.append(bs)
+            if bs_prob:
+                assert len(bs)==len(prob)
+                bp_gen.append(prob)
+
             if return_db:
                 db_result=self.reader.bspan_to_DBpointer(self.tokenizer.decode(bs), turn_domain[i])
                 db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>'))
                 db_gen.append(db)
         if return_db:
+            if bs_prob:
+                return bs_gen,db_gen, bp_gen
             return bs_gen,db_gen
         else:
+            if bs_prob:
+                return bs_gen, bp_gen
             return bs_gen
 
     def get_aspn(self,aspn_tensor):
@@ -1191,6 +1409,22 @@ class Modal(object):
                 resp=resp[-last:]
             resp_gen.append(resp)
         return resp_gen
+    
+    def get_user(self,u_tensor):
+        u_batch=u_tensor.cpu().tolist()
+        u_gen=[]
+
+        for i ,u in enumerate(u_batch):
+            if self.eos_u_id in u:
+                u=[self.sos_ua_id]+u[:u.index(self.eos_u_id)+1]
+            else:
+                u[-1]=self.eos_u_id
+                u=[self.sos_ua_id]+u
+            if u.count(self.sos_ua_id)>1:
+                last=u[::-1].index(self.sos_ua_id)+1
+                u=u[-last:]
+            u_gen.append(u)
+        return u_gen
 
     def get_turn_domain(self, turn_domain_batch, bs_batch, pv_bs_batch=None):
 
@@ -1277,14 +1511,14 @@ class Modal(object):
         
         self.PrioriModel.eval()
         eval_data = self.reader.get_eval_data(data)
-        #if cfg.debugging:
-         #   eval_data=eval_data[:32]
+        if cfg.debugging:
+            eval_data=eval_data[:32]
         origin_batch_size=cfg.batch_size
         cfg.batch_size=cfg.eval_batch_size
         batches=self.reader.get_batches('test',data=eval_data)
         result_path=os.path.join(cfg.eval_load_path,'result.json')
         
-        if os.path.exists(result_path) and cfg.mode=='test':
+        if os.path.exists(result_path) and cfg.mode=='test' and cfg.use_existing_result:
             #results,field=self.reader.load_result(result_path)
             results=json.load(open(result_path, 'r'))
             joint_acc=compute_jacc(results)
@@ -1300,7 +1534,7 @@ class Modal(object):
                 success=std_metrics['success']['success']['total']
                 score = 0.5 * (success + match) + bleu
                 logging.info(std_metrics)
-                logging.info('validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
+                logging.info('[std] validation %2.2f  %2.2f  %2.2f  %.2f  %.3f' % (match, success, bleu, score, joint_acc))
 
             eval_results = {}
             eval_results['bleu'] = bleu
@@ -1308,7 +1542,6 @@ class Modal(object):
             eval_results['match'] = match
             eval_results['score'] = score
             eval_results['joint_acc']=joint_acc
-            eval_results['result'] = 'validation [CTR] match: %2.2f  success: %2.2f  bleu: %2.2f    score: %.2f' % (match, success, bleu, score)
             return eval_results
         
         # valid_losses = []
@@ -1337,7 +1570,7 @@ class Modal(object):
                 else:
                     logging.info(str(exception))
                     raise exception
-        results, field = self.reader.wrap_result_lm(result_collection)
+        results, _ = self.reader.wrap_result_lm(result_collection)
         logging.info('Inference time:{:.3f} min'.format((time.time()-st)/60))
 
         joint_acc=compute_jacc(results)
@@ -1536,21 +1769,33 @@ class Modal(object):
                             return_dict=True,use_cache=True,past_key_values=past_key_values)
 
                     past_key_values=outputs.past_key_values
-
-                    preds=outputs.logits[:,-1,:].argmax(-1)#B
+                    maximum=F.softmax(outputs.logits[:, -1, :], -1).max(-1)
+                    #preds=outputs.logits[:,-1,:].argmax(-1)#B
+                    preds=maximum.indices
+                    probs=maximum.values
                     if i==0:
                         bs_tensor=preds.unsqueeze(1)
+                        if cfg.save_prob:
+                            bs_prob=probs.unsqueeze(1)
                     else:
                         bs_tensor=torch.cat([bs_tensor,preds.unsqueeze(1)],dim=1)
+                        if cfg.save_prob:
+                            bs_prob=torch.cat([bs_prob, probs.unsqueeze(1)], dim=1)
                     attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(device)),dim=1)
                     inputs=preds.unsqueeze(1)
                     end_flag+=(preds.cpu().numpy()==eos_b_id).astype(float)
                     if sum(end_flag==0)==0:
                         break
                 if cfg.use_true_domain_for_ctr_eval:
-                    bs_gen,db_gen=self.get_bspn(bs_tensor,return_db=True, turn_domain=turn_batch['turn_domain'])
+                    if cfg.save_prob:
+                        bs_gen,db_gen, bp_gen=self.get_bspn(bs_tensor,return_db=True, turn_domain=turn_batch['turn_domain'], bs_prob=bs_prob)
+                    else:
+                        bs_gen,db_gen=self.get_bspn(bs_tensor,return_db=True, turn_domain=turn_batch['turn_domain'])
                 else:
-                    bs_gen=self.get_bspn(bs_tensor)
+                    if cfg.save_prob:
+                        bs_gen, bp_gen=self.get_bspn(bs_tensor, bs_prob=bs_prob)
+                    else:
+                        bs_gen=self.get_bspn(bs_tensor)
                     turn_domain_batch, db_gen=self.get_turn_domain(turn_domain_batch, bs_gen, pv_bspn_batch)
                 # generate aspn and resp
                 past_key_values=None
@@ -1596,12 +1841,80 @@ class Modal(object):
                     aspn_gen.append(aspn)
                 pv_batch=self.reader.get_pv_batch(pv_batch, turn_batch['user'], resp_gen, bs_gen)
                 turn_batch['bspn_gen']=bs_gen
+                if cfg.save_prob:
+                    turn_batch['bspn_prob']=bp_gen
                 turn_batch['aspn_gen']=aspn_gen
                 turn_batch['resp_gen']=resp_gen
                 turn_batch['db_gen']=db_gen
                 pv_bspn_batch=bs_gen
         return self.reader.inverse_transpose_batch(batch)
     
+    def generate_batch_us(self, batch):
+        batch=self.reader.transpose_batch(batch)
+        max_len=75
+
+        batch_size=len(batch[0]['dial_id'])
+        contexts=[[] for i in range(batch_size)]
+        bs_gen=[]
+        db_gen=[]
+        resp_gen=[]
+        pv_batch=None
+        device=self.model.device
+        self.model.eval()
+        with torch.no_grad():
+            for turn_num, turn_batch in enumerate(batch):
+                # we first generate aspn
+
+                # we generate user act and user utterance together
+                past_key_values=None
+                end_flag=np.zeros(batch_size)
+                contexts=self.reader.convert_eval_batch_turn_us(turn_batch, pv_batch)
+                
+                if self.global_output>0 and cfg.mode=='test':
+                    logging.info(self.tokenizer.decode(contexts[0]))
+                    self.global_output-=1
+                
+                inputs,attentions=self.reader.batch_align(contexts,left_len=max_len,return_attn=True)
+                inputs=torch.tensor(inputs).to(device)
+                attentions=torch.tensor(attentions).to(device)
+                for i in range(max_len):
+                    position_ids = attentions.long().cumsum(-1) - 1
+                    position_ids.masked_fill_(attentions == 0, 1)
+                    if past_key_values is not None:
+                        position_ids=position_ids[:, -1].unsqueeze(-1)
+                    outputs=self.model(inputs,attention_mask=attentions,position_ids=position_ids,\
+                            return_dict=True,use_cache=True,past_key_values=past_key_values)
+
+                    past_key_values=outputs.past_key_values
+                    preds=outputs.logits[:,-1,:].argmax(-1)#B
+                    if i==0:
+                        u_tensor=preds.unsqueeze(1)
+                    else:
+                        u_tensor=torch.cat([u_tensor,preds.unsqueeze(1)],dim=1)
+                    attentions=torch.cat((attentions,torch.ones(batch_size,1).long().to(device)),dim=1)
+                    inputs=preds.unsqueeze(1)
+                    end_flag+=(preds.cpu().numpy()==self.eos_u_id).astype(float)
+                    if sum(end_flag==0)==0:
+                        break
+                u_gen=self.get_user(u_tensor)
+                user_gen=[]
+                usr_act_gen=[]
+                for i, temp in enumerate(u_gen):
+                    if self.eos_ua_id in temp:
+                        usr_act=temp[:temp.index(self.eos_ua_id)+1]
+                    else:
+                        usr_act=temp[:-1]+[self.eos_ua_id]
+                    if self.sos_u_id in temp:
+                        user=temp[temp.index(self.sos_u_id):]
+                    else:
+                        user=[self.sos_u_id]+temp[1:]
+                    user_gen.append(user)
+                    usr_act_gen.append(usr_act)
+                pv_batch=self.reader.get_pv_batch(pv_batch, resp=turn_batch['resp'], aspn=turn_batch['sys_act'], side='user')
+                turn_batch['usr_act_gen']=usr_act_gen
+                turn_batch['user_gen']=user_gen
+        return self.reader.inverse_transpose_batch(batch)
+
     def validate_pos(self,data='dev'):
         result_path=os.path.join(cfg.eval_load_path,'result.csv')
         if os.path.exists(result_path) and 'test' in cfg.mode:
@@ -1788,7 +2101,10 @@ def main():
     fix_cfg()
     cfg._init_logging_handler(args.mode)
     device=cfg.cuda_device
-    cfg.divided_path=os.path.join(cfg.data_path,'divided_data{}.json'.format(cfg.spv_proportion))
+    if cfg.train_us:
+        cfg.divided_path=os.path.join(cfg.data_path,'divided_us_data{}.json'.format(cfg.spv_proportion))
+    else:
+        cfg.divided_path=os.path.join(cfg.data_path,'divided_data{}.json'.format(cfg.spv_proportion))
 
     # fix random seed
     torch.manual_seed(cfg.seed)
@@ -1802,7 +2118,10 @@ def main():
     if args.mode =='pretrain' or args.mode=='train':
         m.pretrain_turn_level(posterior=cfg.posterior_train)
     elif args.mode =='semi_VL':
-        m.semi_VL()
+        if cfg.train_us:
+            m.semi_VL_US()
+        else:
+            m.semi_VL()
     elif args.mode =='semi_jsa':
         m.semi_jsa()
     elif args.mode == 'semi_ST':

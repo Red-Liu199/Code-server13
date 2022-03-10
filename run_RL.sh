@@ -1,13 +1,14 @@
-path1=experiments_21/RL-DS-baseline/best_score_model
-#path1=experiments_21/all_DM-1-5_sd11_lr0.0001_bs8_ga4/best_score_model
-path2=experiments_21/RL-US-baseline-new/best_score_model
-exp_name=RL-1-11-beam-1
+#path1=experiments_21/turn-level-DS-100/best_score_model
+path1=experiments_21/turn-level-DS-97_34-otl/best_score_model
+path2=experiments_21/US-with-NLU/best_score_model
+#path2=experiments_21/all_US-without-NLU-otl/best_score_model
+exp_name=RL-3-9-alter-nlu
 python session.py -mode train\
  -cfg use_scheduler=False\
  lr=2e-5\
  weight_decay_count=100\
  seed=11\
- epoch_num=100\
+ epoch_num=50\
  training_batch_size=16\
  rl_accumulation_steps=12\
  interaction_batch_size=32\
@@ -26,16 +27,15 @@ python session.py -mode train\
  iterative_update=False\
  on_policy=True\
  beam_search=True\
- beam_size=10
+ user_nlu=True
 
-path1=experiments_21/RL-DS-baseline/best_score_model
 path2=RL_exp/${exp_name}/best_US
 python session.py -mode train\
  -cfg use_scheduler=False\
  lr=2e-5\
  weight_decay_count=100\
  seed=11\
- epoch_num=100\
+ epoch_num=50\
  training_batch_size=16\
  rl_accumulation_steps=12\
  interaction_batch_size=32\
@@ -54,4 +54,4 @@ python session.py -mode train\
  iterative_update=False\
  on_policy=True\
  beam_search=True\
- beam_size=10
+ user_nlu=True

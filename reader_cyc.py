@@ -1119,29 +1119,6 @@ class MultiWozReader(_ReaderBase):
                             v.remove(eos_syntax[key])
                         if sos_syntax[key] in v:
                             v.remove(sos_syntax[key])
-                        # if key != 'resp_gen':
-                        #     # remove eos/sos in span
-                        #     if eos_syntax[key] in v:
-                        #         v.remove(eos_syntax[key])
-                        #     if sos_syntax[key] in v:
-                        #         v.remove(sos_syntax[key])
-                        # else: # 'resp_gen'
-                        #     sos_index = 0
-                        #     eos_index = -1
-                        #     if sos_syntax[key] in v:
-                        #         sos_index = v.index(sos_syntax[key])
-                        #     if eos_syntax[key] in v:
-                        #         eos_index = v.index(eos_syntax[key])
-                        #     else:
-                        #         pass # take too long
-                        #         # no <eos_r> found, stop at any eos_tokens
-                        #         # for i in range(sos_index+1, len(v)):
-                        #         #     if v[i] in sos_syntax.values() or v[i] in eos_syntax.values():
-                        #         #         eos_index = i
-                        #     v = v[sos_index+1: eos_index]
-
-
-                        # v = self.tokenizer.convert_tokens_to_string(v)
                         v = " ".join(v)
                     else: 
                         pass # v = v

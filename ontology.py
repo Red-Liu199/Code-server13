@@ -22,6 +22,12 @@ informable_slots = {
 
 db_domains = ['restaurant', 'hotel', 'attraction', 'train']
 
+book_domains={
+    'hotel': ['stay', 'day', 'people'],
+    'train': ['people'], 
+    'restaurant': ['time', 'day', 'people']
+    }
+
 all_infslot = ["type", "parking", "pricerange", "internet", "stay", "day", "people", "area", "stars", "name",
                      "leave", "destination", "departure", "arrive", "department", "food", "time"]
 # count: 17
@@ -63,7 +69,7 @@ dialog_act_params = {
     'nooffer': all_slots + ['choice'],
     'recommend': all_reqslot + ['choice', 'open'],
     'select': all_slots +['choice'],
-    # 'book': ['time', 'people', 'stay', 'reference', 'day', 'name', 'choice'],
+    'book': ['time', 'people', 'stay', 'reference', 'day', 'name', 'choice'],
     'nobook': ['time', 'people', 'stay', 'reference', 'day', 'name', 'choice'],
     'offerbook':all_slots + ['choice'],
     'offerbooked': all_slots + ['choice'],

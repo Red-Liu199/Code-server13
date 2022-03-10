@@ -11,6 +11,6 @@ python main_turn_level.py -mode pretrain\
     posterior_train=$posterior\
     save_type=max_score\
     turn_level=True\
-    input_history=False\
+    input_history=True\
     input_prev_resp=True\
-    exp_no=turn_level_${ratio}
+    exp_no=turn_level_HRU_${ratio}

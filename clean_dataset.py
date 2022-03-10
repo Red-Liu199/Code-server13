@@ -239,13 +239,13 @@ def clean_slot_values(domain, slot, value):
                 value = "15:00"
     elif domain == 'taxi':
         if slot in ['arriveBy', 'arrive by']:
-            slot = 'arriveby'
+            slot = 'arrive'
             if value == '1530':
                 value = '15:30'
             elif value == '15 minutes':
                 value = ''
         elif slot in ['leaveAt', 'leave at']:
-            slot = 'leaveat'
+            slot = 'leave'
             if value == '1:00':
                 value = '01:00'
             elif value == '21:4':
@@ -266,7 +266,7 @@ def clean_slot_values(domain, slot, value):
 
     elif domain == 'train':
         if slot in ['arriveBy', 'arrive by']:
-            slot = 'arriveby'
+            slot = 'arrive'
             if value == '1':
                 value = '01:00'
             elif value in ['does not care', 'doesnt care', "doesn't care"]:
@@ -280,7 +280,7 @@ def clean_slot_values(domain, slot, value):
             if value =='doesnt care' or value == "doesn't care":
                 value = "do n't care"
         elif slot in ['leaveAt', 'leave at']:
-            slot = 'leaveat'
+            slot = 'leave'
             if value == '2:30':
                 value = '02:30'
             elif value == '7:54':

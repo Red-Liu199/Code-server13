@@ -48,10 +48,6 @@ def compute_jacc(data,default_cleaning_flag=True):
         if set(turn_target) == set(turn_pred):
             joint_acc += 1
             join_flag = True
-        
-        if not join_flag:
-            turn_data['gtbs'] = turn_target
-            turn_data['predbs'] = turn_pred
         num_turns += 1
 
     joint_acc /= num_turns

@@ -15,7 +15,7 @@ from matplotlib import axes
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from significance_test import matched_pair
 
-tokenizer=GPT2Tokenizer.from_pretrained('experiments_21/turn-level-DS/best_score_model')
+tokenizer=GPT2Tokenizer.from_pretrained('experiments_21/turn-level-DS-100/best_score_model')
 reader = MultiWozReader(tokenizer)
 evaluator = MultiWozEvaluator(reader)
 std_evaluator=Evaluator(bleu=1, success=1, richness=0)
@@ -672,24 +672,56 @@ def compare_list(list1, list2):
             c2+=1
     print(c1,c2)
 
+def get_nooffer_slot():
+    data=json.load(open('data/multi-woz-2.1-processed/data_for_us.json', 'r'))
+    nooffer_dict={}
+    for dial in data.values():
+        for turn in dial:
+            if '[nooffer]' in turn['sys_act']:
+                sys_act=reader.aspan_to_act_dict(turn['sys_act'], side='sys')
+                for domain in sys_act:
+                    if 'nooffer' in sys_act[domain]:
+                        if domain not in nooffer_dict:
+                            nooffer_dict[domain]=[]
+                        for slot in sys_act[domain]['nooffer']:
+                            if slot not in nooffer_dict[domain]:
+                                nooffer_dict[domain].append(slot)
+    print(nooffer_dict)
+
+def compare_init_goal():
+    data0=json.load(open('data/multi-woz-2.1-processed/data_for_us0.json', 'r'))
+    data=json.load(open('data/multi-woz-2.1-processed/data_for_us.json', 'r'))
+    count, total = 0, 0
+    total_slots, unequal_slots=0, 0
+    for dial_id, dial in data.items():
+        init_goal=reader.aspan_to_act_dict(dial[0]['goal'], side='user')
+        init_goal0=reader.aspan_to_act_dict(data0[dial_id][0]['goal'], side='user')
+        not_equal=False
+        total+=1
+        for domain in init_goal:
+            if domain not in init_goal0:
+                not_equal=True
+                continue
+            for intent in init_goal[domain]:
+                if intent not in init_goal0[domain]:
+                    not_equal=True
+                    continue
+                if isinstance(init_goal[domain][intent],dict):
+                    if init_goal[domain][intent]!=init_goal0[domain][intent]:
+                        not_equal=True
+                        continue
+                elif isinstance(init_goal[domain][intent], list):
+                    if set(init_goal[domain][intent])!=set(init_goal0[domain][intent]):
+                        not_equal=True
+                        continue
+        if not not_equal:
+            count+=1
+    print('Equal initial goal:', count, 'total:', total)
+                    
+        
 
 if __name__=='__main__':
     '''
-    path='/home/liuhong/myworkspace/experiments_21/RL-DS-baseline/best_score_model/result.json'
-    data1=json.load(open(path, 'r', encoding='utf-8'))
-    count_act(data1)
-    count_state(data1)
-    path='/home/liuhong/myworkspace/RL_exp/RL-1-10-beam-1/best_DS/result.json'
-    data2=json.load(open(path, 'r', encoding='utf-8'))
-    count_act(data2)
-    count_state(data2)
-    
-    path='/home/liuhong/myworkspace/experiments_21/RL-DS-baseline/best_score_model/validate_result.json'
-    data=json.load(open(path, 'r', encoding='utf-8'))
-    count_online(data)
-    path='/home/liuhong/myworkspace/RL_exp/RL-1-10-beam-1/best_DS/validate_result.json'
-    data=json.load(open(path, 'r', encoding='utf-8'))
-    count_online(data)
     
     match1, success1, bleu1, dial_order=get_metrics_list('experiments_21/RL-DS-baseline/best_score_model/result.json')
     match2, success2, bleu2, dial_order=get_metrics_list('RL_exp/RL-1-5-only_aspn/best_DS/result.json')
@@ -710,8 +742,8 @@ if __name__=='__main__':
     #find_attention_case('experiments_21/all_UBAR-wsl_sd11_lr0.0001_bs2_ga16/best_score_model', mode='bspn', turn_th=4, encode_key=['user', 'bspn'])
     #get_attentions1('experiments_21/turn-level-DS/best_score_model', encode_key=['bspn', 'resp'], mode='aspn', turn_th=4)
     #get_attentions('experiments_21/all_HRU-otl_sd11_lr0.0001_bs8_ga4/best_score_model', encode_key=['user', 'resp'], turn_th=5)
-    path='experiments_21/RL-DS-baseline/best_score_model/result.json'
-    prepare_for_std_eval(path)
+    #path='experiments_21/RL-DS-baseline/best_score_model/result.json'
+    #prepare_for_std_eval(path)
     #path2='RL_exp/rl-10-19-use-scheduler/best_DS/result.json'
     #unseen_turns=find_unseen_sys_act()
     #calculate_unseen_acc(unseen_turns, path1, path2)
@@ -727,3 +759,28 @@ if __name__=='__main__':
     #print(reader.aspan_to_act_dict(act, 'user'))
     #print(set(reader.aspan_to_act_dict(act, 'user')))
     #extract_goal()
+    #get_nooffer_slot()
+    #compare_init_goal()
+    path='experiments_21/turn-level-DS-97_34-otl/best_score_model/validate_result.json'
+    data=json.load(open(path, 'r', encoding='utf-8'))
+    print(path)
+    print('Online diversity:')
+    count_online(data)
+    path='experiments_21/turn-level-DS-97_34-otl/best_score_model/result.json'
+    print(path)
+    data1=json.load(open(path, 'r', encoding='utf-8'))
+    print('Offline diversity')
+    count_act(data1)
+    count_state(data1)
+
+    path='RL_exp/RL-3-9-joint-nlu/best_DS/validate_result.json'
+    data=json.load(open(path, 'r', encoding='utf-8'))
+    print(path)
+    print('Online diversity:')
+    count_online(data)
+    path='RL_exp/RL-3-9-joint-nlu/best_DS/result.json'
+    print(path)
+    data1=json.load(open(path, 'r', encoding='utf-8'))
+    print('Offline diversity')
+    count_act(data1)
+    count_state(data1)

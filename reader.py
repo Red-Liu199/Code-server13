@@ -1,3 +1,4 @@
+from lib2to3.pgen2 import token
 import numpy as np
 import os
 import csv
@@ -375,6 +376,7 @@ class MultiWozReader(_ReaderBase):
         self.multi_acts_record = None
         self.get_special_ids()
         self.clean_dial_id()
+        self.nooffer_options=json.load(open('data/multi-woz-2.1-processed/nooffer_options.json', 'r'))
 
     def get_exp_domains(self, exp_domains, all_domains_list):
         if 'hotel' in exp_domains:
@@ -459,8 +461,6 @@ class MultiWozReader(_ReaderBase):
         if cfg.train_us:
             #special_tokens.extend(['[book]','[fail_book]','[fail_info]','[pre_invalid]','[invalid]','<sos_g>','<eos_g>','<sos_ua>','<eos_ua>'])
             special_tokens.extend(['<sos_g>','<eos_g>','<sos_ua>','<eos_ua>'])
-        
-
         special_tokens_dict = {'additional_special_tokens': special_tokens}
         self.tokenizer.add_special_tokens(special_tokens_dict)
         logging.info('Added special tokens to gpt tokenizer.')
@@ -620,6 +620,7 @@ class MultiWozReader(_ReaderBase):
 
             if cfg.rl_train:
                 data_path='data/multi-woz-2.1-processed/data_for_rl.json'
+                #data_path='data/multi-woz-2.1-processed/data_for_us.json'
                 self.data=json.loads(open(data_path, 'r', encoding='utf-8').read().lower())
                 logging.info('Reading data from {}'.format(data_path))
             if not cfg.rl_train or 'test' in cfg.mode:
@@ -770,36 +771,55 @@ class MultiWozReader(_ReaderBase):
                 encoded_data[set].append([self.modified_encode(item[0], tokenizer), self.modified_encode(item[1], tokenizer)])
         return encoded_data
 
-    def update_goal(self, init_goal, user_act, constraint=None, sys_act=None):
+    def update_goal(self, init_goal, user_act, sys_act, constraint=None):
         # constraint and sys_act are from last turn
         goal=deepcopy(init_goal)
+        final_goal=deepcopy(init_goal)
         for domain in user_act:
             if domain not in goal:
                 continue
-            for intent, sv in user_act[domain].items():
-                if intent=='inform':
-                    for slot, value in sv.items():
-                        # In user act, price can express both price and pricerange
-                        if slot=='price' and intent in goal[domain] and slot not in goal[domain][intent]:
-                            slot='pricerange'
-                        if  'inform' in goal[domain] and slot in goal[domain]['inform']:
-                            if goal[domain]['inform'][slot]==value:
-                                goal[domain]['inform'].pop(slot)
-                            if goal[domain]['inform']=={}:
-                                goal[domain].pop('inform')
-                        elif 'book' in goal[domain] and slot in goal[domain]['book']:
-                            if goal[domain]['book'][slot]==value:
-                                goal[domain]['book'].pop(slot)
-                            if goal[domain]['book']=={}:
-                                goal[domain].pop('book')
-                elif intent=='request':
-                    for slot in sv:
-                        if slot=='price' and intent in goal[domain] and slot not in goal[domain][intent]:
-                            slot='pricerange'
-                        if 'request' in goal[domain] and slot in goal[domain]['request']:
-                            goal[domain]['request'].pop(goal[domain]['request'].index(slot))
-                            if goal[domain]['request']==[]:
-                                goal[domain].pop('request')
+            if sys_act and domain in sys_act and 'nooffer' in sys_act[domain] and 'inform' in goal[domain] and domain in self.nooffer_options:
+                # handle no offer situation: change one slot value
+                for slot in sys_act[domain]['nooffer']:
+                    if slot in goal[domain]['inform'] and slot in self.nooffer_options[domain]:
+                        origin_value=goal[domain]['inform'][slot]
+                        options=deepcopy(self.nooffer_options[domain][slot])
+                        if origin_value in options:
+                            options.pop(options.index(origin_value))
+                        new_value=random.sample(options, 1)[0]
+                        goal[domain]['inform'][slot]=new_value  
+                        break
+                # goal change --> final_goal change
+                final_goal=deepcopy(goal)  
+            else:
+                # remove user act from goal state
+                for intent, sv in user_act[domain].items():
+                    if intent=='inform':
+                        for slot, value in sv.items():
+                            # In user act, price can express both price and pricerange
+                            if slot=='price' and intent in goal[domain] and slot not in goal[domain][intent]:
+                                slot='pricerange'
+                            if  'inform' in goal[domain] and slot in goal[domain]['inform']:
+                                if goal[domain]['inform'][slot]==value:
+                                    goal[domain]['inform'].pop(slot)
+                                if goal[domain]['inform']=={}:
+                                    goal[domain].pop('inform')
+                            elif 'book' in goal[domain] and slot in goal[domain]['book']:
+                                if goal[domain]['book'][slot]==value:
+                                    goal[domain]['book'].pop(slot)
+                                if goal[domain]['book']=={}:
+                                    goal[domain].pop('book')
+                    elif intent=='request':
+                        for slot in sv:
+                            if slot=='price' and intent in goal[domain] and slot not in goal[domain][intent]:
+                                slot='pricerange'
+                            if 'request' in goal[domain] and slot in goal[domain]['request']:
+                                goal[domain]['request'].pop(goal[domain]['request'].index(slot))
+                                if goal[domain]['request']==[]:
+                                    goal[domain].pop('request')
+                    if intent=='inform' and 'inform' in goal[domain] and goal[domain]['inform']=={}:
+                        goal[domain].pop('inform')
+            
             if goal[domain]=={}:
                 goal.pop(domain)
         if constraint:
@@ -819,10 +839,12 @@ class MultiWozReader(_ReaderBase):
                     if goal[domain]=={}:
                         goal.pop(domain)
         if sys_act:
+            pass
+            '''
             for domain in sys_act:
                 if domain not in goal:
                     continue
-                for intent, slots in goal[domain].items():
+                for intent, slots in sys_act[domain].items():
                     # if system has inform the slot in last turn then user simulator needn't request
                     if (intent=='inform' or intent=='recommend') and 'request' in goal[domain]:
                         for slot in slots:
@@ -832,8 +854,44 @@ class MultiWozReader(_ReaderBase):
                             goal[domain].pop('request')
                 if goal[domain]=={}:
                     goal.pop(domain)
+            '''
                 
+        return goal, final_goal
+
+    def accumulate_goal(self, pv_goal, user_act):
+        goal=deepcopy(pv_goal) if pv_goal else {}
+        if not user_act and not pv_goal:
+            return goal
+        for domain in user_act:
+            if domain=='general': # last turn and no specific slot
+                continue
+            if domain not in goal:
+                goal.update({domain:{}})
+            for intent, sv in user_act[domain].items():
+                if intent=='inform':
+                    for slot, value in sv.items():
+                        if domain in ontology.book_domains and slot in ontology.book_domains[domain]:
+                            intent='book'
+                        if intent not in goal[domain]:
+                            goal[domain].update({intent:{slot:value}})
+                        else:
+                            goal[domain][intent].update({slot:value})
+                    if sv=={} and intent not in goal[domain] and domain in ['police', 'hospital']:
+                        goal[domain].update({intent:{}})
+                elif intent=='request':
+                    for slot in sv:
+                        if slot=='reference':
+                            continue
+                        if domain not in goal:
+                            goal.update({domain:{intent:[slot]}})
+                        elif intent not in goal[domain]:
+                            goal[domain].update({intent:[slot]})
+                        elif slot not in goal[domain][intent]:
+                            goal[domain][intent].append(slot)   
+                else:
+                    print('Unknown intent:', intent)
         return goal
+
 
     def goal_to_gpan(self, goal, cur_domain=None):
         if goal=={}:
@@ -972,7 +1030,7 @@ class MultiWozReader(_ReaderBase):
         conslen = len(aspan)
         for idx, cons in enumerate(aspan):
             cons = self.vocab.decode(cons) if type(cons) is not str else cons
-            if cons in ['<eos_a>', '<eos_ua>']:
+            if cons in ['<eos_a>', '<eos_ua>', '<eos_g>']:
                 break
             if '[' in cons and cons[1:-1] in ontology.dialog_acts:
                 domain = cons[1:-1]
@@ -987,7 +1045,7 @@ class MultiWozReader(_ReaderBase):
                 vt = aspan[vidx]
                 vt = self.vocab.decode(vt) if type(vt) is not str else vt
                 no_param_act = True
-                while vidx < conslen and vt not in ['<eos_a>', '<eos_ua>'] and '[' not in vt:
+                while vidx < conslen and vt not in ['<eos_a>', '<eos_ua>', '<eos_g>'] and '[' not in vt:
                     no_param_act = False
                     acts.append(domain+'-'+cons[1:-1]+'-'+vt)
                     vidx += 1
@@ -1023,11 +1081,11 @@ class MultiWozReader(_ReaderBase):
                 if domain not in act_dict:
                     act_dict[domain]={}
                 if intent not in act_dict[domain]:
-                    if intent=='inform':
+                    if intent in ['inform','book']:
                         act_dict[domain][intent]={}
                     elif intent=='request':
                         act_dict[domain][intent]=[]
-                if intent=='inform':
+                if intent in ['inform', 'book']:
                     if slot in ontology.all_slots:
                         act_dict[domain][intent][slot]='' 
                         pv_slot=slot                    
@@ -1147,7 +1205,7 @@ class MultiWozReader(_ReaderBase):
                     new_turn={}
                     for key in turn:
                         if key in ['user','bspn','aspn','resp','db', 'usr_act', 'bspn_gen', 'aspn_gen', 
-                            'resp_gen', 'db_gen', 'user_gen', 'usr_act_gen', 'gpan', 'pv_aspn']:
+                            'resp_gen', 'db_gen', 'user_gen', 'usr_act_gen', 'gpan', 'pv_aspn', 'goal']:
                             # GPT2Tokenizer of transformers3.5 needs to be modified
                             new_turn[key]=self.modified_encode(turn[key], tokenizer)
                         else:
@@ -1177,12 +1235,12 @@ class MultiWozReader(_ReaderBase):
             for turn in dial:
                 new_turn={}
                 for key in turn:
-                    if key in ['user','bspn','aspn','resp','db', 'usr_act', 'goal', 'bspn_gen', 
-                        'aspn_gen', 'resp_gen', 'db_gen','user_gen', 'usr_act_gen','sys_act']:
-                        # GPT2Tokenizer of transformers3.5 needs to be modified
-                        new_turn[key]=self.tokenizer.decode(turn[key])
-                    else:
-                        new_turn[key]=turn[key]
+                    if isinstance(turn[key], list):
+                        try:
+                            new_turn[key]=self.tokenizer.decode(turn[key])
+                        except Exception as e:
+                            #print('Cannot decode key:', key)
+                            new_turn[key]=turn[key]
                 new_dial.append(new_turn)
             new_batch.append(new_dial)
         return new_batch
@@ -1305,8 +1363,8 @@ class MultiWozReader(_ReaderBase):
                                 continue
                             turn=dial[turn_id]
                             R=reward[turn_id]
-                            turn_batch.append(turn['gpan']+turn['usr_act']+turn['user'])
-                            label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+turn['user'])
+                            turn_batch.append(turn['goal']+turn['usr_act']+turn['user'])
+                            label_batch.append([cfg.pad_id]*len(turn['goal'])+turn['usr_act']+turn['user'])
                             reward_batch.append(R)
                     else:
                         for dial, reward in zip(batch_part, reward_part):
@@ -1315,10 +1373,11 @@ class MultiWozReader(_ReaderBase):
                             turn=dial[turn_id]
                             pv_turn=dial[turn_id-1]
                             R=reward[turn_id]
-                            #pv_aspn=turn['pv_aspn'] if 'pv_aspn' in turn else pv_turn['aspn']
+                            pv_aspn=turn['pv_aspn'] if 'pv_aspn' in turn else pv_turn['aspn']
                             #turn_batch.append(pv_turn['resp']+pv_aspn+turn['gpan']+turn['usr_act']+turn['user'])
-                            turn_batch.append(pv_turn['resp']+turn['gpan']+turn['usr_act']+turn['user'])
-                            label_batch.append([cfg.pad_id]*len(pv_turn['resp']+turn['gpan'])+\
+                            pv_batch=pv_turn['resp']+pv_aspn if cfg.user_nlu else pv_turn['resp']
+                            turn_batch.append(pv_batch+turn['goal']+turn['usr_act']+turn['user'])
+                            label_batch.append([cfg.pad_id]*len(pv_batch+turn['goal'])+\
                                     turn['usr_act']+turn['user'])
                             reward_batch.append(R)
                     if len(turn_batch)>cfg.training_batch_size/2:
@@ -1335,12 +1394,13 @@ class MultiWozReader(_ReaderBase):
                 pv_turn=None
                 for turn, R in zip(dial, reward):
                     if pv_turn is None:
-                        turn_batch.append(turn['gpan']+turn['usr_act']+turn['user'])
-                        label_batch.append([cfg.pad_id]*len(turn['gpan'])+turn['usr_act']+turn['user'])
+                        turn_batch.append(turn['goal']+turn['usr_act']+turn['user'])
+                        label_batch.append([cfg.pad_id]*len(turn['goal'])+turn['usr_act']+turn['user'])
                     else:
-                        #pv_aspn=turn['pv_aspn'] if 'pv_aspn' in turn else pv_turn['aspn']
-                        turn_batch.append(pv_turn['resp']+turn['gpan']+turn['usr_act']+turn['user'])
-                        label_batch.append([cfg.pad_id]*len(pv_turn['resp']+turn['gpan'])+\
+                        pv_aspn=turn['pv_aspn'] if 'pv_aspn' in turn else pv_turn['aspn']
+                        pv_batch=pv_turn['resp']+pv_aspn if cfg.user_nlu else pv_turn['resp']
+                        turn_batch.append(pv_batch+turn['goal']+turn['usr_act']+turn['user'])
+                        label_batch.append([cfg.pad_id]*len(pv_batch+turn['goal'])+\
                                 turn['usr_act']+turn['user'])
                     reward_batch.append(R)
                     if len(turn_batch)==cfg.training_batch_size:
@@ -1514,7 +1574,10 @@ class MultiWozReader(_ReaderBase):
                         new_pv_batch.append(b)
         else:# user's pv batch
             for r, a in zip(resp, aspn):
-                new_pv_batch.append(r)
+                if cfg.user_nlu:
+                    new_pv_batch.append(r+a)
+                else:
+                    new_pv_batch.append(r)
         return new_pv_batch
 
 
@@ -1697,22 +1760,28 @@ class MultiWozReader(_ReaderBase):
         return eval_batch
 
 
-    def convert_eval_batch_turn_us(self, turn_batch, pv_batch, user_act=None):
+    def convert_eval_batch_turn_us(self, turn_batch, pv_batch, user_act=None, nlu=False):
         eval_batch=[]
-        if user_act is None:# generate user act (and utterance)
-            if pv_batch==None: # first turn
-                for g in turn_batch['goal']:
-                    eval_batch.append(g + [self.sos_ua_id])
-            else:
-                for g, pv in zip(turn_batch['goal'], pv_batch):
-                    eval_batch.append(pv + g + [self.sos_ua_id])
-        else:# generate user utterance
-            if pv_batch==None:
-                for g, ua in zip(turn_batch['goal'], user_act):
-                    eval_batch.append(g + ua + [self.sos_u_id])
-            else:
-                for g, pv, ua in zip(turn_batch['goal'], pv_batch, user_act):
-                    eval_batch.append(pv + g + ua + [self.sos_u_id])
+        if nlu:
+            assert pv_batch # perform NLU except for the first turn
+            for pv_r in pv_batch['resp']:
+                eval_batch.append(pv_r + [self.sos_a_id])
+
+        else:
+            if user_act is None:# generate user act (and utterance)
+                if pv_batch==None: # first turn
+                    for g in turn_batch['goal']:
+                        eval_batch.append(g + [self.sos_ua_id])
+                else:
+                    for g, pv in zip(turn_batch['goal'], pv_batch):
+                        eval_batch.append(pv + g + [self.sos_ua_id])
+            else:# generate user utterance
+                if pv_batch==None:
+                    for g, ua in zip(turn_batch['goal'], user_act):
+                        eval_batch.append(g + ua + [self.sos_u_id])
+                else:
+                    for g, pv, ua in zip(turn_batch['goal'], pv_batch, user_act):
+                        eval_batch.append(pv + g + ua + [self.sos_u_id])
         return eval_batch
 
 
@@ -1748,59 +1817,33 @@ class MultiWozReader(_ReaderBase):
         eos_syntax = ontology.eos_tokens if not eos_syntax else eos_syntax
         sos_syntax = ontology.sos_tokens
         # ground truth bs, as, ds.. generate response
-        field = ['dial_id', 'turn_num', 'user', 'bspn', 'bspn_gen', 'db', 'db_gen', 'aspn_gen', 'aspn', 'resp_gen', 'resp', 'dspn']
+        field = ['user', 'bspn', 'bspn_gen', 'db', 'db_gen', 'aspn_gen', 'aspn', 'resp_gen', 'resp']
+        others = ['dial_id', 'turn_num']
 
         for dial_id, turns in result_dict.items():
-            #修改记录：下方的turn_num在源代码中写的是trun_num
             entry = {'dial_id': dial_id, 'turn_num': len(turns)}
-            for f in field[2:]:
+            for f in field:
                 entry[f] = '' # ???
             results.append(entry)
             for turn_idx, turn in enumerate(turns):
                 entry = {'dial_id': dial_id}
-                for key in field:
-                    if key in ['dial_id']:
-                        continue
-                    v = turn.get(key, '')
-                    if key == 'turn_domain':
-                        v = ' '.join(v)
-
-                    if key in eos_syntax and v != '':
-                        # remove eos tokens
-                        v = self.tokenizer.decode(v)
-                        v = v.split()
-                        # remove eos/sos in span
-                        if eos_syntax[key] in v:
-                            v.remove(eos_syntax[key])
-                        if sos_syntax[key] in v:
-                            v.remove(sos_syntax[key])
-                        # if key != 'resp_gen':
-                        #     # remove eos/sos in span
-                        #     if eos_syntax[key] in v:
-                        #         v.remove(eos_syntax[key])
-                        #     if sos_syntax[key] in v:
-                        #         v.remove(sos_syntax[key])
-                        # else: # 'resp_gen'
-                        #     sos_index = 0
-                        #     eos_index = -1
-                        #     if sos_syntax[key] in v:
-                        #         sos_index = v.index(sos_syntax[key])
-                        #     if eos_syntax[key] in v:
-                        #         eos_index = v.index(eos_syntax[key])
-                        #     else:
-                        #         pass # take too long
-                        #         # no <eos_r> found, stop at any eos_tokens
-                        #         # for i in range(sos_index+1, len(v)):
-                        #         #     if v[i] in sos_syntax.values() or v[i] in eos_syntax.values():
-                        #         #         eos_index = i
-                        #     v = v[sos_index+1: eos_index]
-
-
-                        # v = self.tokenizer.convert_tokens_to_string(v)
-                        v = " ".join(v)
-                    else: 
-                        pass # v = v
-                    entry[key] = v
+                for key in turn:
+                    if key in field:
+                        if cfg.save_prob and key=='bspn_gen':
+                            entry['bspn_tokens']=str(self.tokenizer.convert_ids_to_tokens(turn['bspn_gen']))
+                            entry['bspn_prob']=str(turn['bspn_prob'])
+                        v=self.tokenizer.decode(turn[key])
+                        if key in eos_syntax:
+                            v=v.split()
+                            if eos_syntax[key] in v:
+                                v.remove(eos_syntax[key])
+                            if sos_syntax[key] in v:
+                                v.remove(sos_syntax[key])
+                            v = " ".join(v)
+                        entry[key]=v
+                    elif key in others:
+                        v=turn[key]
+                        entry[key]=v
 
                 results.append(entry)
 

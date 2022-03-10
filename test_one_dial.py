@@ -43,7 +43,8 @@ domain='restaurant'
 venues = reader.db.queryJsons(domain, constraint_dict[domain], return_name=True)
 print('venues:', venues)
 '''
-ua='<sos_a> [hotel] [offerbooked] reference [general] [reqmore] <eos_a>'
+ua='<sos_a> [restaurant] [nooffer]  food [recommend]  name [inform]  food choice price area <eos_a>'
+#print(reader.aspan_to_act_list(ua))
 print(reader.aspan_to_act_dict(ua, side='sys'))
 '''
 path1='/home/liuhong/myworkspace/experiments_21/turn-level-DS/best_score_model'

@@ -925,23 +925,28 @@ class MultiWozEvaluator(object):
         goal[domain] = {}
         goal[domain] = {'informable': {}, 'requestable': [], 'booking': []}
         if 'info' in true_goal[domain]:
+            true_goal[domain]['inform']=true_goal[domain].pop('info')
+        if 'reqt' in true_goal[domain]:
+            true_goal[domain]['request']=true_goal[domain].pop('reqt')
+
+        if 'inform' in true_goal[domain]:
             if domain == 'train':
                 # we consider dialogues only where train had to be booked!
                 if 'book' in true_goal[domain]:
                     goal[domain]['requestable'].append('reference')
-                if 'reqt' in true_goal[domain]:
-                    if 'id' in true_goal[domain]['reqt']:
+                if 'request' in true_goal[domain]:
+                    if 'id' in true_goal[domain]['request']:
                         goal[domain]['requestable'].append('id')
             else:
-                if 'reqt' in true_goal[domain]:
-                    for s in true_goal[domain]['reqt']:  # addtional requests:
+                if 'request' in true_goal[domain]:
+                    for s in true_goal[domain]['request']:  # addtional requests:
                         if s in ['phone', 'address', 'postcode', 'reference', 'id']:
                             # ones that can be easily delexicalized
                             goal[domain]['requestable'].append(s)
                 if 'book' in true_goal[domain]:
                     goal[domain]['requestable'].append("reference")
 
-            for s, v in true_goal[domain]['info'].items():
+            for s, v in true_goal[domain]['inform'].items():
                 s_,v_ = clean_slot_values(domain, s,v)
                 if len(v_.split())>1:
                     v_ = ' '.join([token.text for token in self.reader.nlp(v_)]).strip()
